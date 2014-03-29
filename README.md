@@ -1,6 +1,6 @@
 <h2>tryToxics</h2><hr />
 =========
-<img href="ui/logo.jpg" alt="logo" />
+<img href="https://raw.githubusercontent.com/skamster/tryToxics/master/ui/logo.jpg" alt="logo" />
 
 ..and another tox-api-client, based on pyTox and pyQt, written in pure python 3..
 
@@ -34,8 +34,8 @@ Important to know: friendRequests get automatic accepted, also groupchat for deb
 <b>Not working / known Bugs</b>
 <ul>
   <li>Status (backgroundcolor in friendlist) shows always online</li>
-  <li><strike>Encryption is incomplete and fucks around (padding is not right anymore)-when u want to use it, take arc4 or xor to encrypt, they should work.</strike></li>
+  <li><del>Encryption is incomplete and fucks around (padding is not right anymore)-when u want to use it, take arc4 or xor to encrypt, they should work.</del></li>
   <li>It's easy possible to kill the app, when you don't wait, until it's really connectet to a user and stress it around</li>
-  <li><strike>language has to be fixed</strike></li>
+  <li><del>language has to be fixed</del></li>
 </ul>
 ...etc. I've now a moment time to work on, so i think, it will get a bit more extendet soon (i've broke my feet and shouldn't move - lets dev!).
