@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1072</width>
-    <height>664</height>
+    <height>830</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,10 +17,10 @@
    <widget class="QTabWidget" name="mainTab">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>0</x>
       <y>0</y>
       <width>1041</width>
-      <height>621</height>
+      <height>791</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -43,11 +43,17 @@
      <widget class="QTextEdit" name="toxTryChat">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>130</y>
-        <width>501</width>
-        <height>321</height>
+        <x>360</x>
+        <y>10</y>
+        <width>661</width>
+        <height>711</height>
        </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
       </property>
       <property name="readOnly">
        <bool>true</bool>
@@ -56,18 +62,18 @@
      <widget class="QLineEdit" name="toxTrySendText">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>460</y>
-        <width>301</width>
-        <height>41</height>
+        <x>360</x>
+        <y>730</y>
+        <width>561</width>
+        <height>21</height>
        </rect>
       </property>
      </widget>
      <widget class="QPushButton" name="toxTrySendButton">
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>460</y>
+        <x>930</x>
+        <y>730</y>
         <width>91</width>
         <height>24</height>
        </rect>
@@ -79,10 +85,10 @@
      <widget class="QListWidget" name="toxTryFriends">
       <property name="geometry">
        <rect>
-        <x>530</x>
-        <y>140</y>
-        <width>491</width>
-        <height>192</height>
+        <x>10</x>
+        <y>160</y>
+        <width>291</width>
+        <height>261</height>
        </rect>
       </property>
      </widget>
@@ -91,7 +97,7 @@
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>631</width>
+        <width>291</width>
         <height>107</height>
        </rect>
       </property>
@@ -161,8 +167,8 @@
      <widget class="QLabel" name="label_44">
       <property name="geometry">
        <rect>
-        <x>540</x>
-        <y>120</y>
+        <x>10</x>
+        <y>140</y>
         <width>101</width>
         <height>16</height>
        </rect>
@@ -174,8 +180,8 @@
      <widget class="QLabel" name="label_45">
       <property name="geometry">
        <rect>
-        <x>540</x>
-        <y>330</y>
+        <x>10</x>
+        <y>430</y>
         <width>111</width>
         <height>16</height>
        </rect>
@@ -187,9 +193,9 @@
      <widget class="QTextEdit" name="toxTryFriendInfos">
       <property name="geometry">
        <rect>
-        <x>530</x>
-        <y>350</y>
-        <width>491</width>
+        <x>10</x>
+        <y>450</y>
+        <width>291</width>
         <height>131</height>
        </rect>
       </property>
@@ -206,10 +212,10 @@
      <widget class="QTextEdit" name="toxTryNotifications">
       <property name="geometry">
        <rect>
-        <x>660</x>
-        <y>10</y>
-        <width>361</width>
-        <height>121</height>
+        <x>10</x>
+        <y>610</y>
+        <width>291</width>
+        <height>141</height>
        </rect>
       </property>
       <property name="documentTitle">
@@ -225,23 +231,34 @@
        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:14px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:large; font-weight:600;&quot;&gt;Notifications&lt;/span&gt;&lt;/p&gt;
-&lt;hr /&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QPushButton" name="toxTryNewFriendRequest">
       <property name="geometry">
        <rect>
-        <x>530</x>
-        <y>490</y>
+        <x>200</x>
+        <y>130</y>
         <width>101</width>
         <height>24</height>
        </rect>
       </property>
       <property name="text">
        <string>Add new Friend</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_47">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>590</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Notifications</string>
       </property>
      </widget>
     </widget>
@@ -318,10 +335,10 @@ p, li { white-space: pre-wrap; }
      <widget class="QTextEdit" name="textEdit">
       <property name="geometry">
        <rect>
-        <x>450</x>
-        <y>20</y>
+        <x>380</x>
+        <y>10</y>
         <width>501</width>
-        <height>261</height>
+        <height>251</height>
        </rect>
       </property>
       <property name="undoRedoEnabled">
@@ -334,12 +351,12 @@ p, li { white-space: pre-wrap; }
        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:18pt; text-decoration: underline;&quot;&gt;Avaible Config-Keys&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif';&quot;&gt;* lang / language = language - put the right filename (*.qm in your folder) there&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif';&quot;&gt;* encrypted : 1=CAST, 2=Blowfish, 3=DES3,4=ARC4,5=XOR,6=AES,7=ARC2 (you need to install pycrypto / python3-crypto @ *buntu). Put &amp;quot;None&amp;quot; as value for going back to cleartext. Encryption shouldn't need any restart.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif';&quot;&gt;Restart is needed after changes!&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; text-decoration: underline;&quot;&gt;Avaible Config-Keys&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;* lang / language = language - put the right filename (*.qm in your folder) there&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;* encrypted : 1=CAST, 2=Blowfish, 3=DES3,4=ARC4,5=XOR,6=AES,7=ARC2 (you need to install pycrypto / python3-crypto @ *buntu). Put &amp;quot;None&amp;quot; as value for going back to cleartext. Encryption shouldn't need any restart.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Restart is needed after changes!&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </widget>
@@ -351,7 +368,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>1072</width>
-     <height>21</height>
+     <height>19</height>
     </rect>
    </property>
   </widget>
