@@ -12,37 +12,38 @@ class cm:
         else:
           self.name = "None"
         if self.key != "encryptionInit" and self.key != "":
-            self.setKey(self.key)    
+            self.setKey(self.key)
         logger.debug("|Crypt| Init cm/cryptoMeta with module "+self.name)
         from Crypto import Random as rand
         self.rand = rand
 
     def setKey(self, key):
-        logger.error(key + " len "+str(len(key)))
-        hash = SHA512.new(bytes(key,'ascii'))
-        self.key = hash.hexdigest()
-        if self.name == "CAST" or self.name=="IDEA":
-           self.key = self.key[0:16]
-        elif self.name == "Blowfish" or self.name == "ARC2" or self.name == "ARC4":
-           if len(self.key) < self.mod.block_size:
-             rest = (self.mod.block_size *2) - len(self.key)
-           else:
-             rest = 16
-           while rest !=0:
-             rest -=1
-             self.key += "."
-        elif self.name == "AES" or self.name == "XOR":
-           self.key = self.key[0:32]
-        elif self.name == "DES3":
-          self.key = self.key[0:24]
-        logger.error(self.key + " len "+str(len(self.key)))
-        return self.key
+        if len(key) is not 0:
+          #logger.error("setKEy"+key + " len "+str(len(key)))
+          hash = SHA512.new(bytes(key,'ascii'))
+          self.key = hash.hexdigest()
+          if self.name == "CAST" or self.name=="IDEA":
+            self.key = self.key[0:16]
+          elif self.name == "ARC2":
+            self.key = self.key[0:127]
+          elif self.name == "Blowfish"  or self.name == "ARC4":
+            self.key = self.key[0:56]
+          elif self.name == "AES" or self.name == "XOR":
+            self.key = self.key[0:32]
+          elif self.name == "DES3":
+            self.key = self.key[0:24]
+          #logger.error(self.key + " len "+str(len(self.key)))
+          return self.key
+        else:
+          self.mod = None
+          self.name = "None"
 
     def encrypt(self, rawMessage):
       try:
+        #logger.error("doEncryption")
         message=str(rawMessage)
-        if self.mod == None:
-            return rawMessage
+        if self.mod == None or self.name=="None":
+            return message
         iv = self.rand.new().read(self.mod.block_size)
         if self.name == "XOR" or self.name == "ARC4":
           cipher = self.mod.new(self.key)          
@@ -56,32 +57,36 @@ class cm:
         tmp = ""
         while rest != 0:
             rest -=1
-            tmp += " "
+            tmp += "."
         eMessage = message+tmp
-        #print(eMessage+str(len(eMessage)))
+        #logger.error("encryption msg"+eMessage+" "+str(len(eMessage)))
         t =  base64.b64encode(iv + cipher.encrypt(eMessage))
         return t
       except Exception as e:
-        logger.error("|Crypt| Encryptionerror: "+ str(e.args[0]))
+        logger.error("|Crypt| Encryptionerror: "+ str(e.args[0])+" Message "+str(rawMessage))
     def decrypt(self, encryptedMessage):
         try:
-          if self.mod == None:
+          if self.mod == None or self.name == "None":
               return encryptedMessage
           if encryptedMessage is None:
               return ""
           tDec = base64.b64decode(encryptedMessage)
           iv = tDec[:self.mod.block_size]
+          #logger.error("mod-value: "+str(self.name)+" block-lenght: "+str(self.mod.block_size))
+          #logger.error("iv-value: "+str(iv)+" iv-lenght: "+len(str(iv)))
           if self.name == "XOR" or self.name == "ARC4":
             cipher = self.mod.new(self.key)          
           else:
             cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
+            #logger.error("after?")
+            
           clearText = str(cipher.decrypt(tDec[self.mod.block_size:]))
           #workAround for b'-signed floats and ints..
           if clearText[0:2] == "b'":
               clearText = clearText[2:-1]
           else:
               clearText = clearText[0:-1]
-          return clearText.rstrip()
+          return clearText.rstrip(".")
         except Exception as e:
           logger.error("|Crypt| Decryptionerror: "+ str(e.args[0]))
 
@@ -90,10 +95,11 @@ class scm:
     #oldMod - self.encryptionObject,
     @staticmethod
     def migrateEncryptionData(newCryptManager, toxMessagesHandler):
-      logger.error("|Crypt|Start migrateEncryptionData")
+      logger.debug("|Crypt|Start migrateEncryptionData")
       toxMessagesHandler.updateMessages()
       toxMessagesHandler.eo=newCryptManager
-      toxMessagesHandler.saveAllMessages()
+      toxMessagesHandler.saveAllMessages(newCryptManager)
+      toxMessagesHandler.updateMessages()
           
 
     @staticmethod

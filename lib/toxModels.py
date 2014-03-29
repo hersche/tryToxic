@@ -22,13 +22,16 @@ class toxMessageHandler(QtCore.QObject):
     self.eo = eo
     self.toxMessageArrived.connect(self.flushMessage)
     self.toxMessageDbUpdate.connect(self.updateMessages)
-  def saveAllMessages(self):
-    self.updateMessages()
+  def saveAllMessages(self,eo):
     for msg in self.messages:
-        if self.eo != None:
-          c2.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me WHERE id=?",  (self.eo.encrypt(msg.friendId), self.eo.encrypt(msg.timestamp), self.eo.encrypt(msg.message),self.eo.encrypt(msg.me), msg.dbId))
+        if eo != None:
+          if msg.me == "True":
+            me = "True"
+          else:
+            me = "False"
+          c2.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (self.eo.encrypt(msg.friendId), self.eo.encrypt(msg.timestamp), self.eo.encrypt(msg.message),self.eo.encrypt(me),eo.name, msg.dbId))
         else:
-          c2.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me WHERE id=?",  (msg.friendId, msg.timestamp, msg.message,msg.me, msg.dbId))
+          c2.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (msg.friendId, msg.timestamp, msg.message,me,-1, msg.dbId))
     db2.commit()
           
       
@@ -46,24 +49,24 @@ class toxMessageHandler(QtCore.QObject):
     self.messages = []
     self.tmpDecryptData = []
     if friendId != -1:
-      if self.eo is None:
-        c2.execute('select * from messages where friendId='+str(self.tmpFriendId)+';')
-      else:
+      if self.eo is not None and self.eo.name is not "None":
         c2.execute('select id,friendId from messages;')
         for tmp in c2.fetchall():
-          logger.error(str(friendId)+" vs "+str(self.eo.decrypt(tmp[1])))
+          logger.error("get Ids first "+str(friendId)+" vs "+str(self.eo.decrypt(tmp[1])))
           if str(friendId) == str(self.eo.decrypt(tmp[1])):
-            #logger.error(tmp[0])
+            logger.error("append "+str(tmp[0]))
             self.tmpDecryptData.append(tmp[0])
-        c2.execute('select * from messages;')
+            c2.execute('select * from messages;')
+      else:
+        c2.execute('select * from messages where friendId='+str(self.tmpFriendId)+';')
     else:
         c2.execute('select * from messages;')
     #logger.error("decrypt started or so..?!?")
     for msg in c2.fetchall():
-      #logger.error("Secondround")
+      logger.error("Secondround")
       if friendId != -1:
         if self.eo != None:
-          logger.error(str(msg[0])+" vs "+str(self.tmpDecryptData))
+          logger.error("get second,real connect "+str(msg[0])+" vs "+str(self.tmpDecryptData))
           if msg[0] in self.tmpDecryptData:
             self.messages.append(toxMessage(self.eo.decrypt(msg[1]),self.eo.decrypt(msg[2]),self.eo.decrypt(msg[3]),self.eo.decrypt(msg[4]),msg[0]))
         else:
@@ -130,6 +133,11 @@ class toxMessage:
       self.timestamp = timestamp
       self.dbId=dbId
 
-
-    
+class toxUser:
+  def __init__(self,friendId,name,pubKey,status,statusMessage):
+    self.friendId = friendId
+    self.name = name
+    self.pubKey = pubKey
+    self.status = status
+    self.statusMessage = statusMessage  
  

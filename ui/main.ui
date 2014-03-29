@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>tryTox</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTabWidget" name="mainTab">
@@ -28,9 +28,6 @@
       <horstretch>0</horstretch>
       <verstretch>0</verstretch>
      </sizepolicy>
-    </property>
-    <property name="whatsThis">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Personal finances&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="currentIndex">
      <number>0</number>

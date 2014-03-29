@@ -6,9 +6,9 @@ singleView = False
 singleViewId = -1
 #the whole gui...
 class toxThread(QtCore.QThread):
- def __init__(self,ui,tmh):
+ def __init__(self,ui,tmh,tt):
   QtCore.QThread.__init__(self)
-  self.tt = ToxTry(ui,tmh)
+  self.tt = tt
  def run(self):
     self.tt.loop()
 class Gui(QtGui.QMainWindow):
@@ -26,7 +26,8 @@ class Gui(QtGui.QMainWindow):
         self.ui.setupUi(self)
         #self.tmc = toxController("","")
         self.tmh = toxMessageHandler(self.encryptionObject)
-        self.toxThread = toxThread(self.ui,self.tmh)
+        self.tt = ToxTry(self.ui,self.tmh,self.passPhrase)
+        self.toxThread = toxThread(self.ui,self.tmh,self.tt)
         #self.updateToxUserList()
         self.toxThread.start()
         self.updateConfigListUi()
@@ -61,7 +62,8 @@ class Gui(QtGui.QMainWindow):
             if config.key.lower()== "encrypted" and self.encryptionObject is None:
                 logger.debug("Found encryption in config. Init Module with value "+config.value)
                 if self.encryptionObject is None:
-                  self.encryptionObject = cm(scm.getMod(config.value), "encryptionInit")
+                    logger.error("create init-eo")
+                    self.encryptionObject = cm(scm.getMod(config.value), "encryptionInit")
             elif config.key == "lang" or config.key == "language":
                 if os.path.isfile("lang/"+config.value):
                     self.lang="lang/"+config.value
@@ -77,32 +79,44 @@ class Gui(QtGui.QMainWindow):
     # config-Actions
     #--------------
     def onCreateConfig(self):
-        Config.createConfig(self.ui.configKey.text(), self.ui.configValue.text())
         # @TODO select the created!
         if self.ui.configKey.text() == "encrypted" and self.ui.configValue.text() != "None":
-            pw, okCancel = QtGui.QInputDialog.getText(None,tr("Password"),tr("Enter Password"),QtGui.QLineEdit.Password)
-            newCryptManager = cm(scm.getMod(self.ui.configValue.text()))
-            self.passPhrase = newCryptManager.setKey(pw)
-            scm.migrateEncryptionData(newCryptManager, self.tmh)
+            pw, ok = QtGui.QInputDialog.getText(None,tr("Password"),tr("Enter Password"),QtGui.QLineEdit.Password)
+            if ok:
+              Config.createConfig(self.ui.configKey.text(), self.ui.configValue.text())
+              newCryptManager = cm(scm.getMod(self.ui.configValue.text()),pw)
+              scm.migrateEncryptionData(newCryptManager, self.tmh)
+              self.encryptionObject=newCryptManager
+              self.tt.passPhrase = newCryptManager.key
+              self.tt.saveLocalData()
+        else:
+            Config.createConfig(self.ui.configKey.text(), self.ui.configValue.text())
         self.updateConfigListData()
         self.updateConfigListUi()
     def onSaveConfig(self):
         cI = self.ui.configList.currentItem()
-        ciText = cI.text()
+        if cI is not None:      ciText = cI.text()
+        outOk = True
         for config in self.configlist:
-            if cI is not None and config.key == ciText:
+            if config.key == ciText:
                 config.save(self.ui.configKey.text(), self.ui.configValue.text())
                 if self.ui.configKey.text() == "encrypted":
                     if self.ui.configValue.text() != "None":
-                      logger.error("not none but "+self.ui.configValue.text())
+                      #logger.error("not none but "+self.ui.configValue.text())
                       #self.tmh.
-                      pw, okCancel = QtGui.QInputDialog.getText(None,tr("Password"),tr("Enter Password"),QtGui.QLineEdit.Password)
-                      self.tmpPw = pw
-                      nCm = cm(scm.getMod(self.ui.configValue.text()), pw)
+                      pw, ok = QtGui.QInputDialog.getText(None,tr("Password"),tr("Enter Password"),QtGui.QLineEdit.Password)
+                      outOk=ok 
+                      if ok:
+                        mod = scm.getMod(self.ui.configValue.text())
+                        if mod is not None:
+                          nCm = cm(scm.getMod(self.ui.configValue.text()), pw)
+                          self.tt.passPhrase = nCm.key
+                          self.tt.saveLocalData()
                     else:
                       nCm = None
-                    scm.migrateEncryptionData(nCm, self.tmh)
-                    self.encryptionObject = nCm
+                    if outOk:
+                      scm.migrateEncryptionData(nCm, self.tmh)
+                      self.encryptionObject = nCm
         self.updateConfigListData()
     def onDeleteConfig(self):
         cm = self.ui.configList.currentItem()
