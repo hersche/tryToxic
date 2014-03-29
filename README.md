@@ -19,6 +19,9 @@ Or just download and extract it as zip. Anyway, go into a shell and the right fo
 <b>sudo python3 setup.py install</b> <br />
 After it compiles, you should be ready, give start.sh a kick. Don't forget to update and reinstall this lib by hand.
 
+<h3>Increase debug</h3>
+There's a logger used to detect failures in structure (multiple used methods as example). Settings are saved in lib/header.py and setted per default on error-level.
+
 <h3>Whats working / Bugs</h3>
 Important to know: friendRequests get automatic accepted, also groupchat for debugging..<br />
 <b>Working!</b>
@@ -29,7 +32,7 @@ Important to know: friendRequests get automatic accepted, also groupchat for deb
   <li>Send and reciving messages</li>
   <li>Encryption of localData</li>
   <li>Internationalisised (at the moment english + german)</li>
-  <li>Recive groupchatmessages (get extendet, im happy)</li>
+  <li>Groupchat is working</li>
 </ul>
 
 <b>Not working / known Bugs</b>
@@ -39,4 +42,10 @@ Important to know: friendRequests get automatic accepted, also groupchat for deb
   <li>It's easy possible to kill the app, when you don't wait, until it's really connectet to a user and stress it around</li>
   <li><del>language has to be fixed</del></li>
 </ul>
+<b>Ideas/Future</b>
+<ul>
+  <li>QrCode for publickey/adress. Find no good framework which is easy to install for python 3</li>
+  <li>AudioVideo - i think everyone who play/dev with tox like to got this. Big part..</li>
+  <li>fileTransfer of course.. would be possible i think</li>
+  
 ...etc. I've now a moment time to work on, so i think, it will get a bit more extendet soon (i've broke my feet and shouldn't move - lets dev!).

@@ -3,15 +3,12 @@ from lib.header import *
 from PyQt4.QtCore import pyqtSlot,pyqtSignal
 fileExist = True
 if os.path.isfile('toxMessages.db') == False:
-    #..und ggf umgestellt..
     fileExist = False
-#..denn sqlite3.connect erstellt immer ein file!
-db2 = sqlite3.connect('toxMessages.db')
-#aber wir brauchen ja den cursor, um die db initialisieren zu können.
-c2 = db2.cursor()
+db = sqlite3.connect('toxMessages.db')
+dbCursor = db.cursor()
 if fileExist == False:
-    c2.execute("CREATE TABLE messages (id INTEGER PRIMARY KEY, friendId text, timestamp text, message text, me text, encrypted text)")
-    c2.execute("CREATE TABLE config (coid INTEGER PRIMARY KEY,  key TEXT UNIQUE,  value TEXT, encrypted text)")
+    dbCursor.execute("CREATE TABLE messages (id INTEGER PRIMARY KEY, friendId text, timestamp text, message text, me text, encrypted text)")
+    dbCursor.execute("CREATE TABLE config (coid INTEGER PRIMARY KEY,  key TEXT UNIQUE,  value TEXT, encrypted text)")
 class toxMessageHandler(QtCore.QObject):
   toxMessageArrived = pyqtSignal(object)
   toxMessageDbUpdate = pyqtSignal(object)
@@ -22,6 +19,7 @@ class toxMessageHandler(QtCore.QObject):
     self.eo = eo
     self.toxMessageArrived.connect(self.flushMessage)
     self.toxMessageDbUpdate.connect(self.updateMessages)
+    
   def saveAllMessages(self,eo):
     for msg in self.messages:
         if eo != None:
@@ -29,13 +27,10 @@ class toxMessageHandler(QtCore.QObject):
             me = "True"
           else:
             me = "False"
-          c2.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (self.eo.encrypt(msg.friendId), self.eo.encrypt(msg.timestamp), self.eo.encrypt(msg.message),self.eo.encrypt(me),eo.name, msg.dbId))
+          dbCursor.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (self.eo.encrypt(msg.friendId), self.eo.encrypt(msg.timestamp), self.eo.encrypt(msg.message),self.eo.encrypt(me),eo.name, msg.dbId))
         else:
-          c2.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (msg.friendId, msg.timestamp, msg.message,me,-1, msg.dbId))
-    db2.commit()
-          
-      
-        
+          dbCursor.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (msg.friendId, msg.timestamp, msg.message,me,-1, msg.dbId))
+    db.commit()
     
   def addMessage(self,toxMessage):
     self.cachedToxMessages.append(toxMessage)
@@ -45,28 +40,25 @@ class toxMessageHandler(QtCore.QObject):
       self.tmpFriendId = friendId
       #logger.error("update kicket")
       self.toxMessageDbUpdate.emit(friendId)
+      
   def updateMessages(self,friendId=-1):
     self.messages = []
     self.tmpDecryptData = []
     if friendId != -1:
       if self.eo is not None and self.eo.name is not "None":
-        c2.execute('select id,friendId from messages;')
-        for tmp in c2.fetchall():
-          #logger.error("get Ids first "+str(friendId)+" vs "+str(self.eo.decrypt(tmp[1])))
+        dbCursor.execute('select id,friendId from messages;')
+        for tmp in dbCursor.fetchall():
           if str(friendId) == str(self.eo.decrypt(tmp[1])):
             #logger.error("append "+str(tmp[0]))
             self.tmpDecryptData.append(tmp[0])
-            c2.execute('select * from messages;')
+            dbCursor.execute('select * from messages;')
       else:
-        c2.execute('select * from messages where friendId='+str(self.tmpFriendId)+';')
+        dbCursor.execute('select * from messages where friendId='+str(self.tmpFriendId)+';')
     else:
-        c2.execute('select * from messages;')
-    #logger.error("decrypt started or so..?!?")
-    for msg in c2.fetchall():
-      #logger.error("Secondround")
+        dbCursor.execute('select * from messages;')
+    for msg in dbCursor.fetchall():
       if friendId != -1:
         if self.eo != None:
-          #logger.error("get second,real connect "+str(msg[0])+" vs "+str(self.tmpDecryptData))
           if msg[0] in self.tmpDecryptData:
             self.messages.append(toxMessage(self.eo.decrypt(msg[1]),self.eo.decrypt(msg[2]),self.eo.decrypt(msg[3]),self.eo.decrypt(msg[4]),msg[0]))
         else:
@@ -78,15 +70,14 @@ class toxMessageHandler(QtCore.QObject):
             self.messages.append(toxMessage(msg[1],msg[2],msg[3],msg[4],msg[0]))
   def flushMessage(self):
     try:
-      #logger.error("signal catched, write now!")
       for toxMessage in self.cachedToxMessages:
         if toxMessage.me:       tmpBoolMe = "True"
         else:   tmpBoolMe = "False"
         if self.eo != None:
-            c2.execute("INSERT INTO messages (friendId, timestamp, message,me, encrypted) VALUES (?,?,?,?,?)",  ( self.eo.encrypt(toxMessage.friendId), self.eo.encrypt(toxMessage.timestamp),  self.eo.encrypt(toxMessage.message),self.eo.encrypt(tmpBoolMe), self.eo.name))
+            dbCursor.execute("INSERT INTO messages (friendId, timestamp, message,me, encrypted) VALUES (?,?,?,?,?)",  ( self.eo.encrypt(toxMessage.friendId), self.eo.encrypt(toxMessage.timestamp),  self.eo.encrypt(toxMessage.message),self.eo.encrypt(tmpBoolMe), self.eo.name))
         else:
-            c2.execute("INSERT INTO messages (friendId, timestamp, message,me, encrypted) VALUES (?,?,?,?,?)",  ( toxMessage.friendId, toxMessage.timestamp,  toxMessage.message,tmpBoolMe, "-1"))
-      db2.commit()
+            dbCursor.execute("INSERT INTO messages (friendId, timestamp, message,me, encrypted) VALUES (?,?,?,?,?)",  ( toxMessage.friendId, toxMessage.timestamp,  toxMessage.message,tmpBoolMe, "-1"))
+      db.commit()
       self.cachedToxMessages=[]
     except sqlite3.Error as e:
       logger.error("An DB-error occurred: "+e.args[0])
@@ -101,28 +92,27 @@ class Config:
     @staticmethod
     def createConfig(key, value):
         try:
-            c2.execute("INSERT INTO config (key, value) VALUES (?,?);",  (key, value))
-            db2.commit()
-            #self.updateConfigList()
+            dbCursor.execute("INSERT INTO config (key, value) VALUES (?,?);",  (key, value))
+            db.commit()
         except sqlite3.Error as e:
             logger.error("An DB-error occurred: "+e.args[0])
             return -1
     @staticmethod
     def getConfigByKey(key):
-      c2.execute("SELECT * FROM config WHERE key=?;",(key, ))
-      for row in c2.fetchall():
+      dbCursor.execute("SELECT * FROM config WHERE key=?;",(key, ))
+      for row in dbCursor.fetchall():
         return Config(row[0],row[1],row[2])
       return None
     def save(self, key,  value):
         try:
-            c2.execute("UPDATE config SET key=?, value=? WHERE coid=?",  (key, value,  self.id))
-            db2.commit()
+            dbCursor.execute("UPDATE config SET key=?, value=? WHERE coid=?",  (key, value,  self.id))
+            db.commit()
         except sqlite3.Error as e:
             logger.error("An DB-error occurred: "+e.args[0])("An DB-error occurred: "+e.args[0])
     def delete(self):
         try:
-            c2.execute("DELETE FROM config WHERE coid=?",  (self.id, ))
-            db2.commit()
+            dbCursor.execute("DELETE FROM config WHERE coid=?",  (self.id, ))
+            db.commit()
         except sqlite3.Error as e:
             logger.error("An DB-error occurred: "+e.args[0])("An DB-error occurred: "+e.args[0])
    
@@ -133,7 +123,6 @@ class toxMessage:
         self.me = False
       else:
         self.me = True
-      #logger.error("message created, timestamp "+timestamp)
       self.friendId=friendId
       self.message = message
       self.timestamp = timestamp
@@ -154,6 +143,5 @@ class toxGroupUser(toxUser):
     self.peerList = peerList
     self.messages = []
     self.checkedPeerIds = []
-    
     self.isGroup = True
  

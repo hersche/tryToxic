@@ -1,17 +1,14 @@
-from lib.toxTry import *
+from lib.tryToxics import *
 from lib.toxModels import *
 from lib.cryptClass import *
 from ui.main import *
-singleView = False
-singleViewId = -1
-#the whole gui...
 class toxThread(QtCore.QThread):
- def __init__(self,ui,tmh,tt):
+ def __init__(self,ui,tmh,tryToxic):
   QtCore.QThread.__init__(self)
-  self.tt = tt
+  self.tryToxic = tryToxic
  def run(self):
-    self.tt.loop()
-class Gui(QtGui.QMainWindow):
+    self.tryToxic.loop()
+class mainController(QtGui.QMainWindow):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         logger.debug("|GUI| Init Gui")
@@ -25,19 +22,17 @@ class Gui(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        #self.tmc = toxController("","")
-        self.tmh = toxMessageHandler(self.encryptionObject)
-        self.tt = ToxTry(self.ui,self.tmh,self.passPhrase)
-        self.toxThread = toxThread(self.ui,self.tmh,self.tt)
-        #self.updateToxUserList()
+        self.toxMessagesHandler = toxMessageHandler(self.encryptionObject)
+        self.tryToxic = ToxTry(self.ui,self.toxMessagesHandler,self.passPhrase)
+        self.toxThread = toxThread(self.ui,self.toxMessagesHandler,self.tryToxic)
         self.toxThread.start()
         self.updateConfigListUi()
-        self.ui.configList.itemClicked.connect(self.onConfigItemClick)
+        
         #config-Actions
         self.ui.createConfig.clicked.connect(self.onCreateConfig)
         self.ui.saveConfig.clicked.connect(self.onSaveConfig)
         self.ui.deleteConfig.clicked.connect(self.onDeleteConfig)
-        
+        self.ui.configList.itemClicked.connect(self.onConfigItemClick)
         
     def updateConfigListUi(self,selectFirst=False,name=""):
         self.ui.configList.clear()
@@ -54,16 +49,13 @@ class Gui(QtGui.QMainWindow):
     def updateConfigListData(self):
         logger.debug("|Models| Update configList")
         self.configlist = []
-        c2.execute('select * from config;') 
-        for row in c2.fetchall():
+        dbCursor.execute('select * from config;') 
+        for row in dbCursor.fetchall():
             self.configlist.append(Config(row[0], row[1], row[2]))
         for config in self.configlist:
-            #elif config.key.lower()== "singleviewcname":
-                #singleViewName = config.value
             if config.key.lower()== "encrypted" and self.encryptionObject is None:
                 logger.debug("Found encryption in config. Init Module with value "+config.value)
                 if self.encryptionObject is None:
-                    logger.error("create init-eo")
                     self.encryptionObject = cm(scm.getMod(config.value), "encryptionInit")
             elif config.key == "lang" or config.key == "language":
                 if os.path.isfile("lang/"+config.value):
@@ -86,10 +78,10 @@ class Gui(QtGui.QMainWindow):
             if ok:
               Config.createConfig(self.ui.configKey.text(), self.ui.configValue.text())
               newCryptManager = cm(scm.getMod(self.ui.configValue.text()),pw)
-              scm.migrateEncryptionData(newCryptManager, self.tmh)
+              scm.migrateEncryptionData(newCryptManager, self.toxMessagesHandler)
               self.encryptionObject=newCryptManager
-              self.tt.passPhrase = newCryptManager.key
-              self.tt.saveLocalData()
+              self.tryToxic.passPhrase = newCryptManager.key
+              self.tryToxic.saveLocalData()
         else:
             Config.createConfig(self.ui.configKey.text(), self.ui.configValue.text())
         self.updateConfigListData()
@@ -103,20 +95,18 @@ class Gui(QtGui.QMainWindow):
                 config.save(self.ui.configKey.text(), self.ui.configValue.text())
                 if self.ui.configKey.text() == "encrypted":
                     if self.ui.configValue.text() != "None":
-                      #logger.error("not none but "+self.ui.configValue.text())
-                      #self.tmh.
                       pw, ok = QtGui.QInputDialog.getText(None,tr("Password"),tr("Enter Password"),QtGui.QLineEdit.Password)
                       outOk=ok 
                       if ok:
                         mod = scm.getMod(self.ui.configValue.text())
                         if mod is not None:
                           nCm = cm(scm.getMod(self.ui.configValue.text()), pw)
-                          self.tt.passPhrase = nCm.key
-                          self.tt.saveLocalData()
+                          self.tryToxic.passPhrase = nCm.key
+                          self.tryToxic.saveLocalData()
                     else:
                       nCm = None
                     if outOk:
-                      scm.migrateEncryptionData(nCm, self.tmh)
+                      scm.migrateEncryptionData(nCm, self.toxMessagesHandler)
                       self.encryptionObject = nCm
         self.updateConfigListData()
     def onDeleteConfig(self):

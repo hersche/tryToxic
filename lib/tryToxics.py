@@ -9,18 +9,16 @@ SERVER = ["54.199.139.199", 33445, "56A1ADE4B65B86BCD51CC73E2CD4E542179F47959FE3
 class ToxTry(Tox):
   def __init__(self,ui,tmh,passPhrase):
       self.ui=ui
-      self.tmh = tmh
+      self.toxMessagesHandler = tmh
       self.passPhrase = passPhrase
       self.groupToxUsers = []
       self.currentToxUser = None
-      #self.currentToxUserIsGroup = False
       self.groupNrs = []
       self.online = False
       if exists('./toxData'):
         if passPhrase == "":
           self.load_from_file('./toxData')
         else:
-         #logger.error("open file with pp: "+self.passPhrase)
          self.load_from_file('./toxData',self.passPhrase) 
       else:
         self.set_name("ToxTry")
@@ -33,7 +31,6 @@ class ToxTry(Tox):
       self.ui.toxTryId.setText(self.pubKey)
       self.updateToxUserObjects()
       self.updateToxUsersGuiList()
-        #self.add_friend_norequest(tUser.pubKey)
       self.saveLocalData()
       self.ui.toxTryFriends.itemClicked.connect(self.onClickToxUser)
       self.ui.toxTrySendButton.clicked.connect(self.onSendToxMessage)
@@ -52,7 +49,6 @@ class ToxTry(Tox):
       if tu.friendId == friendId:
         return tu
   def saveLocalData(self):
-    #logger.error("save local data with pp: "+self.passPhrase)
     if self.passPhrase == "":
       self.save_to_file('toxData')
     else:
@@ -80,8 +76,13 @@ class ToxTry(Tox):
     pubKey = pk.getText(QtGui.QWidget(),"Add new friend","Please enter your friends tox-id")
     msg = QtGui.QInputDialog()
     message = msg.getText(QtGui.QWidget(),"Add a message","Send your friend a first message too.",text="I would like to add u to my list")
-    #logger.error(str(pubKey)+ "    " +str(message))
-    self.add_friend(str(pubKey[0]),str(message[0]))
+    try:
+        self.add_friend(str(pubKey[0]),str(message[0]))
+    except Exception as e:
+      if e.args[0] == "the friend was already there but the nospam was different":
+        logger.error("put a alertbox here. user is already exist")
+        pass
+      logger.error("Problem on sending friendrequest: "+e.args[0])
     self.saveLocalData()
     self.updateToxUserObjects()
     self.updateToxUsersGuiList()
@@ -141,7 +142,7 @@ class ToxTry(Tox):
           self.group_message_send(self.currentToxUser.friendId,message)
         else:
           self.send_message(self.currentToxUser.friendId, message)
-          self.tmh.addMessage(toxMessage(self.currentToxUser.friendId,ts,message,"True"))
+          self.toxMessagesHandler.addMessage(toxMessage(self.currentToxUser.friendId,ts,message,"True"))
           self.ui.toxTryChat.append("["+ts+"] "+self.name+": "+message)
         self.ui.toxTrySendText.clear()
         self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
@@ -149,8 +150,6 @@ class ToxTry(Tox):
       logger.error("Send Message failed: "+e.args[0])
   def onClickToxUser(self,item):
     txt = item.text()
-    #self.updateToxUserObjects()
-    #self.updateToxUsersGuiList()
     mergedList = self.toxUserList + self.groupToxUsers
     
     for tu in mergedList:
@@ -162,17 +161,13 @@ class ToxTry(Tox):
         self.ui.toxTryFriendInfos.append("Status message: "+self.statusResolver(tu.status))
         self.ui.toxTryFriendInfos.append("Status message: "+tu.statusMessage)
         self.ui.toxTryChat.clear()
-        self.tmh.kickUpdate(tu.friendId)
+        self.toxMessagesHandler.kickUpdate(tu.friendId)
         sleep(0.1)
-        #logger.error("so big is the msglist "+str(len(self.tmh.messages)))
-        logger.error(txt[0:7])
         if tu.isGroup:
-          #self.currentToxUserIsGroup = True
           for msg in tu.messages:
             self.ui.toxTryChat.append("["+msg.timestamp+"] "+tu.name+": "+msg.message)
         else:
-          #self.currentToxUserIsGroup = False
-          for msg in self.tmh.messages:
+          for msg in self.toxMessagesHandler.messages:
             if "False" == msg.me:
               name=tu.name
             else:
@@ -204,19 +199,17 @@ class ToxTry(Tox):
   def on_friend_request(self, pk, message):
       self.ui.toxTryNotifications.append('Friend request from %s: %s' % (pk, message))
       self.add_friend_norequest(pk)
-      #self.tmc.addToxUser("name",pk,message)
       self.saveLocalData()
       self.updateToxUserObjects()
       self.updateToxUsersGuiList()
       self.ui.toxTryNotifications.append('Accepted friend request')
       self.ui.toxTryNotifications.moveCursor(QtGui.QTextCursor.End)
 
-  #def on_connection_status(friendId, status):
     
   def on_friend_message(self, friendId, message):
       ts = strftime('%Y-%m-%d %H:%M:%S', gmtime())
       tu = self.getToxUserByFriendId(friendId)
-      self.tmh.addMessage(toxMessage(tu.friendId,ts,message,"False"))
+      self.toxMessagesHandler.addMessage(toxMessage(tu.friendId,ts,message,"False"))
       self.ui.toxTryChat.append("["+ts+"] "+tu.name+": "+message)
       self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
       
@@ -243,22 +236,14 @@ class ToxTry(Tox):
     for gnr in self.get_chatlist():
         if gnr not in self.groupNrs:
           groupNr = gnr
-          #logger.error("found groupname: "+str(gnr))
     try:
       if groupNr != -1:
         peersNr = self.group_number_peers(groupNr)
         self.groupToxUsers.append(toxGroupUser(groupNr,"Group #"+str(groupNr),groupPk,0,str(peersNr)+" peoples are online in this groupchat"))
-      #self.updateToxUserObjects()
       self.updateToxUsersGuiList()
-      
-      #logger.error("groupid? peerNrs? "+str(peersNr))
-
-      #peername = self.group_peername(groupNr, peersNr)
-      #log.error("found peer "+peername+" with "+str(peersNr)+" people")
     except Exception as e:
       logger.error("Group joining failed: "+e.args[0])
     
-  #def on_group_namelist_change(group_number, peer_number, change)
   def on_group_message(self,group_number, friend_group_number, message):
     gtu = self.getToxGroupUserByFriendId(group_number)
     ts = strftime('%Y-%m-%d %H:%M:%S', gmtime())
@@ -269,40 +254,27 @@ class ToxTry(Tox):
         for peerUser in gtu.peerList:
             if peerUser.friendId == friend_group_number and peerUser.name is not "":
               sendingPeerUser = peerUser
-              #logger.error("already exist with name")
             elif peerUser.friendId == friend_group_number and peerUser.name == "":
               peerUser.name = self.group_peername(group_number,friend_group_number)
               sendingPeerUser = peerUser
-              #logger.error("try to add name")
             elif friend_group_number not in gtu.checkedPeerIds:
               name = self.group_peername(group_number,friend_group_number)
               sendingPeerUser = toxUser(friend_group_number,name,"",0,"")
               gtu.peerList.append(sendingPeerUser)
               gtu.checkedPeerIds.append(friend_group_number)
-              #logger.error("create new not logic")
       else:
         name = self.group_peername(group_number,friend_group_number)
         sendingPeerUser = toxUser(friend_group_number,name,"",0,"")
         gtu.checkedPeerIds.append(friend_group_number)
         gtu.peerList.append(sendingPeerUser)
-        #logger.error("create new just first round")
     except Exception as e:
         logger.error("workFail on resolving name" + str(e.args[0]))
-        #sendingPeerUser.name = str(friend_group_number)
         logger.error("Fail to get name" + str(e.args[0]))
         pass
-    #groupuserlist = self.group_get_names(group_number)
-    #for gu in groupuserlist:
-      #logger.error("groupnrpeer "+ str(gu))
-    #gtu.memberList.append(toxUser(friend_group_number,gtu.
     if sendingPeerUser is not None and sendingPeerUser.name is not "":
       name = sendingPeerUser.name
     else:
-      #if sendingPeerUser is None:
-        #logger.error("its really none.. omg!")
       name = str(friend_group_number)
     self.ui.toxTryChat.append("["+ts+"] "+gtu.name+"->"+name+": "+message)
     self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
-    logger.error("groupmessage!! "+str(friend_group_number)+"  name: "+str(name)+", message"+message)
-    
-  
+    logger.error("Recive Groupmessage ["+str(friend_group_number)+"]  Name: "+str(name)+" |  message"+message)

@@ -19,7 +19,6 @@ class cm:
 
     def setKey(self, key):
         if len(key) is not 0:
-          #logger.error("setKEy"+key + " len "+str(len(key)))
           hash = SHA512.new(bytes(key,'ascii'))
           self.key = hash.hexdigest()
           if self.name == "CAST" or self.name=="IDEA":
@@ -32,7 +31,6 @@ class cm:
             self.key = self.key[0:32]
           elif self.name == "DES3":
             self.key = self.key[0:24]
-          #logger.error(self.key + " len "+str(len(self.key)))
           return self.key
         else:
           self.mod = None
@@ -40,7 +38,6 @@ class cm:
 
     def encrypt(self, rawMessage):
       try:
-        #logger.error("doEncryption")
         message=str(rawMessage)
         if self.mod == None or self.name=="None":
             return message
@@ -59,7 +56,6 @@ class cm:
             rest -=1
             tmp += "."
         eMessage = message+tmp
-        #logger.error("encryption msg"+eMessage+" "+str(len(eMessage)))
         t =  base64.b64encode(iv + cipher.encrypt(eMessage))
         return t
       except Exception as e:
@@ -78,7 +74,6 @@ class cm:
             cipher = self.mod.new(self.key)          
           else:
             cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
-            #logger.error("after?")
             
           clearText = str(cipher.decrypt(tDec[self.mod.block_size:]))
           #workAround for b'-signed floats and ints..
@@ -92,7 +87,6 @@ class cm:
 
 #static crypt manager
 class scm:
-    #oldMod - self.encryptionObject,
     @staticmethod
     def migrateEncryptionData(newCryptManager, toxMessagesHandler):
       logger.debug("|Crypt|Start migrateEncryptionData")
@@ -130,7 +124,7 @@ class scm:
                 if("AES" not in sys.modules):
                     from Crypto.Cipher import AES
                 return AES
-            elif configValue == "7"  or configValue == "arc2":
+            elif configValue == "7"  or configValue == "ardbCursor":
                 if("ARC2" not in sys.modules):
                     from Crypto.Cipher import ARC2
                 return ARC2

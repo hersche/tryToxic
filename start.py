@@ -2,7 +2,7 @@
 #License @ http://www.gnu.org/licenses/gpl.txt
 #Author: skamster
 
-from lib.guiController import *
+from lib.controller import *
 from lib.toxModels import Config
 import sys
 
@@ -14,10 +14,9 @@ configLang = Config.getConfigByKey("lang")
 if configLang is None:
   configLang = Config.getConfigByKey("language")
 if configLang is not None:
-  print("whatlang"+configLang.value)
   translator.load(configLang.value,"./lang/")
   app.installTranslator(translator)
-gui = Gui()
-gui.show()
+mc = mainController()
+mc.show()
 
 sys.exit(app.exec_())

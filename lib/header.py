@@ -10,9 +10,9 @@ singleViewId = -1
 singleViewName = ""
 dbDateFormat = "dd.MM.yyyy"
 
-logger = logging.getLogger('jobManagement')
+logger = logging.getLogger('tryToxics')
 logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler('jobManagement.log')
+fh = logging.FileHandler('tryToxics.log')
 fh.setLevel(logging.ERROR)
 ch = logging.StreamHandler()
 ch.setLevel(logging.ERROR)
