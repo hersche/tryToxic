@@ -13,6 +13,7 @@ class ToxTry(Tox):
       self.passPhrase = passPhrase
       self.groupToxUsers = []
       self.currentToxUser = None
+      self.currentToxUserIsGroup = False
       self.groupNrs = []
       self.online = False
       if exists('./toxData'):
@@ -133,7 +134,10 @@ class ToxTry(Tox):
     message = self.ui.toxTrySendText.text()
     try:
       if self.currentToxUser is not None:
-        self.send_message(self.currentToxUser.friendId, message)
+        if self.currentToxUserIsGroup:
+          self.group_message_send(self.currentToxUser.friendId,message)
+        else:
+          self.send_message(self.currentToxUser.friendId, message)
         ts = strftime('%Y-%m-%d %H:%M:%S', gmtime())
         self.tmh.addMessage(toxMessage(self.currentToxUser.friendId,ts,message,"True"))
         self.ui.toxTryChat.append("["+ts+"] "+self.name+": "+message)
@@ -145,6 +149,7 @@ class ToxTry(Tox):
     #self.updateToxUserObjects()
     #self.updateToxUsersGuiList()
     mergedList = self.toxUserList + self.groupToxUsers
+    
     for tu in mergedList:
       if tu.name == txt or tu.pubKey == txt:
         self.currentToxUser = tu
@@ -157,12 +162,19 @@ class ToxTry(Tox):
         self.tmh.kickUpdate(tu.friendId)
         sleep(0.1)
         #logger.error("so big is the msglist "+str(len(self.tmh.messages)))
-        for msg in self.tmh.messages:
-          if "False" == msg.me:
-            name=tu.name
-          else:
-            name=self.name
-          self.ui.toxTryChat.append("["+msg.timestamp+"] "+name+": "+msg.message)
+        logger.error(txt[0:7])
+        if len(txt) >7 and txt[0:7] == "Group #":
+          self.currentToxUserIsGroup = True
+          for msg in tu.messages:
+            self.ui.toxTryChat.append("["+msg.timestamp+"] "+tu.name+": "+msg.message)
+        else:
+          self.currentToxUserIsGroup = False
+          for msg in self.tmh.messages:
+            if "False" == msg.me:
+              name=tu.name
+            else:
+              name=self.name
+            self.ui.toxTryChat.append("["+msg.timestamp+"] "+name+": "+msg.message)
 
   def loop(self):
     checked = False
@@ -239,7 +251,7 @@ class ToxTry(Tox):
   def on_group_message(self,group_number, friend_group_number, message):
     gtu = self.getToxGroupUserByFriendId(group_number)
     ts = strftime('%Y-%m-%d %H:%M:%S', gmtime())
-    gtu.messages.append(toxMessage(gtu.friendId,ts,message,"False"))
+    gtu.messages.append(toxMessage(gtu.friendId,message,ts,"False"))
     self.ui.toxTryChat.append("["+ts+"] "+gtu.name+": "+message)
     logger.error("groupmessage!! groupnr:"+str(group_number)+" , friend_group_number: "+str(friend_group_number)+", message"+message)
     
