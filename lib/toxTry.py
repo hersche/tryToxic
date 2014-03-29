@@ -13,7 +13,7 @@ class ToxTry(Tox):
       self.passPhrase = passPhrase
       self.groupToxUsers = []
       self.currentToxUser = None
-      self.currentToxUserIsGroup = False
+      #self.currentToxUserIsGroup = False
       self.groupNrs = []
       self.online = False
       if exists('./toxData'):
@@ -134,7 +134,7 @@ class ToxTry(Tox):
     message = self.ui.toxTrySendText.text()
     try:
       if self.currentToxUser is not None:
-        if self.currentToxUserIsGroup:
+        if self.currentToxUser.isGroup:
           self.group_message_send(self.currentToxUser.friendId,message)
         else:
           self.send_message(self.currentToxUser.friendId, message)
@@ -163,12 +163,12 @@ class ToxTry(Tox):
         sleep(0.1)
         #logger.error("so big is the msglist "+str(len(self.tmh.messages)))
         logger.error(txt[0:7])
-        if len(txt) >7 and txt[0:7] == "Group #":
-          self.currentToxUserIsGroup = True
+        if tu.isGroup:
+          #self.currentToxUserIsGroup = True
           for msg in tu.messages:
             self.ui.toxTryChat.append("["+msg.timestamp+"] "+tu.name+": "+msg.message)
         else:
-          self.currentToxUserIsGroup = False
+          #self.currentToxUserIsGroup = False
           for msg in self.tmh.messages:
             if "False" == msg.me:
               name=tu.name
@@ -242,17 +242,29 @@ class ToxTry(Tox):
       #self.updateToxUserObjects()
       self.updateToxUsersGuiList()
       peersNr = self.group_number_peers(groupNr)
-      logger.error("groupid? peerNrs? "+str(peersNr))
+      #logger.error("groupid? peerNrs? "+str(peersNr))
+
       #peername = self.group_peername(groupNr, peersNr)
       #log.error("found peer "+peername+" with "+str(peersNr)+" people")
     except Exception as e:
       logger.error("Group joining failed: "+e.args[0])
     
+  #def on_group_namelist_change(group_number, peer_number, change)
   def on_group_message(self,group_number, friend_group_number, message):
     gtu = self.getToxGroupUserByFriendId(group_number)
     ts = strftime('%Y-%m-%d %H:%M:%S', gmtime())
     gtu.messages.append(toxMessage(gtu.friendId,message,ts,"False"))
-    self.ui.toxTryChat.append("["+ts+"] "+gtu.name+": "+message)
+    try:
+        name = self.get_name(friend_group_number)
+    except Exception as e:
+        name = str(friend_group_number)
+        logger.error("Fail to get name" + str(e.args[0]))
+        pass
+    #groupuserlist = self.group_get_names(group_number)
+    #for gu in groupuserlist:
+      #logger.error("groupnrpeer "+ str(gu))
+    #gtu.memberList.append(toxUser(friend_group_number,gtu.
+    self.ui.toxTryChat.append("["+ts+"] "+gtu.name+"->"+name+": "+message)
     logger.error("groupmessage!! groupnr:"+str(group_number)+" , friend_group_number: "+str(friend_group_number)+", message"+message)
     
   

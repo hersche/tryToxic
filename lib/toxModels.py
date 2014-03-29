@@ -146,10 +146,14 @@ class toxUser:
     self.pubKey = pubKey
     self.status = status
     self.statusMessage = statusMessage
+    self.isGroup = False
     
 class toxGroupUser(toxUser):
   def __init__(self,friendId,name,pubKey,status,statusMessage,memberList=[]):
     toxUser.__init__(self,friendId,name,pubKey,status,statusMessage)
     self.memberList = memberList
     self.messages = []
+    self.peers = 0
+    
+    self.isGroup = True
  
