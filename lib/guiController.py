@@ -17,6 +17,7 @@ class Gui(QtGui.QMainWindow):
         logger.debug("|GUI| Init Gui")
         self.passPhrase = ""
         self.encryptionObject = None
+        self.lang = ""
         self.updateConfigListData()
         if self.encryptionObject is not None and self.encryptionObject.name is not "None":
             pw, okCancel = QtGui.QInputDialog.getText(None,tr("Password"),tr("Enter Password"),QtGui.QLineEdit.Password)
@@ -66,9 +67,9 @@ class Gui(QtGui.QMainWindow):
                     self.encryptionObject = cm(scm.getMod(config.value), "encryptionInit")
             elif config.key == "lang" or config.key == "language":
                 if os.path.isfile("lang/"+config.value):
-                    self.lang="lang/"+config.value
+                    self.lang=config.value
                 elif os.path.isfile("lang/"+config.value+".qm"):
-                    self.lang="lang/"+config.value+".qm"
+                    self.lang=config.value+".qm"
     def onConfigItemClick(self, item):
         for config in self.configlist:
             if config.key == item.text():

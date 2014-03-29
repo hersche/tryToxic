@@ -1,75 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="de_CH" sourcelanguage="">
-<context>
-    <name>@default</name>
-    <message>
-        <location filename="main_gui_integradet.py" line="510"/>
-        <source>Config</source>
-        <translation type="obsolete">Konfiguration</translation>
-    </message>
-    <message>
-        <location filename="main_gui_integradet.py" line="650"/>
-        <source>Spesen</source>
-        <translation type="obsolete">Charges</translation>
-    </message>
-</context>
+<!DOCTYPE TS><TS version="2.0">
 <context>
     <name>MainWindow</name>
-    <message>
-        <location filename="ui/main.ui" line="298"/>
-        <source>Create</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ui/main.ui" line="305"/>
-        <source>Save</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ui/main.ui" line="312"/>
-        <source>Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ui/main.ui" line="285"/>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="main.py" line="611"/>
-        <source>Lohn</source>
-        <translation type="obsolete">Loan</translation>
-    </message>
-    <message>
-        <location filename="main.py" line="613"/>
-        <source>Zeit (ges)</source>
-        <translation type="obsolete">Time</translation>
-    </message>
-    <message>
-        <location filename="main.py" line="615"/>
-        <source>Spesen</source>
-        <translation type="obsolete">Charges</translation>
-    </message>
-    <message>
-        <location filename="main.py" line="617"/>
-        <source>Abz&#xc3;&#xbc;ge</source>
-        <translation type="obsolete">Splits</translation>
-    </message>
-    <message>
-        <location filename="main.py" line="624"/>
-        <source>Summe (gesammt)</source>
-        <translation type="obsolete">Sum (@all)</translation>
-    </message>
-    <message>
-        <location filename="ui/main.ui" line="268"/>
-        <source>Configs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ui/main.ui" line="278"/>
-        <source>Key</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <location filename="ui/main.ui" line="14"/>
         <source>tryTox</source>
@@ -154,6 +86,36 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="ui/main.ui" line="250"/>
         <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/main.ui" line="268"/>
+        <source>Configs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/main.ui" line="278"/>
+        <source>Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/main.ui" line="285"/>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/main.ui" line="298"/>
+        <source>Create</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/main.ui" line="305"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="ui/main.ui" line="312"/>
+        <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

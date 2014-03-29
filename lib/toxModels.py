@@ -107,6 +107,12 @@ class Config:
         except sqlite3.Error as e:
             logger.error("An DB-error occurred: "+e.args[0])
             return -1
+    @staticmethod
+    def getConfigByKey(key):
+      c2.execute("SELECT * FROM config WHERE key=?;",(key, ))
+      for row in c2.fetchall():
+        return Config(row[0],row[1],row[2])
+      return None
     def save(self, key,  value):
         try:
             c2.execute("UPDATE config SET key=?, value=? WHERE coid=?",  (key, value,  self.id))
