@@ -29,11 +29,12 @@ Important to know: friendRequests get automatic accepted, also groupchat for deb
   <li>Send and reciving messages</li>
   <li>Encryption of localData</li>
   <li>Internationalisised (at the moment english + german)</li>
+  <li>Recive groupchatmessages (get extendet, im happy)</li>
 </ul>
 
 <b>Not working / known Bugs</b>
 <ul>
-  <li>Status (backgroundcolor in friendlist) shows always online</li>
+  <li><del>Status (backgroundcolor in friendlist) shows always online</del></li>
   <li><del>Encryption is incomplete and fucks around (padding is not right anymore)-when u want to use it, take arc4 or xor to encrypt, they should work.</del></li>
   <li>It's easy possible to kill the app, when you don't wait, until it's really connectet to a user and stress it around</li>
   <li><del>language has to be fixed</del></li>

@@ -43,7 +43,7 @@ class toxMessageHandler(QtCore.QObject):
     
   def kickUpdate(self,friendId):
       self.tmpFriendId = friendId
-      logger.error("update kicket")
+      #logger.error("update kicket")
       self.toxMessageDbUpdate.emit(friendId)
   def updateMessages(self,friendId=-1):
     self.messages = []
@@ -52,9 +52,9 @@ class toxMessageHandler(QtCore.QObject):
       if self.eo is not None and self.eo.name is not "None":
         c2.execute('select id,friendId from messages;')
         for tmp in c2.fetchall():
-          logger.error("get Ids first "+str(friendId)+" vs "+str(self.eo.decrypt(tmp[1])))
+          #logger.error("get Ids first "+str(friendId)+" vs "+str(self.eo.decrypt(tmp[1])))
           if str(friendId) == str(self.eo.decrypt(tmp[1])):
-            logger.error("append "+str(tmp[0]))
+            #logger.error("append "+str(tmp[0]))
             self.tmpDecryptData.append(tmp[0])
             c2.execute('select * from messages;')
       else:
@@ -63,10 +63,10 @@ class toxMessageHandler(QtCore.QObject):
         c2.execute('select * from messages;')
     #logger.error("decrypt started or so..?!?")
     for msg in c2.fetchall():
-      logger.error("Secondround")
+      #logger.error("Secondround")
       if friendId != -1:
         if self.eo != None:
-          logger.error("get second,real connect "+str(msg[0])+" vs "+str(self.tmpDecryptData))
+          #logger.error("get second,real connect "+str(msg[0])+" vs "+str(self.tmpDecryptData))
           if msg[0] in self.tmpDecryptData:
             self.messages.append(toxMessage(self.eo.decrypt(msg[1]),self.eo.decrypt(msg[2]),self.eo.decrypt(msg[3]),self.eo.decrypt(msg[4]),msg[0]))
         else:
@@ -145,5 +145,11 @@ class toxUser:
     self.name = name
     self.pubKey = pubKey
     self.status = status
-    self.statusMessage = statusMessage  
+    self.statusMessage = statusMessage
+    
+class toxGroupUser(toxUser):
+  def __init__(self,friendId,name,pubKey,status,statusMessage,memberList=[]):
+    toxUser.__init__(self,friendId,name,pubKey,status,statusMessage)
+    self.memberList = memberList
+    self.messages = []
  
