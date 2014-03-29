@@ -21,19 +21,21 @@ After it compiles, you should be ready, give start.sh a kick. Don't forget to up
 
 <h3>Whats working / Bugs</h3>
 Important to know: friendRequests get automatic accepted, also groupchat for debugging..<br />
-<b>Working!<b>
+<b>Working!</b>
 <ul>
   <li>Add and save toxUsers</li>
   <li>"Profile"-Signals (status, statusmessage, name)</li>
   <li>Save messages/history log</li>
   <li>Send and reciving messages</li>
+  <li>Encryption of localData</li>
+  <li>Internationalisised (at the moment english + german)</li>
 </ul>
 
 <b>Not working / known Bugs</b>
 <ul>
   <li>Status (backgroundcolor in friendlist) shows always online</li>
-  <li>Encryption is incomplete and fucks around (padding is not right anymore)-when u want to use it, take arc4 or xor to encrypt, they should work.</li>
+  <li><strike>Encryption is incomplete and fucks around (padding is not right anymore)-when u want to use it, take arc4 or xor to encrypt, they should work.</strike></li>
   <li>It's easy possible to kill the app, when you don't wait, until it's really connectet to a user and stress it around</li>
-  <li>language has to be fixed</li>
+  <li><strike>language has to be fixed</strike></li>
 </ul>
 ...etc. I've now a moment time to work on, so i think, it will get a bit more extendet soon (i've broke my feet and shouldn't move - lets dev!).
