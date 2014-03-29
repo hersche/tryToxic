@@ -149,11 +149,11 @@ class toxUser:
     self.isGroup = False
     
 class toxGroupUser(toxUser):
-  def __init__(self,friendId,name,pubKey,status,statusMessage,memberList=[]):
+  def __init__(self,friendId,name,pubKey,status,statusMessage,peerList=[]):
     toxUser.__init__(self,friendId,name,pubKey,status,statusMessage)
-    self.memberList = memberList
+    self.peerList = peerList
     self.messages = []
-    self.peers = 0
+    self.checkedPeerIds = []
     
     self.isGroup = True
  
