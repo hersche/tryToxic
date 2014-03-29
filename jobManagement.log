@@ -1,0 +1,241 @@
+2014-03-29 00:55:07,837 - jobManagement - ERROR - An DB-error occurred: column key is not unique
+2014-03-29 01:03:26,593 - jobManagement - ERROR - not none but 3
+2014-03-29 01:07:57,790 - jobManagement - ERROR - not none but 3
+2014-03-29 01:10:06,490 - jobManagement - ERROR - not none but 2
+2014-03-29 01:14:22,019 - jobManagement - ERROR - not none but 1
+2014-03-29 01:14:48,994 - jobManagement - ERROR - not none but 4
+2014-03-29 01:17:53,074 - jobManagement - ERROR - not none but 6
+2014-03-29 01:18:23,184 - jobManagement - ERROR - not none but 5
+2014-03-29 01:32:38,557 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:32:38,558 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:32:38,559 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:32:38,559 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:32:39,631 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:32:39,632 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:32:39,632 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:32:39,632 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:32:40,057 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:32:40,057 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:32:40,058 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:32:40,058 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:33:39,351 - jobManagement - ERROR - 'NoneType' object has no attribute 'friendId'
+2014-03-29 01:34:34,126 - jobManagement - ERROR - |Crypt|Start migrateEncryptionData
+2014-03-29 01:34:34,126 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:34:34,126 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:34:34,127 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:34:34,127 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:34:34,127 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:34:34,127 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:34:34,128 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:34:34,128 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:34:34,128 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:34:34,128 - jobManagement - ERROR - |Crypt| Decryptionerror: IV must be 8 bytes long
+2014-03-29 01:34:34,129 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:34:34,129 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 01:34:34,132 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 01:34:34,132 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 01:34:34,133 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 01:34:34,134 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 01:34:34,134 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 01:34:34,135 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 01:34:34,135 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 01:34:34,136 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 01:34:34,136 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 01:37:59,184 - jobManagement - ERROR - |Crypt|Start migrateEncryptionData
+2014-03-29 01:38:12,663 - jobManagement - ERROR - not none but 5
+2014-03-29 01:38:16,570 - jobManagement - ERROR - |Crypt|Start migrateEncryptionData
+2014-03-29 01:39:03,555 - jobManagement - ERROR - Send Message failed: failed to send message
+2014-03-29 01:39:41,214 - jobManagement - ERROR - not none but 4
+2014-03-29 01:39:44,218 - jobManagement - ERROR - |Crypt|Start migrateEncryptionData
+2014-03-29 01:47:04,540 - jobManagement - ERROR - Send Message failed: failed to send message
+2014-03-29 01:54:26,406 - jobManagement - ERROR - update kicket
+2014-03-29 01:54:26,407 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 01:58:19,066 - jobManagement - ERROR - update kicket
+2014-03-29 01:58:41,756 - jobManagement - ERROR - update kicket
+2014-03-29 02:00:09,111 - jobManagement - ERROR - update kicket
+2014-03-29 02:00:42,971 - jobManagement - ERROR - update kicket
+2014-03-29 02:04:22,725 - jobManagement - ERROR - update kicket
+2014-03-29 02:04:22,725 - jobManagement - ERROR - \xf5
+2014-03-29 02:04:22,726 - jobManagement - ERROR - \xf5
+2014-03-29 02:04:22,726 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:04:42,395 - jobManagement - ERROR - update kicket
+2014-03-29 02:04:42,396 - jobManagement - ERROR - 0
+2014-03-29 02:04:42,397 - jobManagement - ERROR - 0
+2014-03-29 02:04:42,397 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:09:21,323 - jobManagement - ERROR - update kicket
+2014-03-29 02:09:21,324 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:09:37,008 - jobManagement - ERROR - update kicket
+2014-03-29 02:09:37,009 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:10:05,013 - jobManagement - ERROR - update kicket
+2014-03-29 02:10:05,013 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:11:40,017 - jobManagement - ERROR - update kicket
+2014-03-29 02:11:40,018 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:16:01,718 - jobManagement - ERROR - update kicket
+2014-03-29 02:17:14,631 - jobManagement - ERROR - update kicket
+2014-03-29 02:17:14,632 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:17:14,632 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:17:14,633 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:19:24,751 - jobManagement - ERROR - update kicket
+2014-03-29 02:19:24,752 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:19:24,752 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:19:24,753 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:19:24,753 - jobManagement - ERROR - Secondround
+2014-03-29 02:19:24,754 - jobManagement - ERROR - Secondround
+2014-03-29 02:22:17,096 - jobManagement - ERROR - update kicket
+2014-03-29 02:22:17,097 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:22:17,097 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:22:17,097 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:22:17,098 - jobManagement - ERROR - Secondround
+2014-03-29 02:24:01,877 - jobManagement - ERROR - update kicket
+2014-03-29 02:24:01,878 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:24:01,878 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:24:01,879 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:24:01,879 - jobManagement - ERROR - Secondround
+2014-03-29 02:24:01,880 - jobManagement - ERROR - 1 vs []
+2014-03-29 02:24:01,880 - jobManagement - ERROR - Secondround
+2014-03-29 02:24:01,881 - jobManagement - ERROR - 2 vs []
+2014-03-29 02:26:14,272 - jobManagement - ERROR - update kicket
+2014-03-29 02:26:14,272 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:26:14,273 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:26:14,273 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:26:14,274 - jobManagement - ERROR - Secondround
+2014-03-29 02:28:22,075 - jobManagement - ERROR - update kicket
+2014-03-29 02:28:22,076 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:28:22,076 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:28:22,076 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:28:22,077 - jobManagement - ERROR - Secondround
+2014-03-29 02:28:22,077 - jobManagement - ERROR - 1 vs []
+2014-03-29 02:28:22,077 - jobManagement - ERROR - Secondround
+2014-03-29 02:28:22,078 - jobManagement - ERROR - 2 vs []
+2014-03-29 02:29:28,783 - jobManagement - ERROR - update kicket
+2014-03-29 02:29:28,784 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:29:28,784 - jobManagement - ERROR - 1
+2014-03-29 02:29:28,785 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:29:28,785 - jobManagement - ERROR - 2
+2014-03-29 02:29:28,786 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:29:28,786 - jobManagement - ERROR - Secondround
+2014-03-29 02:29:28,786 - jobManagement - ERROR - 1 vs [1, 2]
+2014-03-29 02:29:28,787 - jobManagement - ERROR - Secondround
+2014-03-29 02:29:28,787 - jobManagement - ERROR - 2 vs [1, 2]
+2014-03-29 02:30:01,229 - jobManagement - ERROR - |Crypt|Start migrateEncryptionData
+2014-03-29 02:30:01,229 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:30:29,507 - jobManagement - ERROR - not none but 2
+2014-03-29 02:30:32,882 - jobManagement - ERROR - |Crypt|Start migrateEncryptionData
+2014-03-29 02:30:32,883 - jobManagement - ERROR - |Crypt| Decryptionerror: IV must be 8 bytes long
+2014-03-29 02:30:32,883 - jobManagement - ERROR - -1 vs None
+2014-03-29 02:30:32,884 - jobManagement - ERROR - |Crypt| Decryptionerror: IV must be 8 bytes long
+2014-03-29 02:30:32,884 - jobManagement - ERROR - |Crypt| Decryptionerror: IV must be 8 bytes long
+2014-03-29 02:30:32,884 - jobManagement - ERROR - -1 vs None
+2014-03-29 02:30:32,885 - jobManagement - ERROR - |Crypt| Decryptionerror: IV must be 8 bytes long
+2014-03-29 02:30:32,885 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:30:32,886 - jobManagement - ERROR - Secondround
+2014-03-29 02:30:32,886 - jobManagement - ERROR - 1 vs []
+2014-03-29 02:30:32,886 - jobManagement - ERROR - Secondround
+2014-03-29 02:30:32,886 - jobManagement - ERROR - 2 vs []
+2014-03-29 02:31:34,963 - jobManagement - ERROR - update kicket
+2014-03-29 02:31:34,964 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:32:35,551 - jobManagement - ERROR - |Crypt|Start migrateEncryptionData
+2014-03-29 02:32:35,552 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 02:32:35,552 - jobManagement - ERROR - -1 vs None
+2014-03-29 02:32:35,552 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 02:32:35,552 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 02:32:35,553 - jobManagement - ERROR - -1 vs None
+2014-03-29 02:32:35,553 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 02:32:35,553 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:32:35,553 - jobManagement - ERROR - Secondround
+2014-03-29 02:32:35,554 - jobManagement - ERROR - 1 vs []
+2014-03-29 02:32:35,554 - jobManagement - ERROR - Secondround
+2014-03-29 02:32:35,554 - jobManagement - ERROR - 2 vs []
+2014-03-29 02:33:50,417 - jobManagement - ERROR - update kicket
+2014-03-29 02:33:50,418 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:34:07,169 - jobManagement - ERROR - |Crypt|Start migrateEncryptionData
+2014-03-29 02:34:07,169 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:34:12,979 - jobManagement - ERROR - update kicket
+2014-03-29 02:34:12,980 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:34:48,821 - jobManagement - ERROR - update kicket
+2014-03-29 02:34:48,822 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:34:48,822 - jobManagement - ERROR - 1
+2014-03-29 02:34:48,823 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:34:48,823 - jobManagement - ERROR - 2
+2014-03-29 02:34:48,823 - jobManagement - ERROR - decrypt started or so..?!?
+2014-03-29 02:34:48,824 - jobManagement - ERROR - Secondround
+2014-03-29 02:34:48,824 - jobManagement - ERROR - 1 vs [1, 2]
+2014-03-29 02:34:48,824 - jobManagement - ERROR - Secondround
+2014-03-29 02:34:48,825 - jobManagement - ERROR - 2 vs [1, 2]
+2014-03-29 02:47:10,163 - jobManagement - ERROR - update kicket
+2014-03-29 02:47:10,163 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:47:10,164 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:47:10,165 - jobManagement - ERROR - 1 vs [1, 2]
+2014-03-29 02:47:10,165 - jobManagement - ERROR - 2 vs [1, 2]
+2014-03-29 02:47:23,942 - jobManagement - ERROR - update kicket
+2014-03-29 02:47:23,943 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:47:23,943 - jobManagement - ERROR - 0 vs 0
+2014-03-29 02:47:23,944 - jobManagement - ERROR - 1 vs [1, 2]
+2014-03-29 02:47:23,944 - jobManagement - ERROR - 2 vs [1, 2]
+2014-03-29 02:48:21,222 - jobManagement - ERROR - not none but 3
+2014-03-29 02:48:24,793 - jobManagement - ERROR - |Crypt|Start migrateEncryptionData
+2014-03-29 02:48:24,794 - jobManagement - ERROR - |Crypt| Decryptionerror: IV must be 8 bytes long
+2014-03-29 02:48:24,794 - jobManagement - ERROR - |Crypt| Decryptionerror: IV must be 8 bytes long
+2014-03-29 02:48:24,795 - jobManagement - ERROR - |Crypt| Decryptionerror: Input strings must be a multiple of 8 in length
+2014-03-29 02:48:24,795 - jobManagement - ERROR - |Crypt| Decryptionerror: IV must be 8 bytes long
+2014-03-29 02:48:24,795 - jobManagement - ERROR - |Crypt| Decryptionerror: IV must be 8 bytes long
+2014-03-29 02:48:24,796 - jobManagement - ERROR - |Crypt| Decryptionerror: Input strings must be a multiple of 8 in length
+2014-03-29 02:48:24,796 - jobManagement - ERROR - |Crypt| Decryptionerror: Input strings must be a multiple of 8 in length
+2014-03-29 02:48:24,796 - jobManagement - ERROR - |Crypt| Decryptionerror: IV must be 8 bytes long
+2014-03-29 02:48:24,796 - jobManagement - ERROR - |Crypt| Decryptionerror: IV must be 8 bytes long
+2014-03-29 02:48:24,796 - jobManagement - ERROR - |Crypt| Decryptionerror: Input strings must be a multiple of 8 in length
+2014-03-29 02:48:24,797 - jobManagement - ERROR - |Crypt| Decryptionerror: IV must be 8 bytes long
+2014-03-29 03:00:07,207 - jobManagement - ERROR - update kicket
+2014-03-29 03:00:07,208 - jobManagement - ERROR - 0 vs None
+2014-03-29 03:00:07,208 - jobManagement - ERROR - 0 vs None
+2014-03-29 03:00:07,209 - jobManagement - ERROR - 0 vs None
+2014-03-29 03:00:07,210 - jobManagement - ERROR - 1 vs []
+2014-03-29 03:00:07,210 - jobManagement - ERROR - 2 vs []
+2014-03-29 03:00:07,210 - jobManagement - ERROR - 3 vs []
+2014-03-29 03:03:54,284 - jobManagement - ERROR - |Crypt|Start migrateEncryptionData
+2014-03-29 03:04:20,541 - jobManagement - ERROR - update kicket
+2014-03-29 03:04:23,491 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 03:04:23,492 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 03:04:23,493 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 03:04:23,493 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 03:04:27,345 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 03:04:27,346 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 03:04:27,346 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 03:04:27,346 - jobManagement - ERROR - |Crypt| Encryptionerror: Maximum key size is 448 bits
+2014-03-29 03:33:56,304 - jobManagement - ERROR - 'NoneType' object has no attribute 'friendId'
+2014-03-29 03:39:34,523 - jobManagement - ERROR - 'ToxTry' object has no attribute 'u'
+2014-03-29 03:40:16,029 - jobManagement - ERROR - update kicket
+2014-03-29 03:42:09,595 - jobManagement - ERROR - update kicket
+2014-03-29 03:46:28,876 - jobManagement - ERROR - |Crypt|Start migrateEncryptionData
+2014-03-29 03:46:28,877 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,877 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,877 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,877 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,877 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,878 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,878 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,878 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,878 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,878 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,878 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,879 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,879 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,879 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,879 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,879 - jobManagement - ERROR - |Crypt| Decryptionerror: Incorrect padding
+2014-03-29 03:46:28,882 - jobManagement - ERROR - |Crypt| Encryptionerror: ARC2 key length must be less than 128 bytes
+2014-03-29 03:46:28,882 - jobManagement - ERROR - |Crypt| Encryptionerror: ARC2 key length must be less than 128 bytes
+2014-03-29 03:46:28,883 - jobManagement - ERROR - |Crypt| Encryptionerror: ARC2 key length must be less than 128 bytes
+2014-03-29 03:46:28,884 - jobManagement - ERROR - |Crypt| Encryptionerror: ARC2 key length must be less than 128 bytes
+2014-03-29 03:46:28,885 - jobManagement - ERROR - |Crypt| Encryptionerror: ARC2 key length must be less than 128 bytes
+2014-03-29 03:46:28,885 - jobManagement - ERROR - |Crypt| Encryptionerror: ARC2 key length must be less than 128 bytes
+2014-03-29 03:46:28,886 - jobManagement - ERROR - |Crypt| Encryptionerror: ARC2 key length must be less than 128 bytes
+2014-03-29 03:46:28,886 - jobManagement - ERROR - |Crypt| Encryptionerror: ARC2 key length must be less than 128 bytes
+2014-03-29 03:46:28,887 - jobManagement - ERROR - |Crypt| Encryptionerror: ARC2 key length must be less than 128 bytes
+2014-03-29 03:46:28,888 - jobManagement - ERROR - |Crypt| Encryptionerror: ARC2 key length must be less than 128 bytes
+2014-03-29 03:46:28,888 - jobManagement - ERROR - |Crypt| Encryptionerror: ARC2 key length must be less than 128 bytes
+2014-03-29 03:46:28,889 - jobManagement - ERROR - |Crypt| Encryptionerror: ARC2 key length must be less than 128 bytes
+2014-03-29 03:51:31,395 - jobManagement - ERROR - update kicket
+2014-03-29 03:52:25,613 - jobManagement - ERROR - update kicket
+2014-03-29 03:52:28,047 - jobManagement - ERROR - update kicket
+2014-03-29 03:58:21,363 - jobManagement - ERROR - update kicket
