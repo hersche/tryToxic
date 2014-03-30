@@ -33,11 +33,18 @@ class toxMessageHandler(QtCore.QObject):
     db.commit()
     
   def addMessage(self,toxMessage):
-    self.cachedToxMessages.append(toxMessage)
-    self.toxMessageArrived.emit(toxMessage)
-      
+    if self.eo != None:
+        dbCursor.execute("INSERT INTO messages (friendId, timestamp, message,me, encrypted) VALUES (?,?,?,?,?)",  ( self.eo.encrypt(toxMessage.friendId), self.eo.encrypt(toxMessage.timestamp),  self.eo.encrypt(toxMessage.message),self.eo.encrypt(toxMessage.me), self.eo.name))
+    else:
+        dbCursor.execute("INSERT INTO messages (friendId, timestamp, message,me, encrypted) VALUES (?,?,?,?,?)",  ( toxMessage.friendId, toxMessage.timestamp,  toxMessage.message,toxMessage.me, "-1"))
+    db.commit()
+  def deleteUserMessages(self,friendId):
+    msgList = self.updateMessages(friendId)
+    for msg in msgList:
+      dbCursor.execute("DELETE FROM messages WHERE id=?",  (msg.dbId, ))
+    db.commit()
   def updateMessages(self,friendId=-1):
-    self.messages = []
+    messages = []
     self.tmpDecryptData = []
     if friendId != -1:
       if self.eo is not None and self.eo.name is not "None":
@@ -54,15 +61,15 @@ class toxMessageHandler(QtCore.QObject):
       if friendId != -1:
         if self.eo != None:
           if msg[0] in self.tmpDecryptData:
-            self.messages.append(toxMessage(self.eo.decrypt(msg[1]),self.eo.decrypt(msg[2]),self.eo.decrypt(msg[3]),self.eo.decrypt(msg[4]),msg[0]))
+            messages.append(toxMessage(self.eo.decrypt(msg[1]),self.eo.decrypt(msg[2]),self.eo.decrypt(msg[3]),self.eo.decrypt(msg[4]),msg[0]))
         else:
-          self.messages.append(toxMessage(msg[1],msg[2],msg[3],msg[4],msg[0]))
+          messages.append(toxMessage(msg[1],msg[2],msg[3],msg[4],msg[0]))
       else:
         if self.eo != None:
-            self.messages.append(toxMessage(self.eo.decrypt(msg[1]),self.eo.decrypt(msg[2]),self.eo.decrypt(msg[3]),self.eo.decrypt(msg[4]),msg[0]))
+            messages.append(toxMessage(self.eo.decrypt(msg[1]),self.eo.decrypt(msg[2]),self.eo.decrypt(msg[3]),self.eo.decrypt(msg[4]),msg[0]))
         else:
-            self.messages.append(toxMessage(msg[1],msg[2],msg[3],msg[4],msg[0]))
-    return self.messages
+            messages.append(toxMessage(msg[1],msg[2],msg[3],msg[4],msg[0]))
+    return messages
   def flushMessage(self):
     try:
       for toxMessage in self.cachedToxMessages:

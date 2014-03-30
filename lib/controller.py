@@ -85,6 +85,7 @@ class mainController(QtGui.QMainWindow):
             self.tryToxic.del_groupchat(self.tryToxic.currentToxUser.friendId)
             self.ui.toxTryNotifications.append("Delete groupchat "+self.tryToxic.currentToxUser.name)
           else:
+            self.toxMessagesHandler.deleteUserMessages(self.tryToxic.currentToxUser.friendId)
             self.tryToxic.del_friend(self.tryToxic.currentToxUser.friendId)
             self.tryToxic.updateToxUserObjects()
             self.ui.toxTryNotifications.append("Delete user "+self.tryToxic.currentToxUser.name)
