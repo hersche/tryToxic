@@ -6,8 +6,7 @@ from lib.controller import *
 from lib.toxModels import Config
 import sys
 
-singleView = False
-singleViewId = -1
+
 app = QtGui.QApplication(sys.argv)
 translator = QtCore.QTranslator()
 configLang = Config.getConfigByKey("lang")

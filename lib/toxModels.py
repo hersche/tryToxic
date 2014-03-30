@@ -35,11 +35,6 @@ class toxMessageHandler(QtCore.QObject):
   def addMessage(self,toxMessage):
     self.cachedToxMessages.append(toxMessage)
     self.toxMessageArrived.emit(toxMessage)
-    
-  def kickUpdate(self,friendId):
-      self.tmpFriendId = friendId
-      #logger.error("update kicket")
-      self.toxMessageDbUpdate.emit(friendId)
       
   def updateMessages(self,friendId=-1):
     self.messages = []
@@ -49,11 +44,10 @@ class toxMessageHandler(QtCore.QObject):
         dbCursor.execute('select id,friendId from messages;')
         for tmp in dbCursor.fetchall():
           if str(friendId) == str(self.eo.decrypt(tmp[1])):
-            #logger.error("append "+str(tmp[0]))
             self.tmpDecryptData.append(tmp[0])
             dbCursor.execute('select * from messages;')
       else:
-        dbCursor.execute('select * from messages where friendId='+str(self.tmpFriendId)+';')
+        dbCursor.execute('select * from messages where friendId=?;',(str(friendId), ))
     else:
         dbCursor.execute('select * from messages;')
     for msg in dbCursor.fetchall():
@@ -68,6 +62,7 @@ class toxMessageHandler(QtCore.QObject):
             self.messages.append(toxMessage(self.eo.decrypt(msg[1]),self.eo.decrypt(msg[2]),self.eo.decrypt(msg[3]),self.eo.decrypt(msg[4]),msg[0]))
         else:
             self.messages.append(toxMessage(msg[1],msg[2],msg[3],msg[4],msg[0]))
+    return self.messages
   def flushMessage(self):
     try:
       for toxMessage in self.cachedToxMessages:
@@ -137,7 +132,7 @@ class toxUser:
     self.statusMessage = statusMessage
     self.isGroup = False
     
-class toxGroupUser(toxUser):
+class toxGroupUserList(toxUser):
   def __init__(self,friendId,name,pubKey,status,statusMessage,peerList=[]):
     toxUser.__init__(self,friendId,name,pubKey,status,statusMessage)
     self.peerList = peerList
