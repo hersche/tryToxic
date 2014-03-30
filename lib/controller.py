@@ -3,8 +3,6 @@ from lib.toxModels import *
 from lib.cryptClass import *
 from ui.main import *
 
-
-toxThreadRegister = QtCore.QMetaType.type('toxThread')
 class toxThread(QtCore.QThread):
  updateUiUserList = QtCore.pyqtSignal(list)
  clickToxFriend = QtCore.pyqtSignal(str)
@@ -253,25 +251,16 @@ class mainController(QtGui.QMainWindow):
       for tu in userList:
         if tu.name == "":
           item1 = QtGui.QListWidgetItem(tu.pubKey)
-          self.ui.toxTryFriends.addItem(item1)
-          item1.setData(3, str(tu.statusMessage))
-          if tu.status < 2 and self.tryToxic.online:
-            item1.setBackgroundColor(QtGui.QColor(51,253,0))
-          else:
-            item1.setBackgroundColor(QtGui.QColor(253,0,51))
         else:
           item1 = QtGui.QListWidgetItem(tu.name)
-          self.ui.toxTryFriends.addItem(item1)
-          item1.setData(3, str(tu.statusMessage))
-          if tu.status < 2 and self.tryToxic.online:
-            item1.setBackgroundColor(QtGui.QColor(51,253,0))
-          else:
-            item1.setBackgroundColor(QtGui.QColor(253,0,51))
+          
+        self.ui.toxTryFriends.addItem(item1)
+        item1.setData(3, str(tu.statusMessage))
+        if self.tryToxic.get_friend_connection_status(tu.friendId) and self.tryToxic.online:
+          item1.setBackgroundColor(QtGui.QColor(51,253,0))
+        else:
+          item1.setBackgroundColor(QtGui.QColor(253,0,51))
       if ci is not None:          self.ui.toxTryFriends.setItemSelected(ci,True)
-        
-        
-        
-        
         
     def updateConfigListUi(self,selectFirst=False,name=""):
         self.ui.configList.clear()
