@@ -26,7 +26,6 @@ class mainController(QtGui.QMainWindow):
         logger.debug("|GUI| Init Gui")
         self.passPhrase = ""
         self.encryptionObject = None
-        self.lang = ""
         
         self.updateConfigListData()
         if self.encryptionObject is not None and self.encryptionObject.name is not "None":
@@ -44,6 +43,8 @@ class mainController(QtGui.QMainWindow):
         self.ui.toxTryUsername.setText(self.tryToxic.name)
         self.ui.toxTryStatusMessage.setText(self.tryToxic.statusMessage)
         self.ui.toxTryId.setText(self.tryToxic.pubKey)
+        self.tryToxic.updateToxUserObjects()
+        self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
         self.updateConfigListUi()
         #config-Actions
         self.ui.createConfig.clicked.connect(self.onCreateConfig)
