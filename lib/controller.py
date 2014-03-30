@@ -60,6 +60,7 @@ class mainController(QtGui.QMainWindow):
         self.ui.toxTryUsername.returnPressed.connect(self.onSaveToxUsername)
         self.ui.toxTryNewFriendRequest.clicked.connect(self.onNewFriendRequest)
         self.ui.toxTryStatus.currentIndexChanged.connect(self.onChangeOwnStatus)
+        self.ui.toxTryDeleteFriend.clicked.connect(self.onDeleteFriend)
         self.toxThread.incomingFriendRequest.connect(self.onIncomingFriendRequest)
         self.toxThread.incomingFriendMessage.connect(self.onIncomingFriendMessage)
         self.toxThread.incomingGroupInvite.connect(self.onIncomingGroupInvite)
@@ -70,7 +71,25 @@ class mainController(QtGui.QMainWindow):
         self.toxThread.connectToDHT.connect(self.onConnectToDHT)
         self.toxThread.disconnectToDHT.connect(self.onDisconnectToDHT)
         
-        
+    def onDeleteFriend(self):
+      if self.tryToxic.currentToxUser is not None:
+        deleteUser = QtGui.QMessageBox()
+        deleteUser.addButton(QtGui.QMessageBox.Yes)
+        deleteUser.addButton(QtGui.QMessageBox.No)
+        deleteUser.setText("Do you really want to delete "+self.tryToxic.currentToxUser.name+"?")
+        select = deleteUser.exec()
+        if select == QtGui.QMessageBox.Yes:
+          if self.tryToxic.currentToxUser.isGroup:
+            self.tryToxic.toxGroupUserList.remove(self.tryToxic.currentToxUser)
+            self.tryToxic.del_groupchat(self.tryToxic.currentToxUser.friendId)
+            self.ui.toxTryNotifications.append("Delete groupchat "+self.tryToxic.currentToxUser.name)
+          else:
+            self.tryToxic.del_friend(self.tryToxic.currentToxUser.friendId)
+            self.tryToxic.updateToxUserObjects()
+            self.ui.toxTryNotifications.append("Delete user "+self.tryToxic.currentToxUser.name)
+            self.tryToxic.saveLocalData()
+          self.tryToxic.currentToxUser = None
+          self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
         
     def onConnectToDHT(self):
       self.ui.toxTryNotifications.append('Connected to DHT.')
@@ -131,19 +150,26 @@ class mainController(QtGui.QMainWindow):
       logger.error("Recive Groupmessage ["+str(friend_group_number)+"]  Name: "+str(name)+" |  message"+message)
     def onIncomingGroupInvite(self,friendId,groupPk):
         fr = self.tryToxic.getToxUserByFriendId(friendId)
-        self.ui.toxTryNotifications.append("Becoming group invite from "+fr.name)
-        self.tryToxic.join_groupchat(friendId,groupPk)
-        groupNr = -1
-        for gnr in self.tryToxic.get_chatlist():
-            if gnr not in self.tryToxic.groupNrs:
-              groupNr = gnr
-        try:
-          if groupNr != -1:
-            peersNr = self.tryToxic.group_number_peers(groupNr)
-            self.tryToxic.toxGroupUserList.append(toxGroupUserList(groupNr,"Group #"+str(groupNr),groupPk,0,str(peersNr)+" peoples are online in this groupchat"))
-          self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
-        except Exception as e:
-          logger.error("Group joining failed: "+e.args[0])
+        foundExistGroupPk=False
+        for gtu in self.tryToxic.toxGroupUserList:
+          if gtu.pubKey == groupPk:
+            foundExistGroupPk=True
+        if not foundExistGroupPk:
+          self.ui.toxTryNotifications.append("Becoming group invite from "+fr.name)
+          self.tryToxic.join_groupchat(friendId,groupPk)
+          groupNr = -1
+          for gnr in self.tryToxic.get_chatlist():
+              if gnr not in self.tryToxic.groupNrs:
+                groupNr = gnr
+          try:
+            if groupNr != -1:
+              peersNr = self.tryToxic.group_number_peers(groupNr)
+              self.tryToxic.toxGroupUserList.append(toxGroupUserList(groupNr,"Group #"+str(groupNr),groupPk,0,str(peersNr)+" peoples are online in this groupchat"))
+            self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
+          except Exception as e:
+            logger.error("Group joining failed: "+e.args[0])
+        else:
+          self.ui.toxTryNotifications.append("Becoming group invite from "+fr.name+", but group is already added")
     def onIncomingFriendMessage(self,friendId,message):
         ts = strftime('%Y-%m-%d %H:%M:%S', gmtime())
         tu = self.tryToxic.getToxUserByFriendId(friendId)
