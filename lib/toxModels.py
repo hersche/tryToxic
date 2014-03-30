@@ -121,10 +121,10 @@ class Config:
     
 class toxMessage:
   def __init__(self,friendId,message, timestamp,me,dbId=-1):
-      if me == 0:
-        self.me = False
+      if me == False or me == "False":
+        self.me = "False"
       else:
-        self.me = True
+        self.me = "True"
       self.friendId=friendId
       self.message = message
       self.timestamp = timestamp
