@@ -45,7 +45,6 @@ class mainController(QtGui.QMainWindow):
         self.ui.toxTryStatusMessage.setText(self.tryToxic.statusMessage)
         self.ui.toxTryId.setText(self.tryToxic.pubKey)
         self.updateConfigListUi()
-        self.ui.toxTryChat.append("<h3>Welcome to tryToxic</h3> <br /> <p>This is 'just a little by the way'-project, but it's phun to code, so i will continue. Add friends, chat, have phun! <hr />(and dont forget to click one for your friends to get a rid of booring welcomescreen)</p>")
         #config-Actions
         self.ui.createConfig.clicked.connect(self.onCreateConfig)
         self.ui.saveConfig.clicked.connect(self.onSaveConfig)
@@ -162,13 +161,13 @@ class mainController(QtGui.QMainWindow):
     def onChangeOwnStatus(self):
       cT = self.ui.toxTryStatus.currentText()
       if cT == "Online":
-        self.tryToxic.set_user_status(self.USERSTATUS_NONE)
+        self.tryToxic.set_user_status(self.tryToxic.USERSTATUS_NONE)
       elif cT == "Away":
-        self.tryToxic.set_user_status(self.USERSTATUS_AWAY)
+        self.tryToxic.set_user_status(self.tryToxic.USERSTATUS_AWAY)
       elif cT == "Busy":
-        self.tryToxic.set_user_status(self.USERSTATUS_BUSY)
+        self.tryToxic.set_user_status(self.tryToxic.USERSTATUS_BUSY)
       else:
-        self.tryToxic.set_user_status(self.USERSTATUS_INVALID)
+        self.tryToxic.set_user_status(self.tryToxic.USERSTATUS_INVALID)
           
     def onNewFriendRequest(self):
       pk = QtGui.QInputDialog()

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Sat Mar 29 00:47:30 2014
+# Created: Sun Mar 30 14:04:01 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -40,14 +40,14 @@ class Ui_MainWindow(object):
         self.tab_9 = QtGui.QWidget()
         self.tab_9.setObjectName(_fromUtf8("tab_9"))
         self.toxTryChat = QtGui.QTextEdit(self.tab_9)
-        self.toxTryChat.setGeometry(QtCore.QRect(10, 130, 501, 321))
+        self.toxTryChat.setGeometry(QtCore.QRect(10, 130, 511, 361))
         self.toxTryChat.setReadOnly(True)
         self.toxTryChat.setObjectName(_fromUtf8("toxTryChat"))
         self.toxTrySendText = QtGui.QLineEdit(self.tab_9)
-        self.toxTrySendText.setGeometry(QtCore.QRect(10, 460, 301, 41))
+        self.toxTrySendText.setGeometry(QtCore.QRect(10, 490, 421, 31))
         self.toxTrySendText.setObjectName(_fromUtf8("toxTrySendText"))
         self.toxTrySendButton = QtGui.QPushButton(self.tab_9)
-        self.toxTrySendButton.setGeometry(QtCore.QRect(340, 460, 91, 24))
+        self.toxTrySendButton.setGeometry(QtCore.QRect(430, 490, 91, 31))
         self.toxTrySendButton.setObjectName(_fromUtf8("toxTrySendButton"))
         self.toxTryFriends = QtGui.QListWidget(self.tab_9)
         self.toxTryFriends.setGeometry(QtCore.QRect(530, 140, 491, 192))
@@ -104,8 +104,11 @@ class Ui_MainWindow(object):
         self.toxTryNotifications.setReadOnly(True)
         self.toxTryNotifications.setObjectName(_fromUtf8("toxTryNotifications"))
         self.toxTryNewFriendRequest = QtGui.QPushButton(self.tab_9)
-        self.toxTryNewFriendRequest.setGeometry(QtCore.QRect(530, 490, 101, 24))
+        self.toxTryNewFriendRequest.setGeometry(QtCore.QRect(530, 490, 131, 24))
         self.toxTryNewFriendRequest.setObjectName(_fromUtf8("toxTryNewFriendRequest"))
+        self.toxTryDeleteFriend = QtGui.QPushButton(self.tab_9)
+        self.toxTryDeleteFriend.setGeometry(QtCore.QRect(690, 490, 141, 24))
+        self.toxTryDeleteFriend.setObjectName(_fromUtf8("toxTryDeleteFriend"))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8("logo.jpg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.mainTab.addTab(self.tab_9, icon, _fromUtf8(""))
@@ -165,8 +168,25 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.mainTab.setWhatsThis(_translate("MainWindow", "<html><head/><body><p>Personal finances</p></body></html>", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "tryToxics", None))
+        self.toxTryChat.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:large; font-weight:600;\">Welcome to tryToxic</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Add new friends and click on one of them, to get a rid of this message.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Edit your username or status and press return to save it.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Have a look into Notifications for requests or saving your stuff.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Go to Settings to encrypt local storage or changing the language.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">tryToxic is in heavy development, so may you get crashes.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Have fun!</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
         self.toxTrySendButton.setText(_translate("MainWindow", "Send", None))
         self.label_25.setText(_translate("MainWindow", "Your ID", None))
         self.label_42.setText(_translate("MainWindow", "Username", None))
@@ -186,6 +206,7 @@ class Ui_MainWindow(object):
 "<hr />\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
         self.toxTryNewFriendRequest.setText(_translate("MainWindow", "Add new Friend", None))
+        self.toxTryDeleteFriend.setText(_translate("MainWindow", "Delete Friend", None))
         self.mainTab.setTabText(self.mainTab.indexOf(self.tab_9), _translate("MainWindow", "ToxTry", None))
         self.label_23.setText(_translate("MainWindow", "Configs", None))
         self.label_26.setText(_translate("MainWindow", "Key", None))
