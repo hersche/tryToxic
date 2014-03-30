@@ -17,17 +17,15 @@ class toxMessageHandler(QtCore.QObject):
     self.cachedToxMessages=[]
     self.tmpFriendId = -1
     self.eo = eo
-    self.toxMessageArrived.connect(self.flushMessage)
-    self.toxMessageDbUpdate.connect(self.updateMessages)
     
   def saveAllMessages(self,eo):
-    for msg in self.messages:
+    for msg in self.updateMessages():
         if eo != None:
           if msg.me == "True":
             me = "True"
           else:
             me = "False"
-          dbCursor.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (self.eo.encrypt(msg.friendId), self.eo.encrypt(msg.timestamp), self.eo.encrypt(msg.message),self.eo.encrypt(me),eo.name, msg.dbId))
+          dbCursor.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (eo.encrypt(msg.friendId), eo.encrypt(msg.timestamp), eo.encrypt(msg.message),eo.encrypt(me),eo.name, msg.dbId))
         else:
           dbCursor.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (msg.friendId, msg.timestamp, msg.message,me,-1, msg.dbId))
     db.commit()
@@ -70,19 +68,6 @@ class toxMessageHandler(QtCore.QObject):
         else:
             messages.append(toxMessage(msg[1],msg[2],msg[3],msg[4],msg[0]))
     return messages
-  def flushMessage(self):
-    try:
-      for toxMessage in self.cachedToxMessages:
-        if toxMessage.me:       tmpBoolMe = "True"
-        else:   tmpBoolMe = "False"
-        if self.eo != None:
-            dbCursor.execute("INSERT INTO messages (friendId, timestamp, message,me, encrypted) VALUES (?,?,?,?,?)",  ( self.eo.encrypt(toxMessage.friendId), self.eo.encrypt(toxMessage.timestamp),  self.eo.encrypt(toxMessage.message),self.eo.encrypt(tmpBoolMe), self.eo.name))
-        else:
-            dbCursor.execute("INSERT INTO messages (friendId, timestamp, message,me, encrypted) VALUES (?,?,?,?,?)",  ( toxMessage.friendId, toxMessage.timestamp,  toxMessage.message,tmpBoolMe, "-1"))
-      db.commit()
-      self.cachedToxMessages=[]
-    except sqlite3.Error as e:
-      logger.error("An DB-error occurred: "+e.args[0])
       
 class Config:
     #"CREATE TABLE config (coid INTEGER PRIMARY KEY,  key TEXT,  value TEXT)

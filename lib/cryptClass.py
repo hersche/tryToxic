@@ -39,7 +39,7 @@ class cm:
     def encrypt(self, rawMessage):
       try:
         message=str(rawMessage)
-        if self.mod == None or self.name=="None":
+        if self.mod == None and self.name=="None" and self.key != "encryptionInit":
             return message
         iv = self.rand.new().read(self.mod.block_size)
         if self.name == "XOR" or self.name == "ARC4":
@@ -62,26 +62,27 @@ class cm:
         logger.error("|Crypt| Encryptionerror: "+ str(e.args[0])+" Message "+str(rawMessage))
     def decrypt(self, encryptedMessage):
         try:
-          if self.mod == None or self.name == "None":
-              return encryptedMessage
           if encryptedMessage is None:
               return ""
-          tDec = base64.b64decode(encryptedMessage)
-          iv = tDec[:self.mod.block_size]
-          #logger.error("mod-value: "+str(self.name)+" block-lenght: "+str(self.mod.block_size))
-          #logger.error("iv-value: "+str(iv)+" iv-lenght: "+len(str(iv)))
-          if self.name == "XOR" or self.name == "ARC4":
-            cipher = self.mod.new(self.key)          
+          if self.mod != None and self.name!="None" and self.key != "encryptionInit":
+            tDec = base64.b64decode(encryptedMessage)
+            iv = tDec[:self.mod.block_size]
+            #logger.error("mod-value: "+str(self.name)+" block-lenght: "+str(self.mod.block_size))
+            #logger.error("iv-value: "+str(iv)+" iv-lenght: "+len(str(iv)))
+            if self.name == "XOR" or self.name == "ARC4":
+              cipher = self.mod.new(self.key)          
+            else:
+              cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
+              
+            clearText = str(cipher.decrypt(tDec[self.mod.block_size:]))
+            #workAround for b'-signed floats and ints..
+            if clearText[0:2] == "b'":
+                clearText = clearText[2:-1]
+            else:
+                clearText = clearText[0:-1]
+            return clearText.rstrip(".")
           else:
-            cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
-            
-          clearText = str(cipher.decrypt(tDec[self.mod.block_size:]))
-          #workAround for b'-signed floats and ints..
-          if clearText[0:2] == "b'":
-              clearText = clearText[2:-1]
-          else:
-              clearText = clearText[0:-1]
-          return clearText.rstrip(".")
+            return encryptedMessage
         except Exception as e:
           logger.error("|Crypt| Decryptionerror: "+ str(e.args[0]))
 
@@ -90,9 +91,9 @@ class scm:
     @staticmethod
     def migrateEncryptionData(newCryptManager, toxMessagesHandler):
       logger.debug("|Crypt|Start migrateEncryptionData")
-      toxMessagesHandler.updateMessages()
-      toxMessagesHandler.eo=newCryptManager
+      #toxMessagesHandler.updateMessages()
       toxMessagesHandler.saveAllMessages(newCryptManager)
+      toxMessagesHandler.eo=newCryptManager
       toxMessagesHandler.updateMessages()
           
 

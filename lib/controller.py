@@ -26,7 +26,7 @@ class mainController(QtGui.QMainWindow):
         logger.debug("|GUI| Init Gui")
         self.passPhrase = ""
         self.encryptionObject = None
-        
+        self.msgBox = QtGui.QMessageBox()
         self.updateConfigListData()
         if self.encryptionObject is not None and self.encryptionObject.name is not "None":
             pw, okCancel = QtGui.QInputDialog.getText(None,tr("Password"),tr("Enter Password"),QtGui.QLineEdit.Password)
@@ -205,10 +205,11 @@ class mainController(QtGui.QMainWindow):
       try:
           self.tryToxic.add_friend(str(pubKey[0]),str(message[0]))
       except Exception as e:
+        
         if e.args[0] == "the friend was already there but the nospam was different":
-          logger.error("put a alertbox here. user is already exist")
+          self.msgBox.warning(self,"User is already exist", "The User you want to add exists already!")
           pass
-        logger.error("Problem on sending friendrequest: "+e.args[0])
+        self.msgBox.critical(self,"Send friendrequest failed", "Problem on sending friendrequest: "+e.args[0])
       self.tryToxic.saveLocalData()
       self.tryToxic.updateToxUserObjects()
       self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
@@ -244,7 +245,7 @@ class mainController(QtGui.QMainWindow):
           self.ui.toxTryChat.append("["+ts+"] curentuser is none, message sending failed")
 
       except Exception as e:
-        logger.error("Send Message failed: "+e.args[0])
+        self.msgBox.critical(self,"Send Message failed", "Send Message failed: "+e.args[0])
             
     def onClickToxUser(self,item):
       txt = item.text()
@@ -274,7 +275,6 @@ class mainController(QtGui.QMainWindow):
     def updateToxUsersGuiList(self, userList):
       self.ui.toxTryFriends.clear()
       ci = self.ui.toxTryFriends.currentItem()
-      #mergedList = self.toxUserList + self.toxGroupUserList
       for tu in userList:
         if tu.name == "":
           item1 = QtGui.QListWidgetItem(tu.pubKey)
@@ -374,5 +374,6 @@ class mainController(QtGui.QMainWindow):
         if not success:
             logger.error(tr("Charge")+" "+tr("could not")+" be "+tr("saved"))
         else:
-            self.updateConfigList(True)
+            self.updateConfigListData()
+            self.updateConfigListUi(True)
  
