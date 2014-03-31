@@ -13,7 +13,7 @@ Something more serious. You baiscly need:
 <ul><li>pyQt4</li><li>pyCrypto</li><li>header/dev-Files for python 3 (needed by pyTox)</li><li><a href="https://github.com/aitjcize/PyTox">pyTox</li>
 On *buntu (13.10) they're the following:
 <br /> <b>sudo apt-get install python3-crypto python3-pyqt4 python3-dev</b>
-<br />After installing that stuff, clone pyTox: <br />
+<br />After installing that stuff, clone <a href="https://github.com/aitjcize/PyTox">pyTox</a>: <br />
 <b>git clone https://github.com/aitjcize/PyTox.git</b> <br />
 Or just download and extract it as zip. Anyway, go into a shell and the right folder and put in<b />
 <b>sudo python3 setup.py install</b> <br />
@@ -32,7 +32,7 @@ Important to know: friendRequests get automatic accepted, also groupchat for deb
   <li>Send and reciving messages</li>
   <li>Encryption of localData</li>
   <li>Internationalisised (at the moment english + german)</li>
-  <li>Groupchat is working</li>
+  <li>Groupchat is working, nameresolving could make problems sometimes (you see a id then, do make a diffrent..)</li>
 </ul>
 
 <b>Not working / known Bugs</b>
@@ -40,6 +40,7 @@ Important to know: friendRequests get automatic accepted, also groupchat for deb
   <li><del>Status (backgroundcolor in friendlist) shows always online</del></li>
   <li><del>Encryption is incomplete and fucks around (padding is not right anymore)-when u want to use it, take arc4 or xor to encrypt, they should work.</del></li>
   <li>It's easy possible to kill the app, when you don't wait, until it's really connectet to a user and stress it around</li>
+  <ul><li><a href="https://github.com/skamster/tryToxics/commit/d5de870eea2f2dc25324e38644bd2a0c23127f2d">seems to be really fixed, app work a full day in groupchat and userchanges and working well and withouth crash</a></li></ul>
   <li><del>language has to be fixed</del></li>
 </ul>
 <b>Ideas/Future</b>
