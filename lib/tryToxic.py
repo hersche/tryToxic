@@ -51,13 +51,13 @@ class ToxTry(Tox):
       self.toxUserList.append(toxUser(fid,self.get_name(fid),self.get_client_id(fid),self.get_user_status(fid),self.get_status_message(fid)))
   def statusResolver(self,inti):
     if inti == 0:
-      return "Online"
+      return tr("Online")
     elif inti == 1:
-      return "Busy"
+      return tr("Busy")
     elif inti == 2:
-      return "Away"
+      return tr("Away")
     else:
-      return "Invalid"
+      return tr("Invalid")
   def loop(self):
     checked = False
     try:
@@ -68,24 +68,24 @@ class ToxTry(Tox):
               checked = True
               self.online = True
           if checked and not status:
-              logger.error("Disconnected from DHT")
+              logger.error(tr("Disconnected from DHT"))
               checked = False
           self.do()
           sleep(0.02)
     except Exception as e:
-      logger.error("Disconnected from DHT : "+e.args[0])
+      logger.error(tr("Disconnected from DHT : ")+e.args[0])
       pass
   def on_friend_request(self, pk, message):
     self.thread.incomingFriendRequest.emit(pk,message)
 
     
   def on_friend_message(self, friendId, message):
-    logger.debug("Friendmessage changed")
+    logger.debug(tr("Friendmessage changed"))
     self.thread.incomingFriendMessage.emit(friendId,message)
 
       
   def on_name_change(self,friendId,name):
-    logger.debug("Name changed")
+    logger.debug(tr("Name changed"))
     self.thread.incomingNameChange.emit(friendId,name)
   def on_user_status(self, friendId,status):  
     self.thread.incomingStatusChange.emit(friendId,status)
@@ -119,7 +119,7 @@ class ToxTry(Tox):
         gtu.checkedPeerIds.append(friend_group_number)
         gtu.peerList.append(sendingPeerUser)
     except Exception as e:
-        logger.error("Fail to get name" + str(e.args[0]))
+        logger.error(tr("Fail to get name") + str(e.args[0]))
         pass
     if sendingPeerUser is not None and sendingPeerUser.name is not "":
       username = sendingPeerUser.name

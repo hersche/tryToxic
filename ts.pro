@@ -6,6 +6,11 @@ TEMPLATE = app
 TARGET = ts
 INCLUDEPATH += . ./lib
 
+
 # Input
+SOURCES += lib/controller.py \
+          lib/tryToxic.py \
+          lib/toxModels.py \
+          lib/cryptClass.py
 FORMS += ui/main.ui
 TRANSLATIONS += lang/de.ts lang/en.ts

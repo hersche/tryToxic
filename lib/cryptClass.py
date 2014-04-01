@@ -13,7 +13,7 @@ class cm:
           self.name = "None"
         if self.key != "encryptionInit" and self.key != "":
             self.setKey(self.key)
-        logger.debug("|Crypt| Init cm/cryptoMeta with module "+self.name)
+        logger.debug(tr("|Crypt| Init cm/cryptoMeta with module ")+self.name)
         from Crypto import Random as rand
         self.rand = rand
 
@@ -59,7 +59,7 @@ class cm:
         t =  base64.b64encode(iv + cipher.encrypt(eMessage))
         return t
       except Exception as e:
-        logger.error("|Crypt| Encryptionerror: "+ str(e.args[0])+" Message "+str(rawMessage))
+        logger.error(tr("|Crypt| Encryptionerror: ")+ str(e.args[0])+tr(" Message ")+str(rawMessage))
     def decrypt(self, encryptedMessage):
         try:
           if encryptedMessage is None:
@@ -84,7 +84,7 @@ class cm:
           else:
             return encryptedMessage
         except Exception as e:
-          logger.error("|Crypt| Decryptionerror: "+ str(e.args[0]))
+          logger.error(tr("|Crypt| Decryptionerror: ")+ str(e.args[0]))
 
 #static crypt manager
 class scm:
@@ -131,4 +131,5 @@ class scm:
             else:
                 return None
         except  Exception as e:
-            logger.error("Could not find pycrypt-Module. Please install it via apt-get install python3-crypto")
+            logger.error(tr("Could not find pycrypt-Module. Please install it via apt-get install python3-crypto"))
+            return None
