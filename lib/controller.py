@@ -1,5 +1,6 @@
 from lib.tryToxic import *
 from lib.toxModels import *
+from lib.configControll import *
 from lib.cryptClass import *
 from ui.main import *
 
@@ -8,7 +9,7 @@ class toxThread(QtCore.QThread):
  clickToxFriend = QtCore.pyqtSignal(str)
  incomingFriendRequest = QtCore.pyqtSignal(str,str)
  incomingFriendMessage = QtCore.pyqtSignal(int,str)
- incomingGroupMessage = QtCore.pyqtSignal(int,int,str) 
+ incomingGroupMessage = QtCore.pyqtSignal(str,str,str,str) 
  incomingGroupInvite = QtCore.pyqtSignal(int,str)
  incomingNameChange = QtCore.pyqtSignal(int,str)
  incomingStatusChange = QtCore.pyqtSignal(int,int)
@@ -37,7 +38,6 @@ class mainController(QtGui.QMainWindow):
         self.toxMessagesHandler = toxMessageHandler(self.encryptionObject)
         self.toxThread = toxThread(self.ui,self.toxMessagesHandler)
         self.tryToxic = ToxTry(self.ui,self.toxMessagesHandler,self.passPhrase,self.toxThread)
-
         self.toxThread.tryToxic = self.tryToxic
         self.toxThread.start()
         self.ui.toxTryUsername.setText(self.tryToxic.name)
@@ -45,7 +45,7 @@ class mainController(QtGui.QMainWindow):
         self.ui.toxTryId.setText(self.tryToxic.pubKey)
         self.tryToxic.updateToxUserObjects()
         self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
-        self.updateConfigListUi()
+        self.updateConfigListUi(True)
         #config-Actions
         self.ui.createConfig.clicked.connect(self.onCreateConfig)
         self.ui.saveConfig.clicked.connect(self.onSaveConfig)
@@ -116,38 +116,9 @@ class mainController(QtGui.QMainWindow):
       tu = self.tryToxic.getToxUserByFriendId(friendId)
       if tu is not None:         tu.status=status
       self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
-    def onIncomingGroupMessage(self,group_number,friend_group_number,message):
-      gtu = self.tryToxic.getToxGroupUserByFriendId(group_number)
-      ts = strftime('%Y-%m-%d %H:%M:%S', gmtime())
-      gtu.messages.append(toxMessage(gtu.friendId,message,ts,"False"))
-      sendingPeerUser = None
-      try:
-        if len(gtu.peerList)>0:
-          for peerUser in gtu.peerList:
-              if peerUser.friendId == friend_group_number and peerUser.name is not "":
-                sendingPeerUser = peerUser
-              elif peerUser.friendId == friend_group_number and peerUser.name == "":
-                peerUser.name = self.tryToxic.group_peername(group_number,friend_group_number)
-                sendingPeerUser = peerUser
-              elif friend_group_number not in gtu.checkedPeerIds:
-                name = self.tryToxic.group_peername(group_number,friend_group_number)
-                sendingPeerUser = toxUser(friend_group_number,name,"",0,"")
-                gtu.peerList.append(sendingPeerUser)
-                gtu.checkedPeerIds.append(friend_group_number)
-        else:
-          name = self.tryToxic.group_peername(group_number,friend_group_number)
-          sendingPeerUser = toxUser(friend_group_number,name,"",0,"")
-          gtu.checkedPeerIds.append(friend_group_number)
-          gtu.peerList.append(sendingPeerUser)
-      except Exception as e:
-          logger.error("workFail on resolving name" + str(e.args[0]))
-          logger.error("Fail to get name" + str(e.args[0]))
-          pass
-      if sendingPeerUser is not None and sendingPeerUser.name is not "":
-        name = sendingPeerUser.name
-      else:
-        name = str(friend_group_number)
-      self.ui.toxTryChat.append("["+ts+"] "+gtu.name+"->"+name+": "+message)
+      
+    def onIncomingGroupMessage(self,timeDateString,groupname,username,message):
+      self.ui.toxTryChat.append("["+timeDate+"] "+groupname+"->"+username+": "+message)
       self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
       logger.error("Recive Groupmessage ["+str(friend_group_number)+"]  Name: "+str(name)+" |  message"+message)
     def onIncomingGroupInvite(self,friendId,groupPk):
@@ -237,8 +208,9 @@ class mainController(QtGui.QMainWindow):
             self.tryToxic.group_message_send(self.tryToxic.currentToxUser.friendId,message)
           else:
             self.tryToxic.send_message(self.tryToxic.currentToxUser.friendId, message)
-            self.toxMessagesHandler.addMessage(toxMessage(self.tryToxic.currentToxUser.friendId,ts,message,"True"))
-            self.ui.toxTryChat.append("["+ts+"] "+self.tryToxic.name+": "+message)
+            sendetToxMessage = toxMessage(self.tryToxic.currentToxUser.friendId,ts,message,"True")
+            self.toxMessagesHandler.addMessage(sendetToxMessage)
+            self.ui.toxTryChat.append('<p style="background-color: blue">['+ts+'] '+self.tryToxic.name+': '+message)
           self.ui.toxTrySendText.clear()
           self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
         else:
@@ -272,6 +244,8 @@ class mainController(QtGui.QMainWindow):
               else:
                 name=self.tryToxic.name
               self.ui.toxTryChat.append("["+msg.timestamp+"] "+name+": "+msg.message)
+              
+              
     def updateToxUsersGuiList(self, userList):
       self.ui.toxTryFriends.clear()
       ci = self.ui.toxTryFriends.currentItem()
@@ -317,6 +291,14 @@ class mainController(QtGui.QMainWindow):
                     self.lang=config.value
                 elif os.path.isfile("lang/"+config.value+".qm"):
                     self.lang=config.value+".qm"
+            elif config.key == "fileHandlerLogLevel":
+              logger.removeHandler(fh)
+              fh.setLevel(staticConfigTools.getLoggerLevel(config.key))
+              logger.addHandler(fh)
+            elif config.key == "consoleHandlerLogLevel":
+              logger.removeHandler(ch)
+              ch.setLevel(staticConfigTools.getLoggerLevel(config.value))
+              logger.addHandler(ch)
     def onConfigItemClick(self, item):
         for config in self.configlist:
             if config.key == item.text():
@@ -328,7 +310,9 @@ class mainController(QtGui.QMainWindow):
     #--------------
     def onCreateConfig(self):
         # @TODO select the created!
-        if self.ui.configKey.text() == "encrypted" and self.ui.configValue.text() != "None":
+        key = self.ui.configKey.text()
+        key = key.lower()
+        if key == "encrypted" and self.ui.configValue.text() != "None":
             pw, ok = QtGui.QInputDialog.getText(None,tr("Password"),tr("Enter Password"),QtGui.QLineEdit.Password)
             if ok:
               Config.createConfig(self.ui.configKey.text(), self.ui.configValue.text())
@@ -347,8 +331,10 @@ class mainController(QtGui.QMainWindow):
         outOk = True
         for config in self.configlist:
             if config.key == ciText:
+                key = self.ui.configKey.text()
+                key = key.lower()
                 config.save(self.ui.configKey.text(), self.ui.configValue.text())
-                if self.ui.configKey.text() == "encrypted":
+                if key == "encrypted":
                     if self.ui.configValue.text() != "None":
                       pw, ok = QtGui.QInputDialog.getText(None,tr("Password"),tr("Enter Password"),QtGui.QLineEdit.Password)
                       outOk=ok 

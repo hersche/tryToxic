@@ -2,14 +2,11 @@ from PyQt4 import QtCore,QtGui
 from binascii import b2a_hex
 import re
 import logging
+import os.path,sqlite3
 def tr(name):
     return QtCore.QCoreApplication.translate("@default",  name)
 lang = ""
-singleView = False
-singleViewId = -1
-singleViewName = ""
 dbDateFormat = "dd.MM.yyyy"
-
 logger = logging.getLogger('tryToxics')
 logger.setLevel(logging.DEBUG)
 fh = logging.FileHandler('tryToxics.log')
@@ -23,4 +20,12 @@ ch.setFormatter(formatter)
 # add the handlers to the logger
 logger.addHandler(fh)
 logger.addHandler(ch)
+fileExist = True
+if os.path.isfile('toxMessages.db') == False:
+    fileExist = False
+db = sqlite3.connect('toxMessages.db')
+dbCursor = db.cursor()
+if fileExist == False:
+    dbCursor.execute("CREATE TABLE messages (id INTEGER PRIMARY KEY, friendId text, timestamp text, message text, me text, encrypted text)")
+    dbCursor.execute("CREATE TABLE config (coid INTEGER PRIMARY KEY,  key TEXT UNIQUE,  value TEXT, encrypted text)")
 

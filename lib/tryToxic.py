@@ -28,8 +28,6 @@ class ToxTry(Tox):
       self.pubKey = self.get_address()
       self.statusMessage = self.get_self_status_message()
       self.online = False
-      
-
       self.updateToxUserObjects()
       #self.updateToxUsersGuiList()
       self.thread.updateUiUserList.emit(self.toxUserList+self.toxGroupUserList)
@@ -66,32 +64,32 @@ class ToxTry(Tox):
       return "Invalid"
   def loop(self):
     checked = False
-    #try:
-    while True:
-        status = self.isconnected()
-        if not checked and status:
-            self.thread.connectToDHT.emit(1)
-            checked = True
-            self.online = True
-        if checked and not status:
-            logger.error("Disconnected from DHT")
-            checked = False
-        #print("some output")
-        self.do()
-        sleep(0.02)
-    #except Exception as e:
-        #logger.error("Disconnected from DHT : "+e.args[0])
-        #self.saveLocalData()
-        #self.kill()
+    try:
+      while True:
+          status = self.isconnected()
+          if not checked and status:
+              self.thread.connectToDHT.emit(1)
+              checked = True
+              self.online = True
+          if checked and not status:
+              logger.error("Disconnected from DHT")
+              checked = False
+          self.do()
+          sleep(0.02)
+    except Exception as e:
+      logger.error("Disconnected from DHT : "+e.args[0])
+      pass
   def on_friend_request(self, pk, message):
     self.thread.incomingFriendRequest.emit(pk,message)
 
     
   def on_friend_message(self, friendId, message):
+    logger.debug("Friendmessage changed")
     self.thread.incomingFriendMessage.emit(friendId,message)
 
       
   def on_name_change(self,friendId,name):
+    logger.debug("Name changed")
     self.thread.incomingNameChange.emit(friendId,name)
   def on_user_status(self, friendId,status):  
     self.thread.incomingStatusChange.emit(friendId,status)
@@ -103,4 +101,34 @@ class ToxTry(Tox):
     self.thread.incomingGroupInvite.emit(friendId, groupPk)
     
   def on_group_message(self,group_number, friend_group_number, message):
-    self.thread.incomingGroupMessage.emit(group_number,friend_group_number,message)
+    gtu = self.getToxGroupUserByFriendId(group_number)
+    timeDateString = strftime('%Y-%m-%d %H:%M:%S', gmtime())
+    gtu.messages.append(toxMessage(gtu.friendId,message,ts,"False"))
+    sendingPeerUser = None
+    try:
+      if len(gtu.peerList)>0:
+        for peerUser in gtu.peerList:
+            if peerUser.friendId == friend_group_number and peerUser.name is not "":
+              sendingPeerUser = peerUser
+            elif peerUser.friendId == friend_group_number and peerUser.name == "":
+              peerUser.name = self.group_peername(group_number,friend_group_number)
+              sendingPeerUser = peerUser
+            elif friend_group_number not in gtu.checkedPeerIds:
+              username = self.group_peername(group_number,friend_group_number)
+              sendingPeerUser = toxUser(friend_group_number,username,"",0,"")
+              gtu.peerList.append(sendingPeerUser)
+              gtu.checkedPeerIds.append(friend_group_number)
+      else:
+        username = self.group_peername(group_number,friend_group_number)
+        sendingPeerUser = toxUser(friend_group_number,username,"",0,"")
+        gtu.checkedPeerIds.append(friend_group_number)
+        gtu.peerList.append(sendingPeerUser)
+    except Exception as e:
+        logger.error("workFail on resolving name" + str(e.args[0]))
+        logger.error("Fail to get name" + str(e.args[0]))
+        pass
+    if sendingPeerUser is not None and sendingPeerUser.name is not "":
+      username = sendingPeerUser.name
+    else:
+      username = str(friend_group_number)
+    self.thread.incomingGroupMessage.emit(timeDateString,gtu.name,username,message)

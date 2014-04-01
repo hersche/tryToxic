@@ -1,14 +1,6 @@
-import os.path,sqlite3
 from lib.header import *
 from PyQt4.QtCore import pyqtSlot,pyqtSignal
-fileExist = True
-if os.path.isfile('toxMessages.db') == False:
-    fileExist = False
-db = sqlite3.connect('toxMessages.db')
-dbCursor = db.cursor()
-if fileExist == False:
-    dbCursor.execute("CREATE TABLE messages (id INTEGER PRIMARY KEY, friendId text, timestamp text, message text, me text, encrypted text)")
-    dbCursor.execute("CREATE TABLE config (coid INTEGER PRIMARY KEY,  key TEXT UNIQUE,  value TEXT, encrypted text)")
+
 class toxMessageHandler(QtCore.QObject):
   toxMessageArrived = pyqtSignal(object)
   toxMessageDbUpdate = pyqtSignal(object)
@@ -68,40 +60,6 @@ class toxMessageHandler(QtCore.QObject):
         else:
             messages.append(toxMessage(msg[1],msg[2],msg[3],msg[4],msg[0]))
     return messages
-      
-class Config:
-    #"CREATE TABLE config (coid INTEGER PRIMARY KEY,  key TEXT,  value TEXT)
-    def __init__(self,  id,  key,  value):
-        logger.debug("|Models| Init config "+key+"="+value)
-        self.id = id
-        self.key = key
-        self.value = value
-    @staticmethod
-    def createConfig(key, value):
-        try:
-            dbCursor.execute("INSERT INTO config (key, value) VALUES (?,?);",  (key, value))
-            db.commit()
-        except sqlite3.Error as e:
-            logger.error("An DB-error occurred: "+e.args[0])
-            return -1
-    @staticmethod
-    def getConfigByKey(key):
-      dbCursor.execute("SELECT * FROM config WHERE key=?;",(key, ))
-      for row in dbCursor.fetchall():
-        return Config(row[0],row[1],row[2])
-      return None
-    def save(self, key,  value):
-        try:
-            dbCursor.execute("UPDATE config SET key=?, value=? WHERE coid=?",  (key, value,  self.id))
-            db.commit()
-        except sqlite3.Error as e:
-            logger.error("An DB-error occurred: "+e.args[0])("An DB-error occurred: "+e.args[0])
-    def delete(self):
-        try:
-            dbCursor.execute("DELETE FROM config WHERE coid=?",  (self.id, ))
-            db.commit()
-        except sqlite3.Error as e:
-            logger.error("An DB-error occurred: "+e.args[0])("An DB-error occurred: "+e.args[0])
    
     
 class toxMessage:

@@ -91,7 +91,6 @@ class scm:
     @staticmethod
     def migrateEncryptionData(newCryptManager, toxMessagesHandler):
       logger.debug("|Crypt|Start migrateEncryptionData")
-      #toxMessagesHandler.updateMessages()
       toxMessagesHandler.saveAllMessages(newCryptManager)
       toxMessagesHandler.eo=newCryptManager
       toxMessagesHandler.updateMessages()

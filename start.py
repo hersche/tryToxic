@@ -1,9 +1,9 @@
 #This code is GPL-FORCED so let changes open, pls!!
 #License @ http://www.gnu.org/licenses/gpl.txt
 #Author: skamster
-
-from lib.controller import *
-from lib.toxModels import Config
+from PyQt4 import QtCore,QtGui
+from lib.controller import mainController
+from lib.configControll import Config
 import sys
 
 
