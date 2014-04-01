@@ -44,7 +44,7 @@ class mainController(QtGui.QMainWindow):
         self.ui.toxTryStatusMessage.setText(self.tryToxic.statusMessage)
         self.ui.toxTryId.setText(self.tryToxic.pubKey)
         self.tryToxic.updateToxUserObjects()
-        self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
+        self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
         self.updateConfigListUi(True)
         #config-Actions
         self.ui.createConfig.clicked.connect(self.onCreateConfig)
@@ -81,7 +81,7 @@ class mainController(QtGui.QMainWindow):
         select = deleteUser.exec()
         if select == QtGui.QMessageBox.Yes:
           if self.tryToxic.currentToxUser.isGroup:
-            self.tryToxic.toxGroupUserList.remove(self.tryToxic.currentToxUser)
+            self.tryToxic.toxGroupUser.remove(self.tryToxic.currentToxUser)
             self.tryToxic.del_groupchat(self.tryToxic.currentToxUser.friendId)
             self.ui.toxTryNotifications.append("Delete groupchat "+self.tryToxic.currentToxUser.name)
           else:
@@ -91,7 +91,7 @@ class mainController(QtGui.QMainWindow):
             self.ui.toxTryNotifications.append("Delete user "+self.tryToxic.currentToxUser.name)
             self.tryToxic.saveLocalData()
           self.tryToxic.currentToxUser = None
-          self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
+          self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
         
     def onConnectToDHT(self):
       self.ui.toxTryNotifications.append('Connected to DHT.')
@@ -106,25 +106,25 @@ class mainController(QtGui.QMainWindow):
       self.ui.toxTryNotifications.moveCursor(QtGui.QTextCursor.End)
       tu = self.tryToxic.getToxUserByFriendId(friendId)
       if tu is not None:       tu.name=name
-      self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
+      self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
       
     def onIncomingStatusMessageChange(self,friendId,statusMsg):
       tu = self.tryToxic.getToxUserByFriendId(friendId)
       if tu is not None:       tu.statusMessage=statusMsg
-      self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
+      self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
     def onIncomingStatusChange(self,friendId,status):
       tu = self.tryToxic.getToxUserByFriendId(friendId)
       if tu is not None:         tu.status=status
-      self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
+      self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
       
     def onIncomingGroupMessage(self,timeDateString,groupname,username,message):
-      self.ui.toxTryChat.append("["+timeDate+"] "+groupname+"->"+username+": "+message)
+      self.ui.toxTryChat.append("["+timeDateString+"] "+groupname+"->"+username+": "+message)
       self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
-      logger.error("Recive Groupmessage ["+str(friend_group_number)+"]  Name: "+str(name)+" |  message"+message)
+      logger.debug("Recive Groupmessage ["+timeDateString+"] "+groupname+"->"+username+": "+message)
     def onIncomingGroupInvite(self,friendId,groupPk):
         fr = self.tryToxic.getToxUserByFriendId(friendId)
         foundExistGroupPk=False
-        for gtu in self.tryToxic.toxGroupUserList:
+        for gtu in self.tryToxic.toxGroupUser:
           if gtu.pubKey == groupPk:
             foundExistGroupPk=True
         if not foundExistGroupPk:
@@ -137,26 +137,34 @@ class mainController(QtGui.QMainWindow):
           try:
             if groupNr != -1:
               peersNr = self.tryToxic.group_number_peers(groupNr)
-              self.tryToxic.toxGroupUserList.append(toxGroupUserList(groupNr,"Group #"+str(groupNr),groupPk,0,str(peersNr)+" peoples are online in this groupchat"))
-            self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
+              self.tryToxic.toxGroupUser.append(toxGroupUser(groupNr,"Group #"+str(groupNr),groupPk,0,str(peersNr)+" peoples are online in this groupchat"))
+            self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
           except Exception as e:
             logger.error("Group joining failed: "+e.args[0])
         else:
           self.ui.toxTryNotifications.append("Becoming group invite from "+fr.name+", but group is already added")
     def onIncomingFriendMessage(self,friendId,message):
-        ts = strftime('%Y-%m-%d %H:%M:%S', gmtime())
+        ts = strftime('%c', gmtime())
         tu = self.tryToxic.getToxUserByFriendId(friendId)
         self.toxMessagesHandler.addMessage(toxMessage(tu.friendId,ts,message,"False"))
         self.ui.toxTryChat.append("["+ts+"] "+tu.name+": "+message)
         self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
     def onIncomingFriendRequest(self,pk,message):
-        self.ui.toxTryNotifications.append('Friend request from %s: %s' % (pk, message))
-        self.tryToxic.add_friend_norequest(pk)
-        self.tryToxic.saveLocalData()
-        self.tryToxic.updateToxUserObjects()
-        #self.thread.updateUiUserList.emit(self.toxUserList+self.toxGroupUserList)
-        self.ui.toxTryNotifications.append('Accepted friend request')
-        self.ui.toxTryNotifications.moveCursor(QtGui.QTextCursor.End)
+        addUser = QtGui.QMessageBox()
+        addUser.addButton(QtGui.QMessageBox.Yes)
+        addUser.addButton(QtGui.QMessageBox.No)
+        addUser.setWindowTitle("Recived friendrequest")
+        addUser.setText("Do you want to add "+pk+"? He wrote you: "+message)
+        select = addUser.exec()
+        if select == QtGui.QMessageBox.Yes:
+          self.tryToxic.add_friend_norequest(pk)
+          self.tryToxic.saveLocalData()
+          self.tryToxic.updateToxUserObjects()
+          self.ui.toxTryNotifications.append('Accept friend request from %s: %s' % (pk, message))
+          logger.info('Accept friend request from %s: %s' % (pk, message))
+          self.ui.toxTryNotifications.moveCursor(QtGui.QTextCursor.End)
+        else:
+          logger.info('Refuse friend request from %s: %s' % (pk, message))
     def onChangeOwnStatus(self):
       cT = self.ui.toxTryStatus.currentText()
       if cT == "Online":
@@ -183,8 +191,8 @@ class mainController(QtGui.QMainWindow):
         self.msgBox.critical(self,"Send friendrequest failed", "Problem on sending friendrequest: "+e.args[0])
       self.tryToxic.saveLocalData()
       self.tryToxic.updateToxUserObjects()
-      self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
-      #self.thread.updateUiUserList.emit(self.tryToxic.toxUserList+self.tryToxic.toxGroupUserList)
+      self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
+      #self.thread.updateUiUserList.emit(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
       self.ui.toxTryNotifications.append('Your friendrequest is sendet ')
     def onSaveToxUsername(self):
       self.tryToxic.set_name(self.ui.toxTryUsername.text())
@@ -203,7 +211,7 @@ class mainController(QtGui.QMainWindow):
       message = self.ui.toxTrySendText.text()
       try:
         if self.tryToxic.currentToxUser is not None:
-          ts = strftime('%Y-%m-%d %H:%M:%S', gmtime())
+          ts = strftime('%c', gmtime())
           if self.tryToxic.currentToxUser.isGroup:
             self.tryToxic.group_message_send(self.tryToxic.currentToxUser.friendId,message)
           else:
@@ -221,21 +229,26 @@ class mainController(QtGui.QMainWindow):
             
     def onClickToxUser(self,item):
       txt = item.text()
-      mergedList = self.tryToxic.toxUserList + self.tryToxic.toxGroupUserList
+      mergedList = self.tryToxic.toxUserList + self.tryToxic.toxGroupUser
       for tu in mergedList:
         if tu.name == txt or tu.pubKey == txt:
           self.tryToxic.currentToxUser = tu
+          #First userinfos...
           self.ui.toxTryFriendInfos.clear()
-          self.ui.toxTryFriendInfos.append("Name: "+tu.name)
-          self.ui.toxTryFriendInfos.append("Public key: "+tu.pubKey)
-          self.ui.toxTryFriendInfos.append("Status message: "+self.tryToxic.statusResolver(tu.status))
-          self.ui.toxTryFriendInfos.append("Status message: "+tu.statusMessage)
-          self.ui.toxTryChat.clear()
-          #self.toxMessagesHandler.kickUpdate(tu.friendId)
-          
+          self.ui.toxTryFriendInfos.append(tr("Name: ")+tu.name)
+          self.ui.toxTryFriendInfos.append(tr("Public key: ")+tu.pubKey)
+          self.ui.toxTryFriendInfos.append(tr("Status: ")+self.tryToxic.statusResolver(tu.status))
+          self.ui.toxTryFriendInfos.append(tr("Status message: ")+tu.statusMessage)
+          #...then messages
+          self.ui.toxTryChat.clear()          
           if tu.isGroup:
             for msg in tu.messages:
-              self.ui.toxTryChat.append("["+msg.timestamp+"] "+tu.name+": "+msg.message)
+              if tu.name != "":
+                self.ui.toxTryChat.append("["+msg.timestamp+"] "+tu.name+": "+msg.message)
+              elif msg.individualName != "":
+                self.ui.toxTryChat.append("["+msg.timestamp+"] "+msg.individualName+": "+msg.message)
+              else:
+                self.ui.toxTryChat.append("["+msg.timestamp+"] "+tu.name+": "+msg.message)
           else:
             msgList = self.toxMessagesHandler.updateMessages(tu.friendId)
             for msg in msgList:
@@ -262,7 +275,10 @@ class mainController(QtGui.QMainWindow):
         else:
           item1.setBackgroundColor(QtGui.QColor(253,0,51))
       if ci is not None:          self.ui.toxTryFriends.setItemSelected(ci,True)
-        
+       
+       
+       
+    #down here it's just config-stuff   
     def updateConfigListUi(self,selectFirst=False,name=""):
         self.ui.configList.clear()
         i=0

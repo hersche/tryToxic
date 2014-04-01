@@ -1,9 +1,39 @@
 from lib.header import *
 from PyQt4.QtCore import pyqtSlot,pyqtSignal
-
+# The next 3 classes are just to organize data. toxmessages is a message, 
+# only special is that toxmessages by groupusers dont have dbid (theyr just in ram), but individual name
+class toxMessage:
+  def __init__(self,friendId,message, timestamp,me,dbId=-1,individualName=""):
+      if me == False or me == "False":
+        self.me = "False"
+      else:
+        self.me = "True"
+      self.friendId=friendId
+      self.message = message
+      self.timestamp = timestamp
+      self.dbId=dbId
+      self.individualName=individualName
+#toxUser is a individual, in groupchat or saved, single friend
+class toxUser:
+  def __init__(self,friendId,name,pubKey,status,statusMessage):
+    self.friendId = friendId
+    self.name = name
+    self.pubKey = pubKey
+    self.status = status
+    self.statusMessage = statusMessage
+    self.isGroup = False
+#a special version of toxuser, representing a group, which contains itself a list of toxUser
+class toxGroupUser(toxUser):
+  def __init__(self,friendId,name,pubKey,status,statusMessage,peerList=[]):
+    toxUser.__init__(self,friendId,name,pubKey,status,statusMessage)
+    self.peerList = peerList
+    self.messages = []
+    self.checkedPeerIds = []
+    self.isGroup = True
+ 
+#a handler for saving, manage and giving back the messages.
+# @TODO make this class enable/disable-able (?) in settings..
 class toxMessageHandler(QtCore.QObject):
-  toxMessageArrived = pyqtSignal(object)
-  toxMessageDbUpdate = pyqtSignal(object)
   def __init__(self,eo):
     QtCore.QObject.__init__(self)
     self.cachedToxMessages=[]
@@ -62,31 +92,3 @@ class toxMessageHandler(QtCore.QObject):
     return messages
    
     
-class toxMessage:
-  def __init__(self,friendId,message, timestamp,me,dbId=-1):
-      if me == False or me == "False":
-        self.me = "False"
-      else:
-        self.me = "True"
-      self.friendId=friendId
-      self.message = message
-      self.timestamp = timestamp
-      self.dbId=dbId
-
-class toxUser:
-  def __init__(self,friendId,name,pubKey,status,statusMessage):
-    self.friendId = friendId
-    self.name = name
-    self.pubKey = pubKey
-    self.status = status
-    self.statusMessage = statusMessage
-    self.isGroup = False
-    
-class toxGroupUserList(toxUser):
-  def __init__(self,friendId,name,pubKey,status,statusMessage,peerList=[]):
-    toxUser.__init__(self,friendId,name,pubKey,status,statusMessage)
-    self.peerList = peerList
-    self.messages = []
-    self.checkedPeerIds = []
-    self.isGroup = True
- 

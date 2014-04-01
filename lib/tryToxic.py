@@ -1,5 +1,5 @@
 from tox import Tox
-from lib.toxModels import toxMessage, toxUser,toxGroupUserList
+from lib.toxModels import toxMessage, toxUser,toxGroupUser
 from time import sleep,gmtime, strftime
 from lib.header import *
 import os.path,  sqlite3
@@ -7,13 +7,10 @@ from os.path import exists
 SERVER = ["144.76.60.215", 33445, "04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F"]
 
 class ToxTry(Tox):
-  #friendListClicked = QtCore.pyqtSignal(QtGui.QListWidgetItem)
-  #sendButtonClicked = QtCore.pyqtSignal()
-  
   def __init__(self,ui,tmh,passPhrase,thread):
       self.toxMessagesHandler = tmh
       self.passPhrase = passPhrase
-      self.toxGroupUserList = []
+      self.toxGroupUser = []
       self.currentToxUser = None
       self.groupNrs = []
       self.thread = thread
@@ -29,12 +26,11 @@ class ToxTry(Tox):
       self.statusMessage = self.get_self_status_message()
       self.online = False
       self.updateToxUserObjects()
-      #self.updateToxUsersGuiList()
-      self.thread.updateUiUserList.emit(self.toxUserList+self.toxGroupUserList)
+      self.thread.updateUiUserList.emit(self.toxUserList+self.toxGroupUser)
       self.saveLocalData()
       self.bootstrap_from_address(SERVER[0], 1, SERVER[1], SERVER[2])
   def getToxGroupUserByFriendId(self,groupFriendId):
-    for gtu in self.toxGroupUserList:
+    for gtu in self.toxGroupUser:
       if gtu.friendId == groupFriendId:
         return gtu
       
@@ -102,8 +98,7 @@ class ToxTry(Tox):
     
   def on_group_message(self,group_number, friend_group_number, message):
     gtu = self.getToxGroupUserByFriendId(group_number)
-    timeDateString = strftime('%Y-%m-%d %H:%M:%S', gmtime())
-    gtu.messages.append(toxMessage(gtu.friendId,message,ts,"False"))
+    timeDateString = strftime('%c', gmtime())
     sendingPeerUser = None
     try:
       if len(gtu.peerList)>0:
@@ -124,11 +119,11 @@ class ToxTry(Tox):
         gtu.checkedPeerIds.append(friend_group_number)
         gtu.peerList.append(sendingPeerUser)
     except Exception as e:
-        logger.error("workFail on resolving name" + str(e.args[0]))
         logger.error("Fail to get name" + str(e.args[0]))
         pass
     if sendingPeerUser is not None and sendingPeerUser.name is not "":
       username = sendingPeerUser.name
     else:
       username = str(friend_group_number)
+    gtu.messages.append(toxMessage(gtu.friendId,message,timeDateString,"False",individualName=str(gtu.name+"->"+username)))
     self.thread.incomingGroupMessage.emit(timeDateString,gtu.name,username,message)
