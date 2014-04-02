@@ -3,6 +3,7 @@ from lib.toxModels import *
 from lib.configControll import *
 from lib.cryptClass import *
 from ui.main import *
+from PyQt4 import Qt
 
 class toxThread(QtCore.QThread):
  updateUiUserList = QtCore.pyqtSignal(list)
@@ -41,6 +42,11 @@ class mainController(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.ui.toxTryFriends.setContextMenuPolicy(2)
+        addToGrouchat = QtGui.QAction("Add to groupchat", self.ui.toxTryFriends)
+        contextDelete = QtGui.QAction("Delete", self.ui.toxTryFriends)
+        #self.ui.toxTryFriends.addAction()
+        self.ui.toxTryFriends.addAction(contextDelete)
         self.toxMessagesHandler = toxMessageHandler(self.encryptionObject)
         self.toxThread = toxThread(self.ui,self.toxMessagesHandler)
         self.tryToxic = ToxTry(self.ui,self.toxMessagesHandler,self.passPhrase,self.toxThread)
@@ -60,6 +66,7 @@ class mainController(QtGui.QMainWindow):
         self.ui.configList.itemClicked.connect(self.onConfigItemClick)
         
         #catching tryToxic-signals
+        contextDelete.triggered.connect(self.onDeleteFriend)
         self.toxThread.updateUiUserList.connect(self.updateToxUsersGuiList)
         self.ui.toxTryFriends.itemClicked.connect(self.onClickToxUser)
         self.ui.toxTrySendButton.clicked.connect(self.onSendToxMessage)
@@ -69,6 +76,7 @@ class mainController(QtGui.QMainWindow):
         self.ui.toxTryNewFriendRequest.clicked.connect(self.onNewFriendRequest)
         self.ui.toxTryStatus.currentIndexChanged.connect(self.onChangeOwnStatus)
         self.ui.toxTryDeleteFriend.clicked.connect(self.onDeleteFriend)
+        self.ui.toxTryCreateGroupchat.clicked.connect(self.onCreateGroupchat)
         self.toxThread.incomingFriendRequest.connect(self.onIncomingFriendRequest)
         self.toxThread.incomingFriendMessage.connect(self.onIncomingFriendMessage)
         self.toxThread.incomingGroupInvite.connect(self.onIncomingGroupInvite)
@@ -79,6 +87,18 @@ class mainController(QtGui.QMainWindow):
         self.toxThread.incomingGroupNameChange.connect(self.onClickToxUser)
         self.toxThread.connectToDHT.connect(self.onConnectToDHT)
         self.toxThread.disconnectToDHT.connect(self.onDisconnectToDHT)
+        
+    def onCreateGroupchat(self):
+      self.tryToxic.add_groupchat()
+      groupNr = -1
+      for gnr in self.tryToxic.get_chatlist():
+          if gnr not in self.tryToxic.groupNrs:
+            groupNr = gnr
+      if groupNr != -1:
+        peersNr = self.tryToxic.group_number_peers(groupNr)
+        self.tryToxic.toxGroupUser.append(toxGroupUser(groupNr,"Group #"+str(groupNr),self.tryToxic.get_client_id(groupNr),0,str(peersNr)+" peoples are online in this groupchat"))
+        self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
+              
         
     def onDeleteFriend(self):
       if self.tryToxic.currentToxUser is not None:

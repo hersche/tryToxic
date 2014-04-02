@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Tue Apr  1 21:25:42 2014
+# Created: Wed Apr  2 22:53:14 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -165,6 +165,9 @@ class Ui_MainWindow(object):
         self.toxTryNotifications.setReadOnly(True)
         self.toxTryNotifications.setObjectName(_fromUtf8("toxTryNotifications"))
         self.gridLayout.addWidget(self.toxTryNotifications, 7, 0, 1, 2)
+        self.toxTryCreateGroupchat = QtGui.QPushButton(self.tab_9)
+        self.toxTryCreateGroupchat.setObjectName(_fromUtf8("toxTryCreateGroupchat"))
+        self.gridLayout.addWidget(self.toxTryCreateGroupchat, 6, 1, 1, 1)
         self.horizontalLayout.addLayout(self.gridLayout)
         self.gridLayout_2 = QtGui.QGridLayout()
         self.gridLayout_2.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
@@ -271,6 +274,7 @@ class Ui_MainWindow(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Ubuntu\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans Serif\';\"><br /></p></body></html>", None))
+        self.toxTryCreateGroupchat.setText(_translate("MainWindow", "Create new groupchat", None))
         self.toxTrySendButton.setText(_translate("MainWindow", "Send", None))
         self.mainTab.setTabText(self.mainTab.indexOf(self.tab_9), _translate("MainWindow", "ToxTry", None))
         self.label_23.setText(_translate("MainWindow", "Configs", None))
