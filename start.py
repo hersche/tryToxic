@@ -15,7 +15,7 @@ if configLang is None:
 if configLang is not None:
   translator.load(configLang.value,"./lang/")
   app.installTranslator(translator)
-mc = mainController()
+mc = mainController(app)
 mc.show()
 
 sys.exit(app.exec_())

@@ -1,4 +1,6 @@
+
 from tox import Tox
+
 from lib.toxModels import toxMessage, toxUser,toxGroupUser
 from time import sleep,gmtime, strftime
 from lib.header import *
@@ -82,6 +84,31 @@ class ToxTry(Tox):
   def on_friend_message(self, friendId, message):
     logger.debug(tr("Friendmessage changed"))
     self.thread.incomingFriendMessage.emit(friendId,message)
+    
+  def on_file_send_request(self,friendId, fileId, fileSize, filename):
+    logger.info("Get request to become a file:"+filename)
+    #ssself.f = open('/tmp/output/'+filename, 'wb')
+    self.roundsControl = 0
+    self.roundsData=0
+    self.file_send_control(friendId, 0, fileId, self.FILECONTROL_ACCEPT)
+  def on_file_data(self,friend_number, file_number, data):
+    logger.info("Would recive file now! "+str(type(data)+" Round +"+str(self.roundsData)))
+    self.roundsData+=1
+    #self.f.write(bytes(data))
+  def on_file_control(self,friend_number, receive_send, file_number, control_type, data):
+    logger.info("Do a filecontrol now, round :"+str(self.roundsControl))
+    self.roundsControl+=1
+    if receive_send == 1:
+      if control_type == self.FILECONTROL_FINISHED:
+        logger.info("file recived")
+        self.f.close()
+      elif control_type == self.FILECONTROL_PAUSE:
+        pass
+      elif control_type == self.FILECONTROL_RESUME_BROKEN:
+        logger.info("get from broken again")
+        self.f.write(data)
+      else:
+        pass
 
       
   def on_name_change(self,friendId,name):
