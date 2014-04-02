@@ -116,6 +116,10 @@ class ToxTry(Tox):
     self.thread.incomingNameChange.emit(friendId,name)
   def on_user_status(self, friendId,status):  
     self.thread.incomingStatusChange.emit(friendId,status)
+    
+  def on_group_namelist_change(self,group_number, peer_number, change):
+    gtu = self.getToxGroupUserByFriendId(group_number)
+    self.thread.incomingGroupNameChange.emit(gtu)
       
   def on_status_message(self,friendId, statusMessage):
     self.thread.incomingStatusMessageChange.emit(friendId,statusMessage)

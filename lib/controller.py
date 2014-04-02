@@ -14,6 +14,7 @@ class toxThread(QtCore.QThread):
  incomingNameChange = QtCore.pyqtSignal(int,str)
  incomingStatusChange = QtCore.pyqtSignal(int,int)
  incomingStatusMessageChange = QtCore.pyqtSignal(int,str)
+ incomingGroupNameChange = QtCore.pyqtSignal(toxGroupUser)
  connectToDHT = QtCore.pyqtSignal(int)
  disconnectToDHT = QtCore.pyqtSignal(int)
  def __init__(self,ui,tmh):
@@ -75,6 +76,7 @@ class mainController(QtGui.QMainWindow):
         self.toxThread.incomingNameChange.connect(self.onIncomingNameChange)
         self.toxThread.incomingStatusChange.connect(self.onIncomingStatusChange)
         self.toxThread.incomingStatusMessageChange.connect(self.onIncomingStatusMessageChange)
+        self.toxThread.incomingGroupNameChange.connect(self.onClickToxUser)
         self.toxThread.connectToDHT.connect(self.onConnectToDHT)
         self.toxThread.disconnectToDHT.connect(self.onDisconnectToDHT)
         
@@ -130,7 +132,7 @@ class mainController(QtGui.QMainWindow):
         self.lastMessageColor += 1
         if self.lastMessageColor >= 9:
           self.lastMessageColor = 1
-        self.ui.toxTryChat.append(" <h3>["+msg.timestamp+"] "+groupname+"->"+username+":</h3>"+"<div style='background-color:"+self.colorchanger(self.lastMessageColor)+"'>"+msg.message+"</div>")
+        self.ui.toxTryChat.append(" <h3>["+timeDateString+"] "+groupname+"->"+username+":</h3>"+"<div style='background-color:"+self.colorchanger(self.lastMessageColor)+";float: right;'>"+message+"</div>")
         self.lastMessageName = username
         
       self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
@@ -159,15 +161,17 @@ class mainController(QtGui.QMainWindow):
             logger.error(tr("Group joining failed: ")+e.args[0])
         else:
           self.ui.toxTryNotifications.append(tr("Becoming group invite from ")+fr.name+tr(", but group is already added"))
+          
+          
     def onIncomingFriendMessage(self,friendId,message):
         self.app.alert(self,4000)
         ts = strftime('%c', gmtime())
         tu = self.tryToxic.getToxUserByFriendId(friendId)
-        self.toxMessagesHandler.addMessage(toxMessage(tu.friendId,ts,message,"False"))
+        self.toxMessagesHandler.addMessage(toxMessage(tu.friendId,ts,message,"False",individualName=tu.name))
         if tu.name is self.lastMessageName:
           self.ui.toxTryChat.append('<div style="background-color:'+self.colorchanger(friendId)+'">['+ts+']               '+message+'</div>')
         else:
-          self.ui.toxTryChat.append(" <h3>["+ts+"] "+tu.name+'</h3>: '+'<div style="background-color:'+self.colorchanger(friendId)+'">'+message+'</div>')
+          self.ui.toxTryChat.append(" <h3>["+ts+"] "+tu.name+':</h3> '+'<div style="background-color:'+self.colorchanger(friendId)+';float: right;">'+message+'</div>')
           self.lastMessageName = tu.name
         self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
     def onIncomingFriendRequest(self,pk,message):
@@ -243,7 +247,7 @@ class mainController(QtGui.QMainWindow):
               self.ui.toxTryChat.append('<div style="background-color:'+self.colorchanger(friendId)+';  padding-left:5em">['+ts+']       '+message+'</div>')
             else:
               self.lastMessageName = self.tryToxic.name
-              self.ui.toxTryChat.append(" <h3>["+ts+"] "+self.tryToxic.name+'</h3>: <div style="background-color:'+self.colorchanger(friendId)+'">'+message+'</div>')
+              self.ui.toxTryChat.append(" <h3>["+ts+"] "+self.tryToxic.name+':</h3> <div style="background-color:'+self.colorchanger(friendId)+';float: right;">'+message+'</div>')
           self.ui.toxTrySendText.clear()
           self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
         else:
@@ -266,6 +270,10 @@ class mainController(QtGui.QMainWindow):
         r = (id * 180) % 255
         g = (id * 60) % 255
         b = (id * 120) % 255
+      elif id >16:
+        r = (id * 180) % 255
+        g = (id * 180) % 255
+        b = (id * 180) % 255
       else:
         r = (id * 180) % 255
         g = (id * 210) % 255
@@ -273,6 +281,7 @@ class mainController(QtGui.QMainWindow):
       
       return "rgb("+str(r)+","+str(g)+","+str(b)+")"
     def onClickToxUser(self,item):
+      item=self.ui.toxTryFriends.currentItem()
       txt = item.text()
       self.lastMessageName=""
       mergedList = self.tryToxic.toxUserList + self.tryToxic.toxGroupUser
@@ -290,20 +299,24 @@ class mainController(QtGui.QMainWindow):
           
           #This part is groupchat
           if tu.isGroup:
-            tmpBeginnString = "<div style='background-color: "+self.colorchanger(tu.friendId)+"'>"
+            for gcName in self.tryToxic.group_get_names(tu.friendId):
+              self.ui.toxTryFriendInfos.append(tr("In group: ")+gcName)
+            tmpBeginnString = "<div style='background-color: "+self.colorchanger(tu.friendId)+";float: right;'>"
+
             for msg in tu.messages:
-              if self.lastMessageName is not "" and self.lastMessageName == tu.name:
+              if tu.name[0:7] == "Group #" and msg.individualName != "":
+                name = msg.individualName
+              else:
+                name = tu.name
+              if self.lastMessageName is not "" and self.lastMessageName == name:
                 self.ui.toxTryChat.append(tmpBeginnString+"["+msg.timestamp+"] "+msg.message+"</div>")
               else:
-                if tu.name != "":
-                  self.ui.toxTryChat.append(" <h3>["+msg.timestamp+"] "+tu.name+"</h3>: "+tmpBeginnString+msg.message+"</div>")
-                  self.lastMessageName = tu.name
-                elif msg.individualName != "":
-                  self.lastMessageName = msg.individualName
-                  self.ui.toxTryChat.append(" <h3>["+msg.timestamp+"] "++msg.individualName+"</h3>: "+tmpBeginnString+msg.message+"</div>")
+                logger.info(tu.name[0:7])
+                if name != "" and name[0:7] != "Group #":
+                  self.ui.toxTryChat.append(" <h3>["+msg.timestamp+"] "+name+":</h3> "+tmpBeginnString+msg.message+"</div>")
+                  self.lastMessageName = name
                 else:
-                  self.ui.toxTryChat.append(" <h3>["+msg.timestamp+"] "+tu.name+"</h3>: "+tmpBeginnString+msg.message+"</div>")
-                  self.lastMessageName = tu.name
+                  self.ui.toxTryChat.append(" <h3>["+msg.timestamp+"] "+str(friendId)+":</h3> "+tmpBeginnString+msg.message+"</div>")
           else:
             #while this is for "usual"chat
             msgList = self.toxMessagesHandler.updateMessages(tu.friendId)
@@ -318,7 +331,6 @@ class mainController(QtGui.QMainWindow):
                 friendId = 777
               #is the name from last time setet and the same we have now? when yes, we didn't have to do so much.stay on color and append to chat
               if self.lastMessageName != "" and name == self.lastMessageName:
-                logger.info("already in name "+name)
                 tmpBeginnString = "<div style='background-color: "+self.colorchanger(friendId)+"; padding-left:5em'>"
                 self.ui.toxTryChat.append(tmpBeginnString+"["+msg.timestamp+"]          "+msg.message+"</div>")
               else:
@@ -326,10 +338,9 @@ class mainController(QtGui.QMainWindow):
                   self.lastMessageColor=2
                 else:
                   self.lastMessageColor=3
-                logger.info("name changed to in name "+name)
-                tmpBeginnString = "<div style='background-color: "+self.colorchanger(friendId)+"'>"
+                tmpBeginnString = "<div style='background-color: "+self.colorchanger(friendId)+";float: right;'>"
                 self.lastMessageName = name
-                self.ui.toxTryChat.append(" <h3>["+msg.timestamp+"] "+name+"</h3>"+tmpBeginnString+msg.message+"</div>")
+                self.ui.toxTryChat.append(" <h3>["+msg.timestamp+"] "+name+":</h3>"+tmpBeginnString+msg.message+"</div>")
               
               
     def updateToxUsersGuiList(self, userList):
