@@ -30,23 +30,24 @@ Important to know: friendRequests get automatic accepted, also groupchat for deb
   <li>"Profile"-Signals (status, statusmessage, name)</li>
   <li>Save messages/history log</li>
   <li>Send and reciving messages</li>
-  <li>Encryption of localData</li>
+  <li>Encryption of <a href="https://github.com/skamster/tryToxics/wiki/LocalStorages" >LocalStorages</a></li>
   <li>Internationalisised (at the moment english + german)</li>
-  <li>Groupchat is working, nameresolving could make problems sometimes (you see a id then, do make a diffrent..)</li>
+  <li>Groupchat is working</li>
+  <li>Make colors and like blocks in chats to do a diffrent between users</li>
+  <li>Set Loglevel for console and file on the flow</li>
+  <li>Grouped chatview</li>
 </ul>
 
 <b>Not working / known Bugs</b>
 <ul>
-  <li><del>Status (backgroundcolor in friendlist) shows always online</del></li>
-  <li><del>Encryption is incomplete and fucks around (padding is not right anymore)-when u want to use it, take arc4 or xor to encrypt, they should work.</del></li>
-  <li>It's easy possible to kill the app, when you don't wait, until it's really connectet to a user and stress it around</li>
-  <ul><li><a href="https://github.com/skamster/tryToxics/commit/d5de870eea2f2dc25324e38644bd2a0c23127f2d">seems to be really fixed, app work a full day in groupchat and userchanges and working well and withouth crash</a></li></ul>
-  <li><del>language has to be fixed</del></li>
+  <li>fileTransfer</li>
+  <li>friends keys are weirdly shorted - crap for giving to a friend</li>
+  <li>nr's of peers isn't right (ever 1 persons)</li>
+  <li>this stuff i couldn't resolve for moment, but there's enough to improve :)</li>
 </ul>
 <b>Ideas/Future</b>
 <ul>
   <li>QrCode for publickey/adress. Find no good framework which is easy to install for python 3</li>
   <li>AudioVideo - i think everyone who play/dev with tox like to got this. Big part..</li>
-  <li>fileTransfer of course.. would be possible i think</li>
   
 ...etc. I've now a moment time to work on, so i think, it will get a bit more extendet soon (i've broke my feet and shouldn't move - lets dev!).
