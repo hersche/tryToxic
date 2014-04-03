@@ -87,14 +87,14 @@ class ToxTry(Tox):
     
   def on_file_send_request(self,friendId, fileId, fileSize, filename):
     logger.info("Get request to become a file:"+filename)
-    #ssself.f = open('/tmp/output/'+filename, 'wb')
+    self.f = open('/tmp/output/'+filename, 'rb')
     self.roundsControl = 0
     self.roundsData=0
     self.file_send_control(friendId, 0, fileId, self.FILECONTROL_ACCEPT)
   def on_file_data(self,friend_number, file_number, data):
     logger.info("Would recive file now! "+str(type(data)+" Round +"+str(self.roundsData)))
     self.roundsData+=1
-    #self.f.write(bytes(data))
+    self.f.writelines(bytes(data))
   def on_file_control(self,friend_number, receive_send, file_number, control_type, data):
     logger.info("Do a filecontrol now, round :"+str(self.roundsControl))
     self.roundsControl+=1
