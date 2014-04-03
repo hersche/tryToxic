@@ -27,6 +27,7 @@ class ToxTry(Tox):
       self.pubKey = self.get_address()
       self.statusMessage = self.get_self_status_message()
       self.online = False
+      self.userColor = {}
       self.updateToxUserObjects()
       self.thread.updateUiUserList.emit(self.toxUserList+self.toxGroupUser)
       self.saveLocalData()
@@ -128,33 +129,4 @@ class ToxTry(Tox):
     self.thread.incomingGroupInvite.emit(friendId, groupPk)
     
   def on_group_message(self,group_number, friend_group_number, message):
-    gtu = self.getToxGroupUserByFriendId(group_number)
-    timeDateString = strftime('%c', gmtime())
-    sendingPeerUser = None
-    try:
-      if len(gtu.peerList)>0:
-        for peerUser in gtu.peerList:
-            if peerUser.friendId == friend_group_number and peerUser.name is not "":
-              sendingPeerUser = peerUser
-            elif peerUser.friendId == friend_group_number and peerUser.name == "":
-              peerUser.name = self.group_peername(group_number,friend_group_number)
-              sendingPeerUser = peerUser
-            elif friend_group_number not in gtu.checkedPeerIds:
-              username = self.group_peername(group_number,friend_group_number)
-              sendingPeerUser = toxUser(friend_group_number,username,"",0,"")
-              gtu.peerList.append(sendingPeerUser)
-              gtu.checkedPeerIds.append(friend_group_number)
-      else:
-        username = self.group_peername(group_number,friend_group_number)
-        sendingPeerUser = toxUser(friend_group_number,username,"",0,"")
-        gtu.checkedPeerIds.append(friend_group_number)
-        gtu.peerList.append(sendingPeerUser)
-    except Exception as e:
-        logger.error(tr("Fail to get name") + str(e.args[0]))
-        pass
-    if sendingPeerUser is not None and sendingPeerUser.name is not "":
-      username = sendingPeerUser.name
-    else:
-      username = str(friend_group_number)
-    gtu.messages.append(toxMessage(gtu.friendId,message,timeDateString,"False",individualName=str(gtu.name+"->"+username)))
-    self.thread.incomingGroupMessage.emit(timeDateString,gtu.name,username,message)
+    self.thread.incomingGroupMessage.emit(group_number, friend_group_number, message)

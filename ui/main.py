@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Thu Apr  3 15:18:23 2014
+# Created: Thu Apr  3 16:49:26 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -179,9 +179,9 @@ class Ui_MainWindow(object):
         self.toxTryCreateGroupchat = QtGui.QPushButton(self.tab_4)
         self.toxTryCreateGroupchat.setObjectName(_fromUtf8("toxTryCreateGroupchat"))
         self.gridLayout_8.addWidget(self.toxTryCreateGroupchat, 1, 0, 1, 1)
-        self.pushButton = QtGui.QPushButton(self.tab_4)
-        self.pushButton.setObjectName(_fromUtf8("pushButton"))
-        self.gridLayout_8.addWidget(self.pushButton, 1, 1, 1, 1)
+        self.toxTryDeleteGroup = QtGui.QPushButton(self.tab_4)
+        self.toxTryDeleteGroup.setObjectName(_fromUtf8("toxTryDeleteGroup"))
+        self.gridLayout_8.addWidget(self.toxTryDeleteGroup, 1, 1, 1, 1)
         self.tabWidget.addTab(self.tab_4, _fromUtf8(""))
         self.gridLayout.addWidget(self.tabWidget, 1, 0, 1, 1)
         self.horizontalLayout.addLayout(self.gridLayout)
@@ -292,7 +292,7 @@ class Ui_MainWindow(object):
         self.toxTryDeleteFriend.setText(_translate("MainWindow", "Delete friend", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "Friends", None))
         self.toxTryCreateGroupchat.setText(_translate("MainWindow", "New groupchat", None))
-        self.pushButton.setText(_translate("MainWindow", "Delete Groupchat", None))
+        self.toxTryDeleteGroup.setText(_translate("MainWindow", "Delete Groupchat", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("MainWindow", "Groups", None))
         self.toxTryChat.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

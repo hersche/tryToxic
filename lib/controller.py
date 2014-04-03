@@ -10,7 +10,7 @@ class toxThread(QtCore.QThread):
  clickToxFriend = QtCore.pyqtSignal(str)
  incomingFriendRequest = QtCore.pyqtSignal(str,str)
  incomingFriendMessage = QtCore.pyqtSignal(int,str)
- incomingGroupMessage = QtCore.pyqtSignal(str,str,str,str) 
+ incomingGroupMessage = QtCore.pyqtSignal(int,int,str) 
  incomingGroupInvite = QtCore.pyqtSignal(int,str)
  incomingNameChange = QtCore.pyqtSignal(int,str)
  incomingStatusChange = QtCore.pyqtSignal(int,int)
@@ -74,10 +74,9 @@ class mainController(QtGui.QMainWindow):
         self.ui.configList.itemClicked.connect(self.onConfigItemClick)
         
         #catching tryToxic-signals
-        #QtCore.QEvent.ActionChanged.connect(self.actionEvent)
-        
         contextDelete.triggered.connect(self.onDeleteFriend)
         self.toxThread.updateUiUserList.connect(self.updateToxUsersGuiList)
+        self.ui.toxTryDeleteGroup.clicked.connect(self.onDeleteFriend)
         self.ui.toxTryFriends.itemClicked.connect(self.onClickToxUser)
         self.ui.toxTryGroups.itemClicked.connect(self.onClickToxGroup)
         self.ui.toxTrySendButton.clicked.connect(self.onSendToxMessage)
@@ -101,8 +100,8 @@ class mainController(QtGui.QMainWindow):
         
         
     def closeEvent(self, event):
-      reply = QtGui.QMessageBox.question(self, 'Message',
-          "Are you sure to quit?", QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+      reply = QtGui.QMessageBox.question(self, tr('Really leave tryToxic?'),
+          tr("Are you sure to quit?"), QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
       if reply == QtGui.QMessageBox.Yes:
         self.tryToxic.kill()
         event.accept()
@@ -184,20 +183,46 @@ class mainController(QtGui.QMainWindow):
       tu = self.tryToxic.getToxUserByFriendId(friendId)
       if tu is not None:         tu.status=status
       self.updateToxUsersGuiList(self.tryToxic.toxUserList)
-      
-    def onIncomingGroupMessage(self,timeDateString,groupname,username,message):
+
+    def onIncomingGroupMessage(self,group_number, friend_group_number, message):
+      gtu = self.tryToxic.getToxGroupUserByFriendId(group_number)
+      timeDateString = strftime('%c', gmtime())
+      sendingPeerUser = None
+      try:
+        if len(gtu.peerList)>0:
+          for peerUser in gtu.peerList:
+              if peerUser.friendId == friend_group_number and peerUser.name is not "":
+                sendingPeerUser = peerUser
+              elif peerUser.friendId == friend_group_number and peerUser.name == "":
+                peerUser.name = self.tryToxic.group_peername(group_number,friend_group_number)
+                sendingPeerUser = peerUser
+              elif friend_group_number not in gtu.checkedPeerIds:
+                username = self.tryToxic.group_peername(group_number,friend_group_number)
+                sendingPeerUser = toxUser(friend_group_number,username,"",0,"")
+                gtu.peerList.append(sendingPeerUser)
+                gtu.checkedPeerIds.append(friend_group_number)
+        else:
+          username = self.tryToxic.group_peername(group_number,friend_group_number)
+          sendingPeerUser = toxUser(friend_group_number,username,"",0,"")
+          gtu.checkedPeerIds.append(friend_group_number)
+          gtu.peerList.append(sendingPeerUser)
+      except Exception as e:
+          logger.error(tr("Fail to get name") + str(e.args[0]))
+          pass
+      if sendingPeerUser is not None and sendingPeerUser.name is not "":
+        username = sendingPeerUser.name
+      else:
+        username = str(friend_group_number)
+      gtu.messages.append(toxMessage(gtu.friendId,message,timeDateString,"False",individualName=username))
       self.app.alert(self,4000)
       #logger.info("Username vs messagename: "+username +" vs "+self.lastMessageName)
       if username == self.lastMessageName:
-        self.ui.toxTryChat.append('<div style="background-color:'+self.colorchanger(self.lastMessageColor)+'">['+timeDateString+']               '+message+'</div>')
+        self.ui.toxTryChat.append('<div style="background-color:'+self.colorchanger(sendingPeerUser.friendId)+'">['+timeDateString+']               '+message+'</div>')
       else:
-        self.lastMessageColor += 1
-        if self.lastMessageColor >= 9:
-          self.lastMessageColor = 1
-        self.ui.toxTryChat.append(" <h3>["+timeDateString+"] "+groupname+"->"+username+":</h3>"+"<div style='background-color:"+self.colorchanger(self.lastMessageColor)+";float: right;'>"+message+"</div>")
+        self.ui.toxTryChat.append(" <h3>["+timeDateString+"] "+username+":</h3>"+"<div style='background-color:"+self.colorchanger(sendingPeerUser.friendId)+";float: right;'>"+message+"</div>")
         self.lastMessageName = username
       self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
-      logger.debug(tr("Recive Groupmessage [")+timeDateString+"] "+groupname+"->"+username+": "+message)
+      logger.debug(tr("Recive Groupmessage [")+timeDateString+"] "+gtu.name+"->"+username+": "+message)
     def onIncomingGroupInvite(self,friendId,groupPk):
         self.app.alert(self,4000)
         fr = self.tryToxic.getToxUserByFriendId(friendId)
@@ -382,13 +407,18 @@ class mainController(QtGui.QMainWindow):
               name = msg.individualName
             else:
               name = tu.name
+            usr = tu.getPeerByName(name)
+
             if self.lastMessageName == name:
               tmpBeginnString = "<div style='background-color: "+self.colorchanger(self.lastMessageColor)+";float: right;'>"
               self.ui.toxTryChat.append(tmpBeginnString+"["+msg.timestamp+"] "+msg.message+"</div>")
             else:
-              self.lastMessageColor+=1
-              if self.lastMessageColor > 13:
-                self.lastMessageColor = 1
+              if usr is not None:
+                self.lastMessageColor = usr.friendId
+              else:
+                self.lastMessageColor+=1
+                if self.lastMessageColor > 13:
+                  self.lastMessageColor = 1
               tmpBeginnString = "<div style='background-color: "+self.colorchanger(self.lastMessageColor)+";float: right;'>"
               if name != "":
                 self.ui.toxTryChat.append(" <h3>["+msg.timestamp+"] "+name+":</h3> "+tmpBeginnString+msg.message+"</div>")

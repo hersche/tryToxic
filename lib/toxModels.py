@@ -30,6 +30,12 @@ class toxGroupUser(toxUser):
     self.messages = []
     self.checkedPeerIds = []
     self.isGroup = True
+  def getPeerByName(self,name):
+    for peer in self.peerList:
+      if peer.name == name:
+        return peer
+      else:
+        return None
  
 #a handler for saving, manage and giving back the messages.
 # @TODO make this class enable/disable-able (?) in settings..
