@@ -74,7 +74,7 @@ class mainController(QtGui.QMainWindow):
         #catching tryToxic-signals
         #QtCore.QEvent.ActionChanged.connect(self.actionEvent)
         
-        contextDelete.triggered.connect(self.onContextClick)
+        contextDelete.triggered.connect(self.onDeleteFriend)
         self.toxThread.updateUiUserList.connect(self.updateToxUsersGuiList)
         self.ui.toxTryFriends.itemClicked.connect(self.onClickToxUser)
         self.ui.toxTrySendButton.clicked.connect(self.onSendToxMessage)
@@ -106,12 +106,20 @@ class mainController(QtGui.QMainWindow):
         if userText == usr.name:
           logger.info("found "+userText)
           user = usr
-      if len(text) == 11 and text[0:10] == "ownGroup #":
-        id = text[10:11]
-        logger.info(str(id))
-        gtu = self.tryToxic.getToxGroupUserByFriendId(int(id))
-        self.tryToxic.invite_friend(user.friendId, gtu.friendId)
-        logger.info("getting grouppubkey: "+gtu.pubKey)
+      if user is not None:
+        if len(text) == 11 and text[0:10] == "ownGroup #":
+          id = text[10:11]
+          logger.info(str(id))
+          gtu = self.tryToxic.getToxGroupUserByFriendId(int(id))
+          self.tryToxic.invite_friend(user.friendId, gtu.friendId)
+          logger.info("getting grouppubkey: "+gtu.pubKey)
+        elif len(text) == 8 and text[0:7] == "Group #":
+          logger.info("could we invite users to not-own-groups? i don't know")
+          id = text[7:8]
+          logger.info(str(id))
+          gtu = self.tryToxic.getToxGroupUserByFriendId(int(id))
+          self.tryToxic.invite_friend(user.friendId, gtu.friendId)
+          logger.info("getting grouppubkey: "+gtu.pubKey)
     def onCreateGroupchat(self):
       self.tryToxic.add_groupchat()
       groupNr = -1
@@ -125,11 +133,7 @@ class mainController(QtGui.QMainWindow):
         self.subMenu.addActions([groupAction])
         groupAction.triggered.connect(self.onContextClick)
         self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
-    def actionEvent(self, event):
-      logger.info("action")             
 
-    def contextMenuEvent(self, event):
-      logger.info("context")
     def onDeleteFriend(self):
       if self.tryToxic.currentToxUser is not None:
         self.msgBox.setWindowTitle(tr("REALLY DELETE A USER? AWAY IS AWAY!"))
@@ -197,21 +201,25 @@ class mainController(QtGui.QMainWindow):
             foundExistGroupPk=True
         if not foundExistGroupPk:
           self.ui.toxTryNotifications.append(tr("Becoming group invite from ")+fr.name)
-          self.tryToxic.join_groupchat(friendId,groupPk)
-          groupNr = -1
-          for gnr in self.tryToxic.get_chatlist():
-              if gnr not in self.tryToxic.groupNrs:
-                groupNr = gnr
-          try:
-            if groupNr != -1:
-              groupAction = QtGui.QAction("Group #"+str(groupNr), self.ui.toxTryFriends)
-              self.subMenu.addActions([groupAction])
-              groupAction.triggered.connect(self.onContextClick)
-              peersNr = self.tryToxic.group_number_peers(groupNr)
-              self.tryToxic.toxGroupUser.append(toxGroupUser(groupNr,"Group #"+str(groupNr),groupPk,0,str(peersNr)+" peoples are online in this groupchat"))
-            self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
-          except Exception as e:
-            logger.error(tr("Group joining failed: ")+e.args[0])
+          self.msgBox.setWindowTitle(tr("Invited to groupchat"))
+          self.msgBox.setText(tr("Do you want to enter groupchat from ")+fr.name+"?")
+          select = self.msgBox.exec()
+          if select == QtGui.QMessageBox.Yes:
+            self.tryToxic.join_groupchat(friendId,groupPk)
+            groupNr = -1
+            for gnr in self.tryToxic.get_chatlist():
+                if gnr not in self.tryToxic.groupNrs:
+                  groupNr = gnr
+            try:
+              if groupNr != -1:
+                groupAction = QtGui.QAction("Group #"+str(groupNr), self.ui.toxTryFriends)
+                self.subMenu.addActions([groupAction])
+                groupAction.triggered.connect(self.onContextClick)
+                peersNr = self.tryToxic.group_number_peers(groupNr)
+                self.tryToxic.toxGroupUser.append(toxGroupUser(groupNr,"Group #"+str(groupNr),groupPk,0,str(peersNr)+" peoples are online in this groupchat"))
+              self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
+            except Exception as e:
+              logger.error(tr("Group joining failed: ")+e.args[0])
         else:
           self.ui.toxTryNotifications.append(tr("Becoming group invite from ")+fr.name+tr(", but group is already added"))
           
@@ -336,6 +344,9 @@ class mainController(QtGui.QMainWindow):
     def onClickToxUser(self,item=None):
       if item is not None:
         txt = item.text()
+      elif self.tryToxic.currentToxUser.isGroup :
+        self.tryToxic.currentToxUser.statusMessage = str(self.tryToxic.group_number_peers(self.tryToxic.currentToxUser.friendId))+ " users are online"
+        txt = self.tryToxic.currentToxUser.name
       else:
         txt = self.tryToxic.currentToxUser.name
       self.lastMessageName=""
