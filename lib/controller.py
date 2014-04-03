@@ -96,6 +96,15 @@ class mainController(QtGui.QMainWindow):
         self.toxThread.connectToDHT.connect(self.onConnectToDHT)
         self.toxThread.disconnectToDHT.connect(self.onDisconnectToDHT)
         
+        
+    def closeEvent(self, event):
+      reply = QtGui.QMessageBox.question(self, 'Message',
+          "Are you sure to quit?", QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+      if reply == QtGui.QMessageBox.Yes:
+        self.tryToxic.kill()
+        event.accept()
+      else:
+          event.ignore()
     def onContextClick(self, obj):
       sender = self.sender()
       text = sender.text()
