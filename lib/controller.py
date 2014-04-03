@@ -15,7 +15,7 @@ class toxThread(QtCore.QThread):
  incomingNameChange = QtCore.pyqtSignal(int,str)
  incomingStatusChange = QtCore.pyqtSignal(int,int)
  incomingStatusMessageChange = QtCore.pyqtSignal(int,str)
- incomingGroupNameChange = QtCore.pyqtSignal(toxGroupUser)
+ incomingGroupNameChange = QtCore.pyqtSignal()
  connectToDHT = QtCore.pyqtSignal(int)
  disconnectToDHT = QtCore.pyqtSignal(int)
  def __init__(self,ui,tmh):
@@ -32,6 +32,7 @@ class mainController(QtGui.QMainWindow):
         self.lastMessageName=""
         self.lastMessageColor = 3
         self.encryptionObject = None
+        
         self.msgBox = QtGui.QMessageBox()
         self.msgBox.addButton(QtGui.QMessageBox.Yes)
         self.msgBox.addButton(QtGui.QMessageBox.No)
@@ -42,10 +43,15 @@ class mainController(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.setEnabled(True)
         self.ui.toxTryFriends.setContextMenuPolicy(2)
-        addToGrouchat = QtGui.QAction("Add to groupchat", self.ui.toxTryFriends)
+        self.subMenu = QtGui.QMenu()
+        self.addToGrouchat = QtGui.QAction("Add to groupchat", self.ui.toxTryFriends)
+        self.addToGrouchat.setShortcutContext (3)
+        
+        self.addToGrouchat.setMenu(self.subMenu)
         contextDelete = QtGui.QAction("Delete", self.ui.toxTryFriends)
-        #self.ui.toxTryFriends.addAction()
+        self.ui.toxTryFriends.addAction(self.addToGrouchat)
         self.ui.toxTryFriends.addAction(contextDelete)
         self.toxMessagesHandler = toxMessageHandler(self.encryptionObject)
         self.toxThread = toxThread(self.ui,self.toxMessagesHandler)
@@ -66,7 +72,9 @@ class mainController(QtGui.QMainWindow):
         self.ui.configList.itemClicked.connect(self.onConfigItemClick)
         
         #catching tryToxic-signals
-        contextDelete.triggered.connect(self.onDeleteFriend)
+        #QtCore.QEvent.ActionChanged.connect(self.actionEvent)
+        
+        contextDelete.triggered.connect(self.onContextClick)
         self.toxThread.updateUiUserList.connect(self.updateToxUsersGuiList)
         self.ui.toxTryFriends.itemClicked.connect(self.onClickToxUser)
         self.ui.toxTrySendButton.clicked.connect(self.onSendToxMessage)
@@ -88,6 +96,22 @@ class mainController(QtGui.QMainWindow):
         self.toxThread.connectToDHT.connect(self.onConnectToDHT)
         self.toxThread.disconnectToDHT.connect(self.onDisconnectToDHT)
         
+    def onContextClick(self, obj):
+      sender = self.sender()
+      text = sender.text()
+      userItem = self.ui.toxTryFriends.currentItem()
+      userText = userItem.text()
+      user = None
+      for usr in self.tryToxic.toxUserList:
+        if userText == usr.name:
+          logger.info("found "+userText)
+          user = usr
+      if len(text) == 11 and text[0:10] == "ownGroup #":
+        id = text[10:11]
+        logger.info(str(id))
+        gtu = self.tryToxic.getToxGroupUserByFriendId(int(id))
+        self.tryToxic.invite_friend(user.friendId, gtu.friendId)
+        logger.info("getting grouppubkey: "+gtu.pubKey)
     def onCreateGroupchat(self):
       self.tryToxic.add_groupchat()
       groupNr = -1
@@ -96,10 +120,16 @@ class mainController(QtGui.QMainWindow):
             groupNr = gnr
       if groupNr != -1:
         peersNr = self.tryToxic.group_number_peers(groupNr)
-        self.tryToxic.toxGroupUser.append(toxGroupUser(groupNr,"Group #"+str(groupNr),self.tryToxic.get_client_id(groupNr),0,str(peersNr)+" peoples are online in this groupchat"))
+        self.tryToxic.toxGroupUser.append(toxGroupUser(groupNr,"ownGroup #"+str(groupNr),self.tryToxic.get_client_id(groupNr),0,str(peersNr)+" peoples are online in this groupchat"))
+        groupAction = QtGui.QAction("ownGroup #"+str(groupNr), self.ui.toxTryFriends)
+        self.subMenu.addActions([groupAction])
+        groupAction.triggered.connect(self.onContextClick)
         self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
-              
-        
+    def actionEvent(self, event):
+      logger.info("action")             
+
+    def contextMenuEvent(self, event):
+      logger.info("context")
     def onDeleteFriend(self):
       if self.tryToxic.currentToxUser is not None:
         self.msgBox.setWindowTitle(tr("REALLY DELETE A USER? AWAY IS AWAY!"))
@@ -174,6 +204,9 @@ class mainController(QtGui.QMainWindow):
                 groupNr = gnr
           try:
             if groupNr != -1:
+              groupAction = QtGui.QAction("Group #"+str(groupNr), self.ui.toxTryFriends)
+              self.subMenu.addActions([groupAction])
+              groupAction.triggered.connect(self.onContextClick)
               peersNr = self.tryToxic.group_number_peers(groupNr)
               self.tryToxic.toxGroupUser.append(toxGroupUser(groupNr,"Group #"+str(groupNr),groupPk,0,str(peersNr)+" peoples are online in this groupchat"))
             self.updateToxUsersGuiList(self.tryToxic.toxUserList+self.tryToxic.toxGroupUser)
@@ -300,9 +333,11 @@ class mainController(QtGui.QMainWindow):
         b = (id * 120) % 255
       
       return "rgb("+str(r)+","+str(g)+","+str(b)+")"
-    def onClickToxUser(self,item):
-      item=self.ui.toxTryFriends.currentItem()
-      txt = item.text()
+    def onClickToxUser(self,item=None):
+      if item is not None:
+        txt = item.text()
+      else:
+        txt = self.tryToxic.currentToxUser.name
       self.lastMessageName=""
       mergedList = self.tryToxic.toxUserList + self.tryToxic.toxGroupUser
       for tu in mergedList:
@@ -324,7 +359,7 @@ class mainController(QtGui.QMainWindow):
             tmpBeginnString = "<div style='background-color: "+self.colorchanger(tu.friendId)+";float: right;'>"
 
             for msg in tu.messages:
-              if tu.name[0:7] == "Group #" and msg.individualName != "":
+              if tu.name[0:7] == "Group #" and msg.individualName != "" and name[0:10] != "ownGroup #":
                 name = msg.individualName
               else:
                 name = tu.name
@@ -332,7 +367,7 @@ class mainController(QtGui.QMainWindow):
                 self.ui.toxTryChat.append(tmpBeginnString+"["+msg.timestamp+"] "+msg.message+"</div>")
               else:
                 logger.info(tu.name[0:7])
-                if name != "" and name[0:7] != "Group #":
+                if name != "" and name[0:7] != "Group #" and name[0:10] != "ownGroup #":
                   self.ui.toxTryChat.append(" <h3>["+msg.timestamp+"] "+name+":</h3> "+tmpBeginnString+msg.message+"</div>")
                   self.lastMessageName = name
                 else:
