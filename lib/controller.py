@@ -370,7 +370,7 @@ class mainController(QtGui.QMainWindow):
             tmpBeginnString = "<div style='background-color: "+self.colorchanger(tu.friendId)+";float: right;'>"
 
             for msg in tu.messages:
-              if tu.name[0:7] == "Group #" and msg.individualName != "" and name[0:10] != "ownGroup #":
+              if tu.name[0:7] == "Group #" and msg.individualName != "" and tu.name[0:10] != "ownGroup #":
                 name = msg.individualName
               else:
                 name = tu.name

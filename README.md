@@ -35,13 +35,13 @@ Important to know: friendRequests get automatic accepted, also groupchat for deb
   <li>Groupchat is working</li>
   <li>Make colors and like blocks in chats to do a diffrent between users</li>
   <li>Set Loglevel for console and file on the flow</li>
-  <li>Grouped chatview</li>
+  <li>Grouped chatview, including create groups and invite people into them</li>
 </ul>
 
 <b>Not working / known Bugs</b>
 <ul>
   <li>fileTransfer</li>
-  <li>friends keys are weirdly shorted - crap for giving to a friend</li>
+  <li>friends keys are weirdly shorted - crap for giving to a friend (the own is well)</li>
   <li>nr's of peers isn't right (ever 1 persons)</li>
   <li>this stuff i couldn't resolve for moment, but there's enough to improve :)</li>
 </ul>
