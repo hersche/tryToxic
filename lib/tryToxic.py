@@ -95,7 +95,7 @@ class ToxTry(Tox):
   def on_file_data(self,friend_number, file_number, data):
     logger.info("Would recive file now! "+str(type(data)+" Round +"+str(self.roundsData)))
     self.roundsData+=1
-    self.f.writelines(bytes(data))
+    self.f.writelines(bytes(data, 'ascii'))
   def on_file_control(self,friend_number, receive_send, file_number, control_type, data):
     logger.info("Do a filecontrol now, round :"+str(self.roundsControl))
     self.roundsControl+=1
@@ -117,7 +117,9 @@ class ToxTry(Tox):
     self.thread.incomingNameChange.emit(friendId,name)
   def on_user_status(self, friendId,status):  
     self.thread.incomingStatusChange.emit(friendId,status)
-    
+  def on_connection_status(self,friendId, status):
+    self.thread.incomingOnlineStatus.emit(friendId,status)
+  
   def on_group_namelist_change(self,group_number, peer_number, change):
     gtu = self.getToxGroupUserByFriendId(group_number)
     self.thread.incomingGroupNameChange.emit()

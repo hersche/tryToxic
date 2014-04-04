@@ -22,6 +22,7 @@ class toxUser:
     self.status = status
     self.statusMessage = statusMessage
     self.isGroup = False
+    self.isOnline = False
 #a special version of toxuser, representing a group, which contains itself a list of toxUser
 class toxGroupUser(toxUser):
   def __init__(self,friendId,name,pubKey,status,statusMessage,peerList=[]):

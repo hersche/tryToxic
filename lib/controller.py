@@ -3,7 +3,7 @@ from lib.toxModels import *
 from lib.configControll import *
 from lib.cryptClass import *
 from ui.main import *
-import html
+import html,binascii
 from PyQt4 import Qt
 
 class toxThread(QtCore.QThread):
@@ -15,6 +15,7 @@ class toxThread(QtCore.QThread):
  incomingGroupInvite = QtCore.pyqtSignal(int,str)
  incomingNameChange = QtCore.pyqtSignal(int,str)
  incomingStatusChange = QtCore.pyqtSignal(int,int)
+ incomingOnlineStatus = QtCore.pyqtSignal(int,bool)
  incomingStatusMessageChange = QtCore.pyqtSignal(int,str)
  incomingGroupNameChange = QtCore.pyqtSignal()
  connectToDHT = QtCore.pyqtSignal(int)
@@ -65,6 +66,7 @@ class mainController(QtGui.QMainWindow):
         self.setWindowTitle("tryToxic :: "+self.tryToxic.name)
         self.ui.toxTryStatusMessage.setText(self.tryToxic.statusMessage)
         self.ui.toxTryId.setText(self.tryToxic.pubKey)
+        self.generateDnsId(self.tryToxic.pubKey)
         self.tryToxic.updateToxUserObjects()
         self.updateToxUsersGuiList(self.tryToxic.toxUserList)
         self.updateConfigListUi(True)
@@ -94,6 +96,7 @@ class mainController(QtGui.QMainWindow):
         self.toxThread.incomingGroupMessage.connect(self.onIncomingGroupMessage)
         self.toxThread.incomingNameChange.connect(self.onIncomingNameChange)
         self.toxThread.incomingStatusChange.connect(self.onIncomingStatusChange)
+        self.toxThread.incomingOnlineStatus.connect(self.onIncomingOnlineStatus)
         self.toxThread.incomingStatusMessageChange.connect(self.onIncomingStatusMessageChange)
         self.toxThread.incomingGroupNameChange.connect(self.onClickToxUser)
         self.toxThread.connectToDHT.connect(self.onConnectToDHT)
@@ -180,11 +183,21 @@ class mainController(QtGui.QMainWindow):
       tu = self.tryToxic.getToxUserByFriendId(friendId)
       if tu is not None:       tu.statusMessage=statusMsg
       self.updateToxUsersGuiList(self.tryToxic.toxUserList)
+      
+    def onIncomingOnlineStatus(self,friendId,onlineStatus):
+      tu = self.tryToxic.getToxUserByFriendId(friendId)
+      if onlineStatus:
+        tu.isOnline = True
+      else:
+        tu.isOnline = False
+      logger.info("incomming onlinestatus for user "+tu.name+" Online seems "+str(onlineStatus))
+      self.updateToxUsersGuiList(self.tryToxic.toxUserList)
     def onIncomingStatusChange(self,friendId,status):
       tu = self.tryToxic.getToxUserByFriendId(friendId)
       if tu is not None:         tu.status=status
+      tu.isOnline = self.tryToxic.get_friend_connection_status(tu.friendId)
       self.updateToxUsersGuiList(self.tryToxic.toxUserList)
-
+      
     def onIncomingGroupMessage(self,group_number, friend_group_number, message):
       gtu = self.tryToxic.getToxGroupUserByFriendId(group_number)
       timeDateString = strftime('%c', gmtime())
@@ -224,6 +237,7 @@ class mainController(QtGui.QMainWindow):
         self.lastMessageName = username
       self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
       logger.debug(tr("Recive Groupmessage [")+timeDateString+"] "+gtu.name+"->"+username+": "+message)
+      
     def onIncomingGroupInvite(self,friendId,groupPk):
         self.app.alert(self,4000)
         fr = self.tryToxic.getToxUserByFriendId(friendId)
@@ -267,6 +281,7 @@ class mainController(QtGui.QMainWindow):
           self.ui.toxTryChat.append(" <h3>["+ts+"] "+tu.name+':</h3> '+'<div style="background-color:'+self.colorchanger(friendId)+';float: right;">'+html.escape(message)+'</div>')
           self.lastMessageName = tu.name
         self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
+        
     def onIncomingFriendRequest(self,pk,message):
         self.app.alert(self,4000)
         self.msgBox.setWindowTitle(tr("Recived friendrequest"))
@@ -276,11 +291,12 @@ class mainController(QtGui.QMainWindow):
           self.tryToxic.add_friend_norequest(pk)
           self.tryToxic.saveLocalData()
           self.tryToxic.updateToxUserObjects()
+          self.updateToxGroupsGuiList(self.tryToxic.toxGroupUser)
           self.ui.toxTryNotifications.append(tr('Accept friend request from:')+pk)
           logger.info(tr('Accept friend request from:')+pk)
           self.ui.toxTryNotifications.moveCursor(QtGui.QTextCursor.End)
         else:
-          logger.info(tr('Accept friend request from:')+pk)
+          logger.info(tr('Denied friend request from:')+pk)
     def onChangeOwnStatus(self):
       cT = self.ui.toxTryStatus.currentText()
       if cT == "Online":
@@ -295,10 +311,13 @@ class mainController(QtGui.QMainWindow):
     def onNewFriendRequest(self):
       pk = QtGui.QInputDialog()
       pubKey = pk.getText(QtGui.QWidget(),tr("Add new friend"),tr("Please enter your friends tox-id"))
-      msg = QtGui.QInputDialog()
-      message = msg.getText(QtGui.QWidget(),tr("Add a message"),tr("Send your friend a first message too."),text=tr("I would like to add u to my list"))
+      message = pk.getText(QtGui.QWidget(),tr("Add a message"),tr("Send your friend a first message too."),text=tr("I would like to add u to my list"))
       try:
-          self.tryToxic.add_friend(str(pubKey[0]),str(message[0]))
+          if pubKey[0][0:7] == "v=tox2;":
+            pin = pk.getText(QtGui.QWidget(),tr("V2 Tox-ID"),tr("Please enter your friends pin to do the full request"))
+            self.tryToxic.add_friend(self.generateKey(str(pubKey[0]),str(pin[0])),str(message[0]))
+          else:
+            self.tryToxic.add_friend(str(pubKey[0]),str(message[0]))
       except Exception as e:
         
         if e.args[0] == "the friend was already there but the nospam was different":
@@ -373,7 +392,37 @@ class mainController(QtGui.QMainWindow):
         b = (id * 120) % 255
       
       return "rgb("+str(r)+","+str(g)+","+str(b)+")"
-    
+    def generateKey(self, dns,pin):
+      #dns.trim("'")
+      pub = dns[11:75]
+      logger.info(pub)
+      check = dns[83:87]
+      logger.info(check)
+      nospam = binascii.a2b_base64(pin+"==")
+      nospam =str(binascii.hexlify(nospam))
+      nospam = nospam[2:-1]
+      nospam = nospam.upper()
+      logger.info(nospam)
+      logger.info("lookupkey="+pub+nospam+check)
+      return pub+nospam+check
+    def generateDnsId(self,key):
+      if len(key)==76:
+        logger.info("init-lookupkey: "+key)
+        pub = key[0:64]
+        nospam = key[64:72]
+        checksum = key[71:76]
+        dns="v=tox2;pub="+pub+";check="+checksum
+        logger.info(dns)
+        binData = binascii.unhexlify(nospam)
+        b64data= binascii.b2a_base64(binData)
+        b64data=str(b64data)
+        b64data=b64data[2:-5]
+        b64dta=b64data.rstrip('=')
+        self.ui.toxTryNotifications.append(dns)
+        self.ui.toxTryNotifications.append("Your pin is "+b64data)
+        #self.generateKey(dns,b64data)
+      else:
+        logger.info("Wrong key size")
     def onClickToxGroup(self,item=None):
       if item is not None:
         txt = item.text()
@@ -501,7 +550,7 @@ class mainController(QtGui.QMainWindow):
           
         self.ui.toxTryGroups.addItem(item1)
         item1.setData(3, str(tu.statusMessage))
-        if self.tryToxic.get_friend_connection_status(tu.friendId) and self.tryToxic.online:
+        if tu.isOnline and self.tryToxic.online:
           item1.setBackgroundColor(QtGui.QColor(51,253,0))
         else:
           item1.setBackgroundColor(QtGui.QColor(253,0,51))
