@@ -9,7 +9,7 @@
 The new name should be a motivation too - there are some tox-api-clients and tox-users. "Try" them, but pls no real toxics! :)
 
 <h3>Build-Instructions</h3>
-Something more serious. You baiscly need:
+Something more serious. You basicly need:
 <ul><li>pyQt4</li><li>pyCrypto</li><li>header/dev-Files for python 3 (needed by pyTox)</li><li><a href="https://github.com/aitjcize/PyTox">pyTox</li>
 On *buntu (13.10) they're the following:
 <br /> <b>sudo apt-get install python3-crypto python3-pyqt4 python3-dev</b><br />
@@ -25,8 +25,8 @@ After it compiles, you should be ready, give start.sh a kick. Don't forget to up
 <h3>Increase debug</h3>
 There's a logger used to detect failures in structure (multiple used methods as example). Settings are saved in lib/header.py and setted per default on error-level.
 
-<h3>Whats working / Bugs</h3>
-Important to know: friendRequests get automatic accepted, also groupchat for debugging..<br />
+<h3>Whats working</h3>
+<del>Important to know: friendRequests get automatic accepted, also groupchat for debugging..</del> Deprecated, you will be asked for everything!<br />
 <b>Working!</b>
 <ul>
   <li>Add and save toxUsers, experimental support for tox-id v2</li>
