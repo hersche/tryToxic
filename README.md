@@ -1,6 +1,6 @@
 <h2>tryToxics</h2><hr />
 =========
-<img src="https://raw.githubusercontent.com/skamster/tryToxics/master/ui/logo.jpg" alt="logo" />
+<img src="https://raw.githubusercontent.com/skamster/tryToxics/master/ui/logo.jpg" alt="logo" width="40%" height="40%" />
 
 ..and another tox-api-client, based on pyTox and pyQt, written in pure python 3..
 
@@ -12,7 +12,7 @@ The new name should be a motivation too - there are some tox-api-clients and tox
 Something more serious. You baiscly need:
 <ul><li>pyQt4</li><li>pyCrypto</li><li>header/dev-Files for python 3 (needed by pyTox)</li><li><a href="https://github.com/aitjcize/PyTox">pyTox</li>
 On *buntu (13.10) they're the following:
-<br /> <b>sudo apt-get install python3-crypto python3-pyqt4 python3-dev</b>
+<br /> <b>sudo apt-get install python3-crypto python3-pyqt4 python3-dev</b><br />
 Look <a href="https://github.com/irungentoo/ProjectTox-Core/blob/master/INSTALL.md#unix">here</a> for building tox-core. 
 <br /> Requirements for building tox-core: <b>sudo apt-get install build-essential libtool autotools-dev automake checkinstall check git yasm</b>
 
