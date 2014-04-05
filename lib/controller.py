@@ -533,9 +533,14 @@ class mainController(QtGui.QMainWindow):
         self.ui.toxTryFriends.addItem(item1)
         item1.setData(3, str(tu.statusMessage))
         if self.tryToxic.get_friend_connection_status(tu.friendId) and self.tryToxic.online:
-          item1.setBackgroundColor(QtGui.QColor(51,253,0))
+          if tu.status == 0:
+            item1.setBackgroundColor(QtGui.QColor(51,253,0))
+          elif tu.status == 1:
+            item1.setBackgroundColor(QtGui.QColor(229, 213, 0))
+          else:
+            item1.setBackgroundColor(QtGui.QColor(229, 107, 0))
         else:
-          item1.setBackgroundColor(QtGui.QColor(253,0,51))
+          item1.setBackgroundColor(QtGui.QColor(255,0,0))
       if ci is not None:          self.ui.toxTryFriends.setItemSelected(ci,True)
       
       
@@ -550,10 +555,15 @@ class mainController(QtGui.QMainWindow):
           
         self.ui.toxTryGroups.addItem(item1)
         item1.setData(3, str(tu.statusMessage))
-        if tu.isOnline and self.tryToxic.online:
-          item1.setBackgroundColor(QtGui.QColor(51,253,0))
+        if self.tryToxic.get_friend_connection_status(tu.friendId) and self.tryToxic.online:
+          if tu.status == 0:
+            item1.setBackgroundColor(QtGui.QColor(51,253,0))
+          elif tu.status == 1:
+            item1.setBackgroundColor(QtGui.QColor(229, 213, 0))
+          else:
+            item1.setBackgroundColor(QtGui.QColor(229, 107, 0))
         else:
-          item1.setBackgroundColor(QtGui.QColor(253,0,51))
+          item1.setBackgroundColor(QtGui.QColor(255,0,0))
       if ci is not None:          self.ui.toxTryGroups.setItemSelected(ci,True)
        
        
