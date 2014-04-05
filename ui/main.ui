@@ -93,38 +93,27 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item row="0" column="0" colspan="2">
-               <layout class="QGridLayout" name="gridLayout_5">
+               <layout class="QFormLayout" name="formLayout">
                 <property name="sizeConstraint">
                  <enum>QLayout::SetMaximumSize</enum>
                 </property>
-                <item row="3" column="0">
-                 <widget class="QLabel" name="label_25">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text">
-                   <string>Your ID</string>
-                  </property>
-                 </widget>
-                </item>
                 <item row="0" column="0">
                  <widget class="QLabel" name="label_42">
+                  <property name="contextMenuPolicy">
+                   <enum>Qt::NoContextMenu</enum>
+                  </property>
+                  <property name="layoutDirection">
+                   <enum>Qt::LeftToRight</enum>
+                  </property>
                   <property name="text">
                    <string>Username</string>
                   </property>
-                 </widget>
-                </item>
-                <item row="4" column="0">
-                 <widget class="QLabel" name="label_43">
-                  <property name="text">
-                   <string>Status</string>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="2">
+                <item row="0" column="1">
                  <widget class="QLineEdit" name="toxTryUsername">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
@@ -134,7 +123,49 @@ p, li { white-space: pre-wrap; }
                   </property>
                  </widget>
                 </item>
-                <item row="4" column="2">
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_25">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="contextMenuPolicy">
+                   <enum>Qt::NoContextMenu</enum>
+                  </property>
+                  <property name="layoutDirection">
+                   <enum>Qt::LeftToRight</enum>
+                  </property>
+                  <property name="text">
+                   <string>Your ID</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="toxTryId">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_43">
+                  <property name="contextMenuPolicy">
+                   <enum>Qt::NoContextMenu</enum>
+                  </property>
+                  <property name="text">
+                   <string>Status</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
                  <widget class="QComboBox" name="toxTryStatus">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -159,14 +190,17 @@ p, li { white-space: pre-wrap; }
                   </item>
                  </widget>
                 </item>
-                <item row="5" column="0">
+                <item row="3" column="0">
                  <widget class="QLabel" name="label_46">
+                  <property name="contextMenuPolicy">
+                   <enum>Qt::NoContextMenu</enum>
+                  </property>
                   <property name="text">
                    <string>Statusmessage</string>
                   </property>
                  </widget>
                 </item>
-                <item row="5" column="2">
+                <item row="3" column="1">
                  <widget class="QLineEdit" name="toxTryStatusMessage">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -176,16 +210,6 @@ p, li { white-space: pre-wrap; }
                   </property>
                   <property name="text">
                    <string>I'm alive!</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="1" colspan="2">
-                 <widget class="QLineEdit" name="toxTryId">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
                   </property>
                  </widget>
                 </item>
@@ -299,6 +323,9 @@ p, li { white-space: pre-wrap; }
                 </property>
                 <property name="frameShadow">
                  <enum>QFrame::Sunken</enum>
+                </property>
+                <property name="lineWrapMode">
+                 <enum>QTextEdit::WidgetWidth</enum>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
