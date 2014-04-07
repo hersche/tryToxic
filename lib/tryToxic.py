@@ -1,6 +1,6 @@
 
 from tox import Tox
-
+import io
 from lib.toxModels import toxMessage, toxUser,toxGroupUser
 from time import sleep,gmtime, strftime
 from lib.header import *
@@ -15,6 +15,7 @@ class ToxTry(Tox):
       self.toxGroupUser = []
       self.currentToxUser = None
       self.groupNrs = []
+      self.filename = ""
       self.thread = thread
       if exists('./toxData'):
         if passPhrase == "":
@@ -76,7 +77,7 @@ class ToxTry(Tox):
           self.do()
           sleep(0.02)
     except Exception as e:
-      logger.error(tr("Disconnected from DHT : ")+e.args[0])
+      logger.error(tr("Disconnected from DHT : ")+str(e.args[0]))
       pass
   def on_friend_request(self, pk, message):
     self.thread.incomingFriendRequest.emit(pk,message)
@@ -88,20 +89,37 @@ class ToxTry(Tox):
     
   def on_file_send_request(self,friendId, fileId, fileSize, filename):
     logger.info("Get request to become a file:"+filename)
-    self.f = open('/tmp/output/'+filename, 'rb')
+    self.filename = filename
+    self.memoryData = bytes()
     self.roundsControl = 0
     self.roundsData=0
-    self.file_send_control(friendId, 0, fileId, self.FILECONTROL_ACCEPT)
+    self.file_send_control(friendId, 1, fileId, self.FILECONTROL_ACCEPT)
   def on_file_data(self,friend_number, file_number, data):
-    logger.info("Would recive file now! "+str(type(data)+" Round +"+str(self.roundsData)))
-    self.roundsData+=1
-    self.f.writelines(bytes(data, 'ascii'))
+    logger.info("Would recive file now! "+str(type(data))+" Round +"+str(self.roundsData))
+    if self.roundsData==50:
+      #self.f.write(self.memoryData)
+      logger.info("flush now!")
+      #self.roundsData=0
+      #self.memoryData = bytes()
+    else:
+      self.roundsData+=1
+      self.memoryData += data
+    #self.f.writelines(bytes(data, 'ascii'))
   def on_file_control(self,friend_number, receive_send, file_number, control_type, data):
-    logger.info("Do a filecontrol now, round :"+str(self.roundsControl))
+    logger.info("Do a filecontrol now, round :"+str(self.roundsControl)+" and r/s "+str(receive_send)+" controll type "+str(control_type))
     self.roundsControl+=1
-    if receive_send == 1:
+    if receive_send == 0:
+      logger.info("do receive")
       if control_type == self.FILECONTROL_FINISHED:
         logger.info("file recived")
+        if data is not None:
+          self.memoryData += data
+        logger.info(str(self.memoryData) +" into "+self.filename)
+        self.f = open(str("/tmp/blabla"),"wb+")
+        #self.f = open(str("~/"+self.filename),"wb+")
+        #self.f.open(self.filename, "wb")
+        logger.info("fileobject created")
+        self.f.write(self.memoryData)
         self.f.close()
       elif control_type == self.FILECONTROL_PAUSE:
         pass
