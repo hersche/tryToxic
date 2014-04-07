@@ -89,21 +89,27 @@ class ToxTry(Tox):
     
   def on_file_send_request(self,friendId, fileId, fileSize, filename):
     logger.info("Get request to become a file:"+filename)
-    self.filename = filename
+    filename
     self.memoryData = bytes()
     self.roundsControl = 0
     self.roundsData=0
+    try:
+      self.f = io.FileIO("/tmp/"+filename,"wb+")
+    except Exception as e:
+      logger.error("Old venom-bug (18.4.14), last sign of recived filename got NUL at end. workarounded.")
+      self.f = io.FileIO("/tmp/"+filename[:-1],"wb+")
     self.file_send_control(friendId, 1, fileId, self.FILECONTROL_ACCEPT)
   def on_file_data(self,friend_number, file_number, data):
     logger.info("Would recive file now! "+str(type(data))+" Round +"+str(self.roundsData))
-    if self.roundsData==50:
-      #self.f.write(self.memoryData)
-      logger.info("flush now!")
+    #if self.roundsData==50:
+      #logger.info("flush now!")
+      #self.f.writelines(self.memoryData)
+      ##self.f.flush()
       #self.roundsData=0
       #self.memoryData = bytes()
-    else:
-      self.roundsData+=1
-      self.memoryData += data
+    #else:
+    self.roundsData+=1
+    self.memoryData += data
     #self.f.writelines(bytes(data, 'ascii'))
   def on_file_control(self,friend_number, receive_send, file_number, control_type, data):
     logger.info("Do a filecontrol now, round :"+str(self.roundsControl)+" and r/s "+str(receive_send)+" controll type "+str(control_type))
@@ -114,12 +120,9 @@ class ToxTry(Tox):
         logger.info("file recived")
         if data is not None:
           self.memoryData += data
-        logger.info(str(self.memoryData) +" into "+self.filename)
-        self.f = open(str("/tmp/blabla"),"wb+")
-        #self.f = open(str("~/"+self.filename),"wb+")
-        #self.f.open(self.filename, "wb")
-        logger.info("fileobject created")
         self.f.write(self.memoryData)
+        #self.f.flush()
+        logger.info("fileobject created")
         self.f.close()
       elif control_type == self.FILECONTROL_PAUSE:
         pass
