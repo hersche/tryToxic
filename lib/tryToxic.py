@@ -4,7 +4,7 @@ import io
 from lib.toxModels import toxMessage, toxUser,toxGroupUser
 from time import sleep,gmtime, strftime
 from lib.header import *
-import os.path,  sqlite3
+import os,  sqlite3
 from os.path import exists
 SERVER = ["144.76.60.215", 33445, "04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F"]
 
@@ -88,40 +88,27 @@ class ToxTry(Tox):
     self.thread.incomingFriendMessage.emit(friendId,message)
     
   def on_file_send_request(self,friendId, fileId, fileSize, filename):
-    logger.info("Get request to become a file:"+filename)
-    filename
-    self.memoryData = bytes()
-    self.roundsControl = 0
-    self.roundsData=0
+    folder = os.path.expanduser("~/toxFiles/")
+    logger.info("Get request to become a file:"+filename+" and try to create folder "+folder)
+    if os.path.exists(folder) is not True:
+      os.makedirs(folder)
+      
     try:
-      self.f = io.FileIO("/tmp/"+filename,"wb+")
+      self.f = io.FileIO(folder+filename,"wb+")
     except Exception as e:
       logger.error("Old venom-bug (18.4.14), last sign of recived filename got NUL at end. workarounded.")
-      self.f = io.FileIO("/tmp/"+filename[:-1],"wb+")
+      logger.info(folder+filename[:-1])
+      self.f = io.FileIO(folder+filename[:-1],"wb+")
     self.file_send_control(friendId, 1, fileId, self.FILECONTROL_ACCEPT)
   def on_file_data(self,friend_number, file_number, data):
-    logger.info("Would recive file now! "+str(type(data))+" Round +"+str(self.roundsData))
-    #if self.roundsData==50:
-      #logger.info("flush now!")
-      #self.f.writelines(self.memoryData)
-      ##self.f.flush()
-      #self.roundsData=0
-      #self.memoryData = bytes()
-    #else:
-    self.roundsData+=1
-    self.memoryData += data
-    #self.f.writelines(bytes(data, 'ascii'))
+    logger.info("Recive data now")
+    self.f.write(data)
   def on_file_control(self,friend_number, receive_send, file_number, control_type, data):
-    logger.info("Do a filecontrol now, round :"+str(self.roundsControl)+" and r/s "+str(receive_send)+" controll type "+str(control_type))
-    self.roundsControl+=1
+    logger.info("Do a filecontrol now, r/s "+str(receive_send)+" controll type "+str(control_type))
     if receive_send == 0:
-      logger.info("do receive")
       if control_type == self.FILECONTROL_FINISHED:
-        logger.info("file recived")
         if data is not None:
-          self.memoryData += data
-        self.f.write(self.memoryData)
-        #self.f.flush()
+          self.f.write(data)
         logger.info("fileobject created")
         self.f.close()
       elif control_type == self.FILECONTROL_PAUSE:
