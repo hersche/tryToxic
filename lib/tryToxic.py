@@ -15,8 +15,10 @@ class ToxTry(Tox):
       self.currentToxUser = None
       self.groupNrs = []
       self.filename = ""
+      self.sendFilenamepath =""
       self.thread = thread
       self.sendFile = None
+      self.sendSplitSize = -1
       if os.path.exists('./toxData'):
         if passPhrase == "":
           self.load_from_file('./toxData')
@@ -122,9 +124,23 @@ class ToxTry(Tox):
       if control_type == self.FILECONTROL_ACCEPT:
         logger.info("user accept filerequest, sending")
         if self.sendFile is not None:
-          logger.info("reach file_send_data")
-          self.file_send_data(friend_number, file_number, self.sendFile.read())
-
+          completed = False
+          sended = 0
+          fileSize = os.path.getsize(self.sendFilenamepath)
+          data = self.sendFile.read()
+          while not completed:
+            if sended == fileSize:
+              logger.info("complete")
+              self.file_send_control(friend_number,0, file_number,self.FILECONTROL_FINISHED)
+              completed = True
+            else:
+              next = sended + self.sendSplitSize
+              if next > fileSize:
+                next = fileSize
+              logger.info("reach file_send_data")
+              self.file_send_data(friend_number, file_number, data[sended:next])
+              logger.info("exc")
+              sended = next
       
   def on_name_change(self,friendId,name):
     logger.debug(tr("Name changed"))

@@ -4,7 +4,7 @@ from lib.configControll import *
 from lib.cryptClass import *
 from ui.main import *
 import html,binascii
-import os
+import os,io
 from PyQt4 import Qt
 
 class toxThread(QtCore.QThread):
@@ -116,11 +116,12 @@ class mainController(QtGui.QMainWindow):
       filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file',os.path.expanduser("~/"))
       logger.info(filename)
       self.tryToxic.sendFile=open(filename,"rb")
-      filename = os.path.basename(filename)
+      self.tryToxic.sendFilenamepath = filename
       friendId = self.tryToxic.currentToxUser.friendId
       if self.tryToxic.currentToxUser.isOnline:
         fds = self.tryToxic.file_data_size(friendId)
-        fileNr = self.tryToxic.new_file_sender(friendId, fds, filename)        
+        self.tryToxic.sendSplitSize = fds
+        fileNr = self.tryToxic.new_file_sender(friendId, fds, os.path.basename(filename))        
     def closeEvent(self, event):
       reply = QtGui.QMessageBox.question(self, tr('Really leave tryToxic?'),
           tr("Are you sure to quit?"), QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
