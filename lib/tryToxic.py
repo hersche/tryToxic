@@ -4,8 +4,7 @@ import io
 from lib.toxModels import toxMessage, toxUser,toxGroupUser
 from time import sleep,gmtime, strftime
 from lib.header import *
-import os,  sqlite3
-from os.path import exists
+import os,sqlite3
 SERVER = ["144.76.60.215", 33445, "04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F"]
 
 class ToxTry(Tox):
@@ -17,7 +16,7 @@ class ToxTry(Tox):
       self.groupNrs = []
       self.filename = ""
       self.thread = thread
-      if exists('./toxData'):
+      if os.path.exists('./toxData'):
         if passPhrase == "":
           self.load_from_file('./toxData')
         else:

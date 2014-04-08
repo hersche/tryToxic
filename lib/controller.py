@@ -4,6 +4,7 @@ from lib.configControll import *
 from lib.cryptClass import *
 from ui.main import *
 import html,binascii
+import os
 from PyQt4 import Qt
 
 class toxThread(QtCore.QThread):
@@ -46,22 +47,29 @@ class mainController(QtGui.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.setEnabled(True)
+        
+        #set and create rightclickmenu for friendlist and grouplist
         self.ui.toxTryFriends.setContextMenuPolicy(2)
         self.ui.toxTryGroups.setContextMenuPolicy(2)
         self.subMenu = QtGui.QMenu()
         self.addToGroupchat = QtGui.QAction(tr("Add to groupchat"), self.ui.toxTryFriends)
         self.addToGroupchat.setShortcutContext (3)
-        
         self.addToGroupchat.setMenu(self.subMenu)
         contextDelete = QtGui.QAction(tr("Delete"), self.ui.toxTryFriends)
+        contextSendFile = QtGui.QAction(tr("Send File"), self.ui.toxTryFriends)
         self.ui.toxTryGroups.addAction(contextDelete)
         self.ui.toxTryFriends.addAction(self.addToGroupchat)
         self.ui.toxTryFriends.addAction(contextDelete)
+        self.ui.toxTryFriends.addAction(contextSendFile)
+        
+        #instance message-handler, thread, tryToxic itself..
         self.toxMessagesHandler = toxMessageHandler(self.encryptionObject)
         self.toxThread = toxThread(self.ui,self.toxMessagesHandler)
         self.tryToxic = ToxTry(self.ui,self.toxMessagesHandler,self.passPhrase,self.toxThread)
         self.toxThread.tryToxic = self.tryToxic
         self.toxThread.start()
+        
+        #set ui-data 
         self.ui.toxTryUsername.setText(self.tryToxic.name)
         self.setWindowTitle("tryToxic :: "+self.tryToxic.name)
         self.ui.toxTryStatusMessage.setText(self.tryToxic.statusMessage)
@@ -70,6 +78,7 @@ class mainController(QtGui.QMainWindow):
         self.tryToxic.updateToxUserObjects()
         self.updateToxUsersGuiList(self.tryToxic.toxUserList)
         self.updateConfigListUi(True)
+        
         #config-Actions
         self.ui.createConfig.clicked.connect(self.onCreateConfig)
         self.ui.saveConfig.clicked.connect(self.onSaveConfig)
@@ -77,6 +86,7 @@ class mainController(QtGui.QMainWindow):
         self.ui.configList.itemClicked.connect(self.onConfigItemClick)
         
         #catching tryToxic-signals
+        contextSendFile.triggered.connect(self.onSendFile)
         contextDelete.triggered.connect(self.onDeleteFriend)
         self.toxThread.updateUiUserList.connect(self.updateToxUsersGuiList)
         self.ui.toxTryDeleteGroup.clicked.connect(self.onDeleteFriend)
@@ -102,6 +112,15 @@ class mainController(QtGui.QMainWindow):
         self.toxThread.connectToDHT.connect(self.onConnectToDHT)
         self.toxThread.disconnectToDHT.connect(self.onDisconnectToDHT)
         
+    def onSendFile(self):
+      filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file',os.path.expanduser("~/"))
+      logger.info(filename)
+      file=open(filename,"rb")
+      friendId = self.tryToxic.currentToxUser.friendId
+      if self.tryToxic.currentToxUser.isOnline:
+        fds = self.tryToxic.file_data_size(friendId)
+        fileNr = self.tryToxic.new_file_sender(friendId, fds, filename)
+        self.tryToxic.file_send_data(friendId, fileNr, file.read())
         
     def closeEvent(self, event):
       reply = QtGui.QMessageBox.question(self, tr('Really leave tryToxic?'),
