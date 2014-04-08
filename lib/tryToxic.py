@@ -16,6 +16,7 @@ class ToxTry(Tox):
       self.groupNrs = []
       self.filename = ""
       self.thread = thread
+      self.sendFile = None
       if os.path.exists('./toxData'):
         if passPhrase == "":
           self.load_from_file('./toxData')
@@ -117,6 +118,12 @@ class ToxTry(Tox):
         self.f.write(data)
       else:
         pass
+    elif receive_send == 1:
+      if control_type == self.FILECONTROL_ACCEPT:
+        logger.info("user accept filerequest, sending")
+        if self.sendFile is not None:
+          logger.info("reach file_send_data")
+          self.file_send_data(friend_number, file_number, self.sendFile.read())
 
       
   def on_name_change(self,friendId,name):
