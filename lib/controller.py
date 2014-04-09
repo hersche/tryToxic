@@ -55,11 +55,14 @@ class mainController(QtGui.QMainWindow):
         self.addToGroupchat = QtGui.QAction(tr("Add to groupchat"), self.ui.toxTryFriends)
         self.addToGroupchat.setShortcutContext (3)
         self.addToGroupchat.setMenu(self.subMenu)
+        contextDeleteHistory = QtGui.QAction(tr("Delete history"), self.ui.toxTryFriends)
         contextDelete = QtGui.QAction(tr("Delete"), self.ui.toxTryFriends)
         contextSendFile = QtGui.QAction(tr("Send File"), self.ui.toxTryFriends)
         self.ui.toxTryGroups.addAction(contextDelete)
+        self.ui.toxTryGroups.addAction(contextDeleteHistory)
         self.ui.toxTryFriends.addAction(self.addToGroupchat)
         self.ui.toxTryFriends.addAction(contextDelete)
+        self.ui.toxTryFriends.addAction(contextDeleteHistory)
         self.ui.toxTryFriends.addAction(contextSendFile)
         
         #instance message-handler, thread, tryToxic itself..
@@ -88,6 +91,7 @@ class mainController(QtGui.QMainWindow):
         #catching tryToxic-signals
         contextSendFile.triggered.connect(self.onSendFile)
         contextDelete.triggered.connect(self.onDeleteFriend)
+        contextDeleteHistory.triggered.connect(self.onDeleteFriendHistory)
         self.toxThread.updateUiUserList.connect(self.updateToxUsersGuiList)
         self.ui.toxTryDeleteGroup.clicked.connect(self.onDeleteFriend)
         self.ui.toxTryFriends.currentItemChanged.connect(self.onClickToxUser)
@@ -162,6 +166,24 @@ class mainController(QtGui.QMainWindow):
         self.subMenu.addActions([groupAction])
         groupAction.triggered.connect(self.onContextClick)
         self.updateToxGroupsGuiList(self.tryToxic.toxGroupUser)
+
+    def onDeleteFriendHistory(self):
+      if self.tryToxic.currentToxUser is not None:
+        self.msgBox.setWindowTitle(tr("Really want to delete history/log?"))
+        self.msgBox.setText(tr("Do you really want to delete ")+self.tryToxic.currentToxUser.name+"'s message-history?")
+        select = self.msgBox.exec()
+        if select == QtGui.QMessageBox.Yes:
+          if self.tryToxic.currentToxUser.isGroup:
+            self.tryToxic.currentToxUser.messages = []
+            #update ongroupclick
+            self.onClickToxGroup()
+            self.ui.toxTryNotifications.append(tr("Clear group-history out of RAM"))
+          else:
+            self.toxMessagesHandler.deleteUserMessages(self.tryToxic.currentToxUser.friendId)
+            self.tryToxic.updateToxUserObjects()
+            self.ui.toxTryNotifications.append(tr("Delete ")+self.tryToxic.currentToxUser.name+"'s history")
+            self.tryToxic.saveLocalData()
+            self.updateToxUsersGuiList(self.tryToxic.toxUserList)
 
     def onDeleteFriend(self):
       if self.tryToxic.currentToxUser is not None:
