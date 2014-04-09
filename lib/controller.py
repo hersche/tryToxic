@@ -90,8 +90,8 @@ class mainController(QtGui.QMainWindow):
         contextDelete.triggered.connect(self.onDeleteFriend)
         self.toxThread.updateUiUserList.connect(self.updateToxUsersGuiList)
         self.ui.toxTryDeleteGroup.clicked.connect(self.onDeleteFriend)
-        self.ui.toxTryFriends.itemClicked.connect(self.onClickToxUser)
-        self.ui.toxTryGroups.itemClicked.connect(self.onClickToxGroup)
+        self.ui.toxTryFriends.currentItemChanged.connect(self.onClickToxUser)
+        self.ui.toxTryGroups.currentItemChanged.connect(self.onClickToxGroup)
         self.ui.toxTrySendButton.clicked.connect(self.onSendToxMessage)
         self.ui.toxTrySendText.returnPressed.connect(self.onSendToxMessage)
         self.ui.toxTryStatusMessage.returnPressed.connect(self.onChangeStatusMessage)
@@ -115,7 +115,7 @@ class mainController(QtGui.QMainWindow):
     def onSendFile(self):
       filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file',os.path.expanduser("~/"))
       logger.info(filename)
-      self.tryToxic.sendFile=open(filename,"rb")
+      self.tryToxic.sendFile=io.FileIO(filename,"rb")
       self.tryToxic.sendFilenamepath = filename
       friendId = self.tryToxic.currentToxUser.friendId
       if self.tryToxic.currentToxUser.isOnline:
