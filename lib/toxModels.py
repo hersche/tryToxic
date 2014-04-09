@@ -13,6 +13,17 @@ class toxMessage:
       self.timestamp = timestamp
       self.dbId=dbId
       self.individualName=individualName
+      
+class toxFile:
+  def __init__(self,id,filename,folder,size,fileObject,sr):
+    self.id = id
+    self.filename = filename
+    self.folder = folder
+    self.size = size
+    self.sr = sr
+    self.splitSize=-1
+    self.fileObject = fileObject
+    
 #toxUser is a individual, in groupchat or saved, single friend
 class toxUser:
   def __init__(self,friendId,name,pubKey,status,statusMessage):
@@ -23,6 +34,13 @@ class toxUser:
     self.statusMessage = statusMessage
     self.isGroup = False
     self.isOnline = False
+    self.files = []
+    
+  def getFileById(self,id):
+    tf = None
+    for toxFile in self.files:
+      if toxFile.id == id:
+        return toxFile
 #a special version of toxuser, representing a group, which contains itself a list of toxUser
 class toxGroupUser(toxUser):
   def __init__(self,friendId,name,pubKey,status,statusMessage,peerList=[]):

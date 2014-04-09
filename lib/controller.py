@@ -10,6 +10,7 @@ from PyQt4 import Qt
 class toxThread(QtCore.QThread):
  updateUiUserList = QtCore.pyqtSignal(list)
  clickToxFriend = QtCore.pyqtSignal(str)
+ incomingFriendFile = QtCore.pyqtSignal(int,int,float,str)
  incomingFriendRequest = QtCore.pyqtSignal(str,str)
  incomingFriendMessage = QtCore.pyqtSignal(int,str)
  incomingGroupMessage = QtCore.pyqtSignal(int,int,str) 
@@ -104,6 +105,7 @@ class mainController(QtGui.QMainWindow):
         self.ui.toxTryStatus.currentIndexChanged.connect(self.onChangeOwnStatus)
         self.ui.toxTryDeleteFriend.clicked.connect(self.onDeleteFriend)
         self.ui.toxTryCreateGroupchat.clicked.connect(self.onCreateGroupchat)
+        self.toxThread.incomingFriendFile.connect(self.onIncomingFriendFile)
         self.toxThread.incomingFriendRequest.connect(self.onIncomingFriendRequest)
         self.toxThread.incomingFriendMessage.connect(self.onIncomingFriendMessage)
         self.toxThread.incomingGroupInvite.connect(self.onIncomingGroupInvite)
@@ -116,16 +118,40 @@ class mainController(QtGui.QMainWindow):
         self.toxThread.connectToDHT.connect(self.onConnectToDHT)
         self.toxThread.disconnectToDHT.connect(self.onDisconnectToDHT)
         
+        
+    def onIncomingFriendFile(self,friendId, fileId, fileSize, filename):
+      tu = self.tryToxic.getToxUserByFriendId(friendId)
+      self.msgBox.setWindowTitle(tr("Filerequest"))
+      self.msgBox.setText(tr("Do you want to recive ")+filename+" from "+tu.name+"?")
+      select = self.msgBox.exec()
+      if select == QtGui.QMessageBox.Yes:
+        folder = os.path.expanduser("~/toxFiles/")
+        logger.info("Get request to become a file:"+filename+" and try to create folder "+folder)
+        if os.path.exists(folder) is not True:
+          os.makedirs(folder)
+        try:
+          f = io.FileIO(folder+filename,"wb+")
+        except Exception as e:
+          logger.error("Old venom-bug (18.4.14), last sign of recived filename got NUL at end. workarounded.")
+          logger.info(folder+filename[:-1])
+          f = io.FileIO(folder+filename[:-1],"wb+")
+        tu.files.append(toxFile(fileId,filename,folder,fileSize,f,1))
+        self.tryToxic.file_send_control(friendId, 1, fileId, self.tryToxic.FILECONTROL_ACCEPT)
+      else:
+        self.tryToxic.file_send_control(friendId, 1, fileId, self.tryToxic.FILECONTROL_KILL)
     def onSendFile(self):
-      filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file',os.path.expanduser("~/"))
-      logger.info(filename)
-      self.tryToxic.sendFile=io.FileIO(filename,"rb")
-      self.tryToxic.sendFilenamepath = filename
+      fullPath = QtGui.QFileDialog.getOpenFileName(self, 'Open file',os.path.expanduser("~/"))
+      f=io.FileIO(fullPath,"rb")
+      filename=os.path.basename(fullPath)
+      folder=os.path.dirname(fullPath)
       friendId = self.tryToxic.currentToxUser.friendId
       if self.tryToxic.currentToxUser.isOnline:
-        fds = self.tryToxic.file_data_size(friendId)
-        self.tryToxic.sendSplitSize = fds
-        fileNr = self.tryToxic.new_file_sender(friendId, fds, os.path.basename(filename))        
+        fileSplitSize = self.tryToxic.file_data_size(friendId)
+        fileNr = self.tryToxic.new_file_sender(friendId, fileSplitSize, filename)
+        tf = toxFile(fileNr,filename,folder,len(f.read()),f,0)
+        tf.splitSize = fileSplitSize
+        self.tryToxic.currentToxUser.files.append(tf)
+        
     def closeEvent(self, event):
       reply = QtGui.QMessageBox.question(self, tr('Really leave tryToxic?'),
           tr("Are you sure to quit?"), QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)

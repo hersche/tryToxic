@@ -4,7 +4,7 @@ import io
 from lib.toxModels import toxMessage, toxUser,toxGroupUser
 from time import sleep,gmtime, strftime
 from lib.header import *
-import os,sqlite3
+import os,sqlite3,binascii
 SERVER = ["144.76.60.215", 33445, "04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F"]
 
 class ToxTry(Tox):
@@ -54,7 +54,8 @@ class ToxTry(Tox):
     self.toxUserList = []
     for friendId in self.get_friendlist():
       fid = friendId
-      self.toxUserList.append(toxUser(fid,self.get_name(fid),self.get_client_id(fid),self.get_user_status(fid),self.get_status_message(fid)))
+      logger.info("pk-len:"+str(len(self.get_client_id(fid))))
+      self.toxUserList.append(toxUser(fid,self.get_name(fid),str(self.get_client_id(fid)),self.get_user_status(fid),self.get_status_message(fid)))
   def statusResolver(self,inti):
     if inti == 0:
       return tr("Online")
@@ -66,21 +67,22 @@ class ToxTry(Tox):
       return tr("Invalid")
   def loop(self):
     checked = False
-    try:
-      while True:
-          status = self.isconnected()
-          if not checked and status:
-              self.thread.connectToDHT.emit(1)
-              checked = True
-              self.online = True
-          if checked and not status:
-              logger.error(tr("Disconnected from DHT"))
-              checked = False
-          self.do()
-          sleep(0.02)
-    except Exception as e:
-      logger.error(tr("Disconnected from DHT : ")+str(e.args[0]))
-      pass
+    while True:
+      try:
+        status = self.isconnected()
+        if not checked and status:
+            self.thread.connectToDHT.emit(1)
+            checked = True
+            self.online = True
+        if checked and not status:
+            logger.error(tr("Disconnected from DHT"))
+            checked = False
+            raise
+        self.do()
+        sleep(0.02)
+      except Exception as e:
+        logger.error(tr("Catch exception in mainloop : ")+str(e.args))
+        continue
   def on_friend_request(self, pk, message):
     self.thread.incomingFriendRequest.emit(pk,message)
 
@@ -90,29 +92,24 @@ class ToxTry(Tox):
     self.thread.incomingFriendMessage.emit(friendId,message)
     
   def on_file_send_request(self,friendId, fileId, fileSize, filename):
-    folder = os.path.expanduser("~/toxFiles/")
-    logger.info("Get request to become a file:"+filename+" and try to create folder "+folder)
-    if os.path.exists(folder) is not True:
-      os.makedirs(folder)
-      
-    try:
-      self.f = io.FileIO(folder+filename,"wb+")
-    except Exception as e:
-      logger.error("Old venom-bug (18.4.14), last sign of recived filename got NUL at end. workarounded.")
-      logger.info(folder+filename[:-1])
-      self.f = io.FileIO(folder+filename[:-1],"wb+")
-    self.file_send_control(friendId, 1, fileId, self.FILECONTROL_ACCEPT)
+    self.thread.incomingFriendFile.emit(friendId,fileId,fileSize,filename)
+
   def on_file_data(self,friend_number, file_number, data):
     logger.info("Recive data now")
-    self.f.write(data)
+    tu = self.getToxUserByFriendId(friend_number)
+    tf = tu.getFileById(file_number)
+    tf.fileObject.write(data)
   def on_file_control(self,friend_number, receive_send, file_number, control_type, data):
     logger.info("Do a filecontrol now, r/s "+str(receive_send)+" controll type "+str(control_type))
     if receive_send == 0:
       if control_type == self.FILECONTROL_FINISHED:
+        tu = self.getToxUserByFriendId(friend_number)
+        tf = tf = tu.getFileById(file_number)
         if data is not None:
-          self.f.write(data)
-        logger.info("fileobject created")
-        self.f.close()
+          #tf.fileobject.write(data)
+          logger.info("receive restdata of file: "+str(data))
+        logger.info("fileobject recived")
+        tf.fileObject.close()
       elif control_type == self.FILECONTROL_PAUSE:
         pass
       elif control_type == self.FILECONTROL_RESUME_BROKEN:
@@ -123,23 +120,35 @@ class ToxTry(Tox):
     elif receive_send == 1:
       if control_type == self.FILECONTROL_ACCEPT:
         logger.info("user accept filerequest, sending")
-        if self.sendFile is not None:
+        tu = self.getToxUserByFriendId(friend_number)
+        toxFile = tu.getFileById(file_number)
+        if toxFile.fileObject is not None:
           completed = False
           sended = 0
-          fileSize = os.path.getsize(self.sendFilenamepath)
-          data = self.sendFile.read()
+          fileSize = toxFile.size
+          data = toxFile.fileObject.read()
+          count = 0
           while not completed:
             if sended == fileSize:
               logger.info("complete")
-              self.file_send_control(friend_number,0, file_number,self.FILECONTROL_FINISHED)
+              self.file_send_control(friend_number,1, file_number,self.FILECONTROL_FINISHED)
               completed = True
             else:
-              next = sended + self.sendSplitSize
+              #count += 1
+              #if count == 2:
+                #count = 0
+                #logger.info("sleep")
+                #sleep(.1)
+              next = sended + toxFile.splitSize
               if next > fileSize:
                 next = fileSize
-              logger.info("reach file_send_data")
-              self.file_send_data(friend_number, file_number, data[sended:next])
-              logger.info("exc")
+              logger.info(str(next)+" / "+str(toxFile.splitSize))
+              try:
+                subData = data[sended:next]
+                #logger.info(str(friend_number)+" "+str(file_number)+" DATA: "+subData)
+                self.file_send_data(friend_number, file_number,subData)
+              except Exception as e:
+                logger.error("file-send-data interrupted: "+str(e.args))
               sended = next
       
   def on_name_change(self,friendId,name):
