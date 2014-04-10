@@ -8,39 +8,56 @@ import os,sqlite3,binascii
 SERVER = ["144.76.60.215", 33445, "04119E835DF3E78BACF0F84235B300546AF8B936F035185E2A8E9E0A67C8924F"]
 
 class ToxTry(Tox):
+  """
+  The tox-handler-class
+  """
   def __init__(self,ui,tmh,passPhrase,thread):
-      self.toxMessagesHandler = tmh
-      self.passPhrase = passPhrase
-      self.toxGroupUser = []
-      self.currentToxUser = None
-      self.groupNrs = []
-      self.filename = ""
-      self.sendFilenamepath =""
-      self.thread = thread
-      self.sendFile = None
-      self.sendSplitSize = -1
-      if os.path.exists('./toxData'):
-        if passPhrase == "":
-          self.load_from_file('./toxData')
-        else:
-         self.load_from_file('./toxData',self.passPhrase) 
+    """
+    ui --- ui is from mainController
+    tmh --- is the toxMessagesHandler
+    passPhrase --- or key, password
+    thread --- to connect to it's signals
+    """
+    self.toxMessagesHandler = tmh
+    self.passPhrase = passPhrase
+    self.toxGroupUser = []
+    self.currentToxUser = None
+    self.groupNrs = []
+    self.filename = ""
+    self.sendFilenamepath =""
+    self.thread = thread
+    self.sendFile = None
+    self.sendSplitSize = -1
+    if os.path.exists('./toxData'):
+      if passPhrase == "":
+        self.load_from_file('./toxData')
       else:
-        self.set_name("tryToxics")
-      self.name = self.get_self_name()
-      self.pubKey = self.get_address()
-      self.statusMessage = self.get_self_status_message()
-      self.online = False
-      self.userColor = {}
-      self.updateToxUserObjects()
-      self.thread.updateUiUserList.emit(self.toxUserList+self.toxGroupUser)
-      self.saveLocalData()
-      self.bootstrap_from_address(SERVER[0], 1, SERVER[1], SERVER[2])
+        self.load_from_file('./toxData',self.passPhrase) 
+    else:
+      self.set_name("tryToxics")
+    self.name = self.get_self_name()
+    self.pubKey = self.get_address()
+    self.statusMessage = self.get_self_status_message()
+    self.online = False
+    self.userColor = {}
+    self.updateToxUserObjects()
+    self.thread.updateUiUserList.emit(self.toxUserList+self.toxGroupUser)
+    self.saveLocalData()
+    self.bootstrap_from_address(SERVER[0], 1, SERVER[1], SERVER[2])
   def getToxGroupUserByFriendId(self,groupFriendId):
+    """
+    Get a toxGroup by friendId
+    return toxGroupUser
+    """
     for gtu in self.toxGroupUser:
       if gtu.friendId == groupFriendId:
         return gtu
       
   def getToxUserByFriendId(self,friendId):
+    """
+    Get a toxUser by friendId
+    return toxUser
+    """
     for tu in self.toxUserList:
       if tu.friendId == friendId:
         return tu
@@ -51,6 +68,9 @@ class ToxTry(Tox):
       self.save_to_file('toxData',self.passPhrase)
 
   def updateToxUserObjects(self):
+    """
+    update toxUser-data-objects.
+    """
     self.toxUserList = []
     for friendId in self.get_friendlist():
       fid = friendId
@@ -66,6 +86,9 @@ class ToxTry(Tox):
     else:
       return tr("Invalid")
   def loop(self):
+    """
+    mainloop of tox!
+    """
     checked = False
     while True:
       try:

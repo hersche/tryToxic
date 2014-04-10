@@ -22,9 +22,11 @@ Or just download and extract it as zip. Anyway, go into a shell and the right fo
 <b>sudo python3 setup.py install</b> <br />
 After it compiles, you should be ready, give start.sh a kick. Don't forget to update and reinstall tox-core and pyTox by hand.
 
-<h3>Increase debug</h3>
-There's a logger used to detect failures in structure (multiple used methods as example). Settings are saved in lib/header.py and setted per default on error-level.
-
+<h3>Dev-infos</h3>
+<ul><li>Go to settings for debug-levels</li>
+<li><a href="http://skamster.github.io/tryToxicDocs/">Go here for source-docs</a></li>
+<li>Have a look into wiki for descriptions</li>
+</ul>
 <h3>Whats working</h3>
 <del>Important to know: friendRequests get automatic accepted, also groupchat for debugging..</del> Deprecated, you will be asked for everything!<br />
 <b>Working!</b>
