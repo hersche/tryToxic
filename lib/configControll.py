@@ -14,27 +14,7 @@ class Config:
     self.id = id
     self.key = key
     self.value = value
-  @staticmethod
-  def createConfig(key, value):
-    """
-    create new Config
-    """
-    try:
-        dbCursor.execute("INSERT INTO config (key, value) VALUES (?,?);",  (key, value))
-        db.commit()
-    except sqlite3.Error as e:
-        logger.error("An DB-error occurred: "+e.args[0])
-        return -1
-  @staticmethod
-  def getConfigByKey(key):
-    """
-    get a config by it's key.
-    return Config
-    """
-    dbCursor.execute("SELECT * FROM config WHERE key=?;",(key, ))
-    for row in dbCursor.fetchall():
-      return Config(row[0],row[1],row[2])
-    return None
+
   def save(self, key,  value):
     """
     save the config-object
@@ -59,7 +39,42 @@ class staticConfigTools:
   """
   A pool for static config-tools in context to config
   """
+  @staticmethod
+  def updateConfigListData():
+    """
+    update the list of config-data-objects 
+    """
+    logger.debug("|Models| Update configList")
+    configList = []
+    dbCursor.execute('select * from config;') 
+    for row in dbCursor.fetchall():
+        configList.append(Config(row[0], row[1], row[2]))
+    return configList
   
+  
+  @staticmethod
+  def createConfig(key, value):
+    """
+    create new Config
+    """
+    try:
+        dbCursor.execute("INSERT INTO config (key, value) VALUES (?,?);",  (key, value))
+        db.commit()
+    except sqlite3.Error as e:
+        logger.error("An DB-error occurred: "+e.args[0])
+        return -1
+  @staticmethod
+  def getConfigByKey(key):
+    """
+    get a config by it's key.
+    return Config
+    """
+    dbCursor.execute("SELECT * FROM config WHERE key=?;",(key, ))
+    for row in dbCursor.fetchall():
+      return Config(row[0],row[1],row[2])
+    return None
+  
+  @staticmethod 
   def getLoggerLevel(levelString):
     """
     get the right value for log-levels.

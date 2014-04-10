@@ -472,7 +472,6 @@ class toxUiHandler:
       if self.currentToxUser is not None:
         ts = strftime('%c', gmtime())
         friendId = 777
-        
         if self.currentToxUser.isGroup:
           self.tryToxic.group_message_send(self.currentToxUser.friendId,message)
         else:

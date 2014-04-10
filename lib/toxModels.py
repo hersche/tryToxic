@@ -107,14 +107,14 @@ class toxMessageHandler(QtCore.QObject):
     eo -- is the NEW encryptionObject
     """
     for msg in self.updateMessages():
-        if eo != None:
-          if msg.me == "True":
-            me = "True"
-          else:
-            me = "False"
-          dbCursor.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (eo.encrypt(msg.friendId), eo.encrypt(msg.timestamp), eo.encrypt(msg.message),eo.encrypt(me),eo.name, msg.dbId))
-        else:
-          dbCursor.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (msg.friendId, msg.timestamp, msg.message,me,-1, msg.dbId))
+      if msg.me == "True":
+        me = "True"
+      else:
+        me = "False"
+      if eo != None:
+        dbCursor.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (eo.encrypt(msg.friendId), eo.encrypt(msg.timestamp), eo.encrypt(msg.message),eo.encrypt(me),eo.name, msg.dbId))
+      else:
+        dbCursor.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (msg.friendId, msg.timestamp, msg.message,me,-1, msg.dbId))
     db.commit()
     
   def addMessage(self,toxMessage):
