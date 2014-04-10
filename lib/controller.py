@@ -65,7 +65,7 @@ class mainController(QtGui.QMainWindow):
     #instance message-handler, thread, tryToxic itself..
     self.toxMessagesHandler = toxMessageHandler(self.encryptionObject)
     self.toxThread = toxThread()
-    self.tryToxic = ToxTry(self.ui,self.toxMessagesHandler,self.passPhrase,self.toxThread)
+    self.tryToxic = ToxTry(self.passPhrase,self.toxThread)
     self.toxThread.tryToxic = self.tryToxic
     self.toxThread.start()
     self.toxUiHandler = toxUiHandler(self.ui, self.tryToxic,self.toxMessagesHandler,self.toxThread)

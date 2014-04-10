@@ -11,7 +11,7 @@ class ToxTry(Tox):
   """
   The tox-handler-class
   """
-  def __init__(self,ui,tmh,passPhrase,thread):
+  def __init__(self,passPhrase,thread):
     """
     ui --- ui is from mainController
     passPhrase --- or key, password
