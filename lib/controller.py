@@ -69,7 +69,17 @@ class mainController(QtGui.QMainWindow):
     self.toxUiHandler = toxUiHandler(self.ui, self.tryToxic,self.toxMessagesHandler,self.toxThread)
 
     self.configUiHandler.passPhraseChanged.connect(self.onPassPhraseChanged)
-   
+    self.configUiHandler.saveMessagesChanged.connect(self.onSaveMessagesChanged)
+    
+  def onSaveMessagesChanged(self,yesNo):
+    yesNo = yesNo.lower()
+    if yesNo != "true":
+      self.toxMessagesHandler.saveMessages = False
+      self.tryToxic.toxMessagesHandler.saveMessages = False
+    else:
+      self.toxMessagesHandler.saveMessages = True
+      self.tryToxic.toxMessagesHandler.saveMessages = True
+      
    
   def onPassPhraseChanged(self,encryptionObject):
     """

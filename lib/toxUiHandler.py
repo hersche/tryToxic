@@ -5,9 +5,7 @@ class toxUiHandler:
   def __init__(self,ui,tryToxic,toxMessagesHandler,toxThread):
     self.ui = ui
     self.tryToxic = tryToxic
-    self.msgBox = QtGui.QMessageBox()
-    self.msgBox.addButton(QtGui.QMessageBox.Yes)
-    self.msgBox.addButton(QtGui.QMessageBox.No)
+
     self.lastMessageName=""
     self.lastMessageColor = 3
     self.currentToxUser = None
@@ -40,6 +38,9 @@ class toxUiHandler:
     self.tryToxic.updateToxUserObjects()
     self.updateToxUsersGuiList(self.tryToxic.toxUserList)
     
+    self.msgBox = QtGui.QMessageBox()
+    self.msgBox.addButton(QtGui.QMessageBox.Yes)
+    self.msgBox.addButton(QtGui.QMessageBox.No)
     #catching tryToxic-signals
 
     contextSendFile.triggered.connect(self.onSendFile)
