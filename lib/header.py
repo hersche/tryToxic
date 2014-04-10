@@ -4,7 +4,10 @@ import re
 import logging
 import os.path,sqlite3
 def tr(name):
-    return QtCore.QCoreApplication.translate("@default",  name)
+  """
+  The translationmethod
+  """
+  return QtCore.QCoreApplication.translate("@default",  name)
 lang = ""
 dbDateFormat = "dd.MM.yyyy"
 logger = logging.getLogger('tryToxics')

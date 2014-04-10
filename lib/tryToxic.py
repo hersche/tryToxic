@@ -104,7 +104,7 @@ class ToxTry(Tox):
         self.do()
         sleep(0.02)
       except Exception as e:
-        logger.error(tr("Catch exception in mainloop : ")+str(e.args))
+        logger.error(tr("Catch exception in toxLoop: ")+str(e))
         continue
   def on_friend_request(self, pk, message):
     self.thread.incomingFriendRequest.emit(pk,message)
@@ -123,6 +123,9 @@ class ToxTry(Tox):
     tf = tu.getFileById(file_number)
     tf.fileObject.write(data)
   def on_file_control(self,friend_number, receive_send, file_number, control_type, data):
+    """ Callback for everykind of file-changes. Big method!
+    receive_send : 0 = rec, 1 = send
+    """
     logger.info("Do a filecontrol now, r/s "+str(receive_send)+" controll type "+str(control_type))
     if receive_send == 0:
       if control_type == self.FILECONTROL_FINISHED:
@@ -157,11 +160,6 @@ class ToxTry(Tox):
               self.file_send_control(friend_number,1, file_number,self.FILECONTROL_FINISHED)
               completed = True
             else:
-              #count += 1
-              #if count == 2:
-                #count = 0
-                #logger.info("sleep")
-                #sleep(.1)
               next = sended + toxFile.splitSize
               if next > fileSize:
                 next = fileSize

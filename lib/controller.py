@@ -28,7 +28,17 @@ class toxThread(QtCore.QThread):
   def __init__(self):
     QtCore.QThread.__init__(self)
   def run(self):
-      self.tryToxic.loop()
+    """
+    Run the thread
+    """
+    self.tryToxic.loop()
+    
+  def quit(self):
+    """
+    Quit the thread
+    """
+    self.tryToxic.kill()
+    self.exit(0)
 class mainController(QtGui.QMainWindow):
   """
   The big big main-class. It's the gui and handler for gui, which is in active connection with tryToxic in toxThread.
@@ -173,7 +183,7 @@ class mainController(QtGui.QMainWindow):
     reply = QtGui.QMessageBox.question(self, tr('Really leave tryToxic?'),
         tr("Are you sure to quit?"), QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
     if reply == QtGui.QMessageBox.Yes:
-      self.tryToxic.kill()
+      self.toxThread.quit()
       event.accept()
     else:
         event.ignore()
@@ -707,11 +717,6 @@ class mainController(QtGui.QMainWindow):
             logger.debug(tr("Found encryption in config. Init Module with value "+config.value))
             if self.encryptionObject is None:
                 self.encryptionObject = cm(scm.getMod(config.value), "encryptionInit")
-        elif config.key == "lang" or config.key == "language":
-            if os.path.isfile("lang/"+config.value):
-                self.lang=config.value
-            elif os.path.isfile("lang/"+config.value+".qm"):
-                self.lang=config.value+".qm"
         elif config.key == "fileHandlerLogLevel":
           logger.removeHandler(fh)
           fh.setLevel(staticConfigTools.getLoggerLevel(config.key))
@@ -721,10 +726,10 @@ class mainController(QtGui.QMainWindow):
           ch.setLevel(staticConfigTools.getLoggerLevel(config.value))
           logger.addHandler(ch)
   def onConfigItemClick(self, item):
-      for config in self.configlist:
-          if config.key == item.text():
-              self.ui.configKey.setText(config.key)
-              self.ui.configValue.setText(config.value)
+    for config in self.configlist:
+        if config.key == item.text():
+            self.ui.configKey.setText(config.key)
+            self.ui.configValue.setText(config.value)
               
   #-------------
   # config-Actions
