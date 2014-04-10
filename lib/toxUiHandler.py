@@ -31,6 +31,14 @@ class toxUiHandler:
     self.ui.toxTryFriends.addAction(contextDeleteHistory)
     self.ui.toxTryFriends.addAction(contextSendFile)
     
+    #setup ui
+    self.ui.toxTryUsername.setText(self.tryToxic.name)
+    self.ui.toxTryStatusMessage.setText(self.tryToxic.statusMessage)
+    self.ui.toxTryId.setText(self.tryToxic.pubKey)
+    self.generateDnsId(self.tryToxic.pubKey)
+    #init toxUsers
+    self.tryToxic.updateToxUserObjects()
+    self.updateToxUsersGuiList(self.tryToxic.toxUserList)
     
     #catching tryToxic-signals
 

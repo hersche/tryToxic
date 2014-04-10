@@ -1,9 +1,6 @@
 from lib.tryToxic import *
-from lib.toxModels import *
-from lib.configControll import *
-from lib.cryptClass import *
 from ui.main import *
-from PyQt4 import Qt
+from PyQt4 import QtCore,QtGui
 from lib.toxUiHandler import toxUiHandler
 from lib.configUiHandler import configUiHandler
 
@@ -47,22 +44,17 @@ class mainController(QtGui.QMainWindow):
   """
   def __init__(self,app, parent=None):
     QtGui.QWidget.__init__(self, parent)
-    logger.debug("|GUI| Init Gui")
-    self.app=app
-
-    self.msgBox = QtGui.QMessageBox()
-    self.msgBox.addButton(QtGui.QMessageBox.Yes)
-    self.msgBox.addButton(QtGui.QMessageBox.No)
-    
+    self.app=app    
     QtGui.QWidget.__init__(self, parent)
     self.ui = Ui_MainWindow()
     self.ui.setupUi(self)
-    self.setEnabled(True)
     
+    #Starting with encryption
     self.encryptionObject = None
     self.configUiHandler = configUiHandler(self.ui)
     if self.configUiHandler.encryptionObject is not None:
       self.encryptionObject = self.configUiHandler.encryptionObject
+      
     #instance message-handler, thread, tryToxic itself..
     self.toxMessagesHandler = toxMessageHandler(self.encryptionObject)
     self.toxThread = toxThread()
@@ -72,23 +64,18 @@ class mainController(QtGui.QMainWindow):
       self.tryToxic = ToxTry("",self.toxThread)
     self.toxThread.tryToxic = self.tryToxic
     self.toxThread.start()
-    self.toxUiHandler = toxUiHandler(self.ui, self.tryToxic,self.toxMessagesHandler,self.toxThread)
-    #set ui-data 
-    self.ui.toxTryUsername.setText(self.tryToxic.name)
     self.setWindowTitle("tryToxic :: "+self.tryToxic.name)
-    self.ui.toxTryStatusMessage.setText(self.tryToxic.statusMessage)
-    self.ui.toxTryId.setText(self.tryToxic.pubKey)
-    #self.generateDnsId(self.tryToxic.pubKey)
-    self.tryToxic.updateToxUserObjects()
-    self.toxUiHandler.updateToxUsersGuiList(self.tryToxic.toxUserList)
-    
-    
-    
-    self.configUiHandler.updateConfigListUi(True)
+    #start toxUiHandler
+    self.toxUiHandler = toxUiHandler(self.ui, self.tryToxic,self.toxMessagesHandler,self.toxThread)
+
     self.configUiHandler.passPhraseChanged.connect(self.onPassPhraseChanged)
    
    
   def onPassPhraseChanged(self,encryptionObject):
+    """
+    When configUiHandler came to the point, he has to change passPhrase, he informs the mainclass (for compatibility)
+    but also tryToxic over it's new passPhrase.
+    """
     self.encryptionObject=encryptionObject
     if encryptionObject is not None:
       self.tryToxic.passPhrase=encryptionObject.key

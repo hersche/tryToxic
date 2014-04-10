@@ -1,7 +1,7 @@
 
 from tox import Tox
 import io
-from lib.toxModels import toxMessage, toxUser,toxGroupUser
+from lib.toxModels import *
 from time import sleep,gmtime, strftime
 from lib.header import *
 import os,sqlite3,binascii

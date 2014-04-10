@@ -1,4 +1,5 @@
 from lib.header import *
+from lib.cryptClass import *
 from PyQt4.QtCore import pyqtSlot,pyqtSignal
 # The next 4 classes are just to organize data. toxmessages is a message, 
 # only special is that toxmessages by groupusers dont have dbid (theyr just in ram), but individual name
