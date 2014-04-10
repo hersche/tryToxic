@@ -19,7 +19,6 @@ class ToxTry(Tox):
     """
     self.passPhrase = passPhrase
     self.toxGroupUser = []
-    self.groupNrs = []
     self.thread = thread
     if os.path.exists('./toxData'):
       if passPhrase == "":
@@ -34,7 +33,7 @@ class ToxTry(Tox):
     self.online = False
     self.userColor = {}
     self.updateToxUserObjects()
-    self.thread.updateUiUserList.emit(self.toxUserList+self.toxGroupUser)
+    self.thread.updateUiUserList.emit(self.toxUserList)
     self.saveLocalData()
     self.bootstrap_from_address(SERVER[0], 1, SERVER[1], SERVER[2])
   def getToxGroupUserByFriendId(self,groupFriendId):

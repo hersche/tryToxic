@@ -13,7 +13,7 @@ class toxUiHandler:
     self.currentToxUser = None
     self.toxMessagesHandler = toxMessagesHandler
     self.toxThread = toxThread
-    
+    self.groupNrs = []
     #set and create rightclickmenu for friendlist and grouplist
     self.ui.toxTryFriends.setContextMenuPolicy(2)
     self.ui.toxTryGroups.setContextMenuPolicy(2)
@@ -275,8 +275,9 @@ class toxUiHandler:
     self.tryToxic.add_groupchat()
     groupNr = -1
     for gnr in self.tryToxic.get_chatlist():
-        if gnr not in self.tryToxic.groupNrs:
-          groupNr = gnr
+      if gnr not in self.groupNrs:
+        groupNr = gnr
+        self.groupNrs.append(gnr)
     if groupNr != -1:
       peersNr = self.tryToxic.group_number_peers(groupNr)
       self.tryToxic.toxGroupUser.append(toxGroupUser(groupNr,"ownGroup #"+str(groupNr),self.tryToxic.get_client_id(groupNr),0,str(peersNr)+" peoples are online in this groupchat"))
@@ -377,8 +378,9 @@ class toxUiHandler:
         self.tryToxic.join_groupchat(friendId,groupPk)
         groupNr = -1
         for gnr in self.tryToxic.get_chatlist():
-            if gnr not in self.tryToxic.groupNrs:
+            if gnr not in self.groupNrs:
               groupNr = gnr
+              self.groupNrs.append(gnr)
         try:
           if groupNr != -1:
             groupAction = QtGui.QAction("Group #"+str(groupNr), self.ui.toxTryFriends)
