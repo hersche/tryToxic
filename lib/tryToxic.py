@@ -14,20 +14,13 @@ class ToxTry(Tox):
   def __init__(self,ui,tmh,passPhrase,thread):
     """
     ui --- ui is from mainController
-    tmh --- is the toxMessagesHandler
     passPhrase --- or key, password
     thread --- to connect to it's signals
     """
-    self.toxMessagesHandler = tmh
     self.passPhrase = passPhrase
     self.toxGroupUser = []
-    self.currentToxUser = None
     self.groupNrs = []
-    self.filename = ""
-    self.sendFilenamepath =""
     self.thread = thread
-    self.sendFile = None
-    self.sendSplitSize = -1
     if os.path.exists('./toxData'):
       if passPhrase == "":
         self.load_from_file('./toxData')
@@ -74,9 +67,14 @@ class ToxTry(Tox):
     self.toxUserList = []
     for friendId in self.get_friendlist():
       fid = friendId
-      logger.info("pk-len:"+str(len(self.get_client_id(fid))))
       self.toxUserList.append(toxUser(fid,self.get_name(fid),str(self.get_client_id(fid)),self.get_user_status(fid),self.get_status_message(fid)))
+      
   def statusResolver(self,inti):
+    """
+    Status-resolving of online-statuses.
+    Give int,
+    return str
+    """
     if inti == 0:
       return tr("Online")
     elif inti == 1:
