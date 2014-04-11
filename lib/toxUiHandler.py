@@ -1,11 +1,15 @@
 from PyQt4 import QtCore, QtGui
 from lib.header import *
+from lib.toxModels import *
 import html,io,os,binascii
-class toxUiHandler:
+from time import strftime, gmtime
+
+class toxUiHandler(QtCore.QObject):
+  appNotify = saveMessagesChanged = QtCore.pyqtSignal()
   def __init__(self,ui,tryToxic,toxMessagesHandler,toxThread):
+    QtCore.QObject.__init__(self)
     self.ui = ui
     self.tryToxic = tryToxic
-
     self.lastMessageName=""
     self.lastMessageColor = 3
     self.currentToxUser = None
@@ -361,7 +365,7 @@ class toxUiHandler:
     else:
       username = str(friend_group_number)
     gtu.messages.append(toxMessage(gtu.friendId,message,timeDateString,"False",individualName=username))
-    self.app.alert(self,4000)
+    self.appNotify.emit()
     #logger.info("Username vs messagename: "+username +" vs "+self.lastMessageName)
     if username == self.lastMessageName:
       self.ui.toxTryChat.append('<div style="background-color:'+self.colorchanger(sendingPeerUser.friendId)+'">['+timeDateString+']               '+html.escape(message)+'</div>')
@@ -372,7 +376,7 @@ class toxUiHandler:
     logger.debug(tr("Recive Groupmessage [")+timeDateString+"] "+gtu.name+"->"+username+": "+message)
     
   def onIncomingGroupInvite(self,friendId,groupPk):
-    self.app.alert(self,4000)
+    self.appNotify.emit()
     fr = self.tryToxic.getToxUserByFriendId(friendId)
     foundExistGroupPk=False
     for gtu in self.tryToxic.toxGroupUser:
@@ -405,7 +409,7 @@ class toxUiHandler:
         
         
   def onIncomingFriendMessage(self,friendId,message):
-    self.app.alert(self,4000)
+    self.appNotify.emit()
     ts = strftime('%c', gmtime())
     tu = self.tryToxic.getToxUserByFriendId(friendId)
     self.toxMessagesHandler.addMessage(toxMessage(tu.friendId,ts,message,"False"))
@@ -417,7 +421,7 @@ class toxUiHandler:
     self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
       
   def onIncomingFriendRequest(self,pk,message):
-    self.app.alert(self,4000)
+    self.appNotify.emit()
     self.msgBox.setWindowTitle(tr("Recived friendrequest"))
     self.msgBox.setText(tr("Do you want to add ")+pk+tr("? He wrote you: ")+message)
     select = self.msgBox.exec()
@@ -457,7 +461,7 @@ class toxUiHandler:
       if e.args[0] == "the friend was already there but the nospam was different":
         self.msgBox.warning(self,tr("User is already exist"), tr("The User you want to add exists already!"))
         pass
-      self.msgBox.critical(self,tr("Send friendrequest failed"), tr("Problem on sending friendrequest: ")+e.args[0])
+      self.msgBox.critical(None,tr("Send friendrequest failed"), tr("Problem on sending friendrequest: ")+e.args[0])
     self.tryToxic.saveLocalData()
     self.tryToxic.updateToxUserObjects()
     self.updateToxUsersGuiList(self.tryToxic.toxUserList)
@@ -499,7 +503,7 @@ class toxUiHandler:
         self.ui.toxTryChat.append("["+ts+"] curentuser is none, message sending failed")
 
     except Exception as e:
-      self.msgBox.critical(self,tr("Send Message failed"), tr("Send Message failed: ")+e.args[0])
+      self.msgBox.critical(None,tr("Send Message failed"), tr("Send Message failed: ")+e.args[0])
   
   
   def colorchanger(self,id):

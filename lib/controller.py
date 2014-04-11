@@ -67,9 +67,14 @@ class mainController(QtGui.QMainWindow):
     self.setWindowTitle("tryToxic :: "+self.tryToxic.name)
     #start toxUiHandler
     self.toxUiHandler = toxUiHandler(self.ui, self.tryToxic,self.toxMessagesHandler,self.toxThread)
-
+    
+    self.toxUiHandler.appNotify.connect(self.onAppNotify)
     self.configUiHandler.passPhraseChanged.connect(self.onPassPhraseChanged)
     self.configUiHandler.saveMessagesChanged.connect(self.onSaveMessagesChanged)
+    
+  def onAppNotify(self):
+    logger.info("recive notify!")
+    self.app.alert(self,4000)
     
   def onSaveMessagesChanged(self,yesNo):
     yesNo = yesNo.lower()
