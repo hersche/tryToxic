@@ -397,8 +397,8 @@ class toxUiHandler(QtCore.QObject):
         try:
           if groupNr != -1:
             groupAction = QtGui.QAction("Group #"+str(groupNr), self.ui.toxTryFriends)
-            self.subMenu.addActions([groupAction])
-            groupAction.triggered.connect(self.onContextClick)
+            self.groupMenu.addActions([groupAction])
+            groupAction.triggered.connect(self.onContextGroupInviteClick)
             peersNr = self.tryToxic.group_number_peers(groupNr)
             self.tryToxic.toxGroupUser.append(toxGroupUser(groupNr,"Group #"+str(groupNr),groupPk,0,str(peersNr)+" peoples are online in this groupchat"))
           self.updateToxGroupsGuiList(self.tryToxic.toxGroupUser)
