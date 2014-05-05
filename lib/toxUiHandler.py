@@ -233,7 +233,7 @@ class toxUiHandler(QtCore.QObject):
       try:
         f = io.FileIO(folder+filename,"wb+")
       except Exception as e:
-        logger.error(str(e))
+        logger.error("FILE | on recive: "+str(e))
       tu.files.append(toxFile(fileId,filename,folder,fileSize,f,1))
       self.tryToxic.file_send_control(friendId, 1, fileId, self.tryToxic.FILECONTROL_ACCEPT)
     else:
