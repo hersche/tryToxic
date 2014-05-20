@@ -1,8 +1,8 @@
-from PyQt4 import QtCore,QtGui
-from binascii import b2a_hex
-import re
+from PyQt4 import QtCore
+
 import logging
 import os.path,sqlite3
+
 def tr(name):
   """
   The translationmethod
