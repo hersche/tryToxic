@@ -9,18 +9,12 @@
 The new name should be a motivation too - there are some tox-api-clients and tox-users. "Try" them, but pls no real toxics! :)
 
 <h3>Build-Instructions</h3>
-Something more serious. You basicly need:
-<ul><li>pyQt4</li><li>pyCrypto</li><li>header/dev-Files for python 3 (needed by pyTox)</li><li><a href="https://github.com/aitjcize/PyTox">pyTox</li>
-On *buntu (13.10) they're the following:
-<br /> <b>sudo apt-get install python3-crypto python3-pyqt4 python3-dev</b><br />
-Look <a href="https://github.com/irungentoo/ProjectTox-Core/blob/master/INSTALL.md#unix">here</a> for building tox-core. 
-<br /> Requirements for building tox-core: <b>sudo apt-get install build-essential libtool autotools-dev automake checkinstall check git yasm</b>
+For *buntu, you could just make buildDepsBuntu.sh executable and start it by <br />
+<b>./buildDepsBuntu.sh install</b>
+<br />When you like to update, you just could <br />
+<b>./buildDepsBuntu.sh update</b>
 
-<br />After installing that stuff (tox-core, libsodium, packages) stuff, clone <a href="https://github.com/aitjcize/PyTox">pyTox</a>: <br />
-<b>git clone https://github.com/aitjcize/PyTox.git</b> <br />
-Or just download and extract it as zip. Anyway, go into a shell and the right folder and put in<b />
-<b>sudo python3 setup.py install</b> <br />
-After it compiles, you should be ready, give start.sh a kick. Don't forget to update and reinstall tox-core and pyTox by hand.
+After it the dependencies compiled, you should be ready. Give start.sh a kick. Don't forget to update and reinstall tox-core and pyTox by hand.
 
 <h3>Dev-infos</h3>
 <ul><li>Go to settings for debug-levels</li>
@@ -53,5 +47,5 @@ After it compiles, you should be ready, give start.sh a kick. Don't forget to up
 <ul>
   <li>QrCode for publickey/adress. Find no good framework which is easy to install for python 3</li>
   <li>AudioVideo - i think everyone who play/dev with tox like to got this. Big part..</li>
-  
+
 ...etc. I've now a moment time to work on, so i think, it will get a bit more extendet soon (i've broke my feet and shouldn't move - lets dev!).
