@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Sat Apr  5 13:47:31 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Wed May 21 02:22:40 2014
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -276,7 +276,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.mainTab.setCurrentIndex(0)
+        self.mainTab.setCurrentIndex(1)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -339,6 +339,7 @@ class Ui_MainWindow(object):
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\';\">* lang / language = language - put the right filename (*.qm in your folder) there</span></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\';\">* encrypted : 1=CAST, 2=Blowfish, 3=DES3,4=ARC4,5=XOR,6=AES,7=ARC2 (you need to install pycrypto / python3-crypto @ *buntu). Put &quot;None&quot; as value for going back to cleartext. Encryption shouldn\'t need any restart.</span></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\';\">* consoleHandlerLogLevel / fileHandlerLogLevel accept the following values:        fatal, error, warning, info and debug. Default is error (also used if you do typo). Shouldn\'t need restart.</span></p>\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\';\">* logMessages accept true or false. Default is true</span></p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\';\">Restart is needed after changes!</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans Serif\';\"><br /></p></body></html>", None))
         self.mainTab.setTabText(self.mainTab.indexOf(self.settings), _translate("MainWindow", "Settings", None))

@@ -1,7 +1,7 @@
 from lib.header import *
 from lib.cryptClass import *
 from PyQt4.QtCore import pyqtSlot,pyqtSignal
-# The next 4 classes are just to organize data. toxmessages is a message, 
+# The next 4 classes are just to organize data. toxmessages is a message,
 # only special is that toxmessages by groupusers dont have dbid (theyr just in ram), but individual name
 class toxMessage:
   """
@@ -21,7 +21,7 @@ class toxMessage:
     self.timestamp = timestamp
     self.dbId=dbId
     self.individualName=individualName
-      
+
 class toxFile:
   """
   A data-file-class handled by tox.
@@ -41,7 +41,7 @@ class toxFile:
     self.fileObject = fileObject
 
 class toxUser:
-  """    
+  """
   toxUser is a individual in binary/dual/non-group-chat. It's a data-object too.
   """
   def __init__(self,friendId,name,pubKey,status,statusMessage):
@@ -53,7 +53,7 @@ class toxUser:
     self.isGroup = False
     self.isOnline = False
     self.files = []
-    
+
   def getFileById(self,id):
     """
     Get a toxFile-Object by it's fileId
@@ -86,7 +86,7 @@ class toxGroupUser(toxUser):
         return peer
       else:
         return None
- 
+
 
 class toxMessageHandler(QtCore.QObject):
   """
@@ -102,7 +102,7 @@ class toxMessageHandler(QtCore.QObject):
     self.cachedToxMessages=[]
     self.tmpFriendId = -1
     self.eo = eo
-  
+
   def saveAllMessages(self,eo):
     """
     reSave all messages. Mainly used by scm's method migrateEncryptedData
@@ -119,7 +119,7 @@ class toxMessageHandler(QtCore.QObject):
         else:
           dbCursor.execute("UPDATE messages SET friendId=?, timestamp=?,message=?,me=?,encrypted=? WHERE id=?",  (msg.friendId, msg.timestamp, msg.message,me,-1, msg.dbId))
       db.commit()
-    
+
   def addMessage(self,toxMessage):
     """
     add toxMessage to the database
@@ -132,7 +132,7 @@ class toxMessageHandler(QtCore.QObject):
       db.commit()
     else:
       self.cachedToxMessages.append(toxMessage)
-    
+
   def deleteUserMessages(self,friendId):
     """
     Delete a user's history/messages from database
@@ -148,7 +148,9 @@ class toxMessageHandler(QtCore.QObject):
     It's recommended to use a friendId!
     """
     messages = []
-    if self.saveMessages:
+    # if true is a workaround and would be replaced by if self.saveMessages:, but i think it makes
+    # sense to disable this, then you see you're saved messages..
+    if True:
       self.tmpDecryptData = []
       if friendId != -1:
         if self.eo is not None and self.eo.name is not "None":
@@ -183,5 +185,5 @@ class toxMessageHandler(QtCore.QObject):
         return tmpList
       else:
         return self.cachedToxMessages
-   
-    
+
+

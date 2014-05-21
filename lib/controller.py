@@ -3,6 +3,7 @@ from ui.main import *
 from PyQt4 import QtCore, QtGui
 from lib.toxUiHandler import toxUiHandler
 from lib.toxModels import toxMessageHandler
+from lib.cryptClass import scm
 from lib.configUiHandler import configUiHandler
 from lib.header import tr
 
@@ -58,7 +59,7 @@ class mainController(QtGui.QMainWindow):
       self.encryptionObject = self.configUiHandler.encryptionObject
 
     # instance message-handler, thread, tryToxic itself..
-    self.toxMessagesHandler = toxMessageHandler(self.encryptionObject)
+    self.toxMessagesHandler = toxMessageHandler(self.encryptionObject, self.configUiHandler.logMessages)
     self.toxThread = toxThread()
     if self.encryptionObject is not None:
       self.tryToxic = ToxTry(self.encryptionObject.key, self.toxThread)

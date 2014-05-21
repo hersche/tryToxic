@@ -40,7 +40,11 @@ class configUiHandler(QtCore.QObject):
           if self.encryptionObject is None and config.value.lower() != "none":
             pw, ok = QtGui.QInputDialog.getText(None, tr("Password"), tr("Enter Password"), QtGui.QLineEdit.Password)
             if ok:
-              self.encryptionObject = cm(scm.getMod(config.value), pw)
+              pin, ok2 = QtGui.QInputDialog.getText(None, tr("Pin"), tr("Secure your password once more with a pin. This could be a simple nr between 1-100. Leafe empty for no one."), QtGui.QLineEdit.Password)
+              if ok2:
+                self.encryptionObject = cm(scm.getMod(config.value), pw)
+              else:
+                self.encryptionObject = cm(scm.getMod(config.value), pw)
       elif config.key.lower() == "filehandlerloglevel":
         logger.removeHandler(fh)
         fh.setLevel(staticConfigTools.getLoggerLevel(config.key))
@@ -49,7 +53,7 @@ class configUiHandler(QtCore.QObject):
         logger.removeHandler(ch)
         ch.setLevel(staticConfigTools.getLoggerLevel(config.value))
         logger.addHandler(ch)
-      elif config.key.lower() == "logMessages":
+      elif config.key.lower() == "logmessages":
         if config.value.lower() != "true":
           self.logMessages = False
 
