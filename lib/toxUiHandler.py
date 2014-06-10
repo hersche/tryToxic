@@ -214,9 +214,8 @@ class toxUiHandler(QtCore.QObject):
               self.lastMessageColor = 2
             else:
               self.lastMessageColor = 3
-            tmpBeginnString = "<div style='background-color: " + self.colorchanger(friendId) + ";float: right;'>"
             self.lastMessageName = name
-            self.ui.toxTryChat.append(" <h3>[" + msg.timestamp + "] " + name + ":</h3>" + tmpBeginnString + html.escape(msg.message) + "</div>")
+            self.ui.toxTryChat.append(" <h3 style='background-color: " + self.colorchanger(friendId) + ";' >[" + msg.timestamp + "] " + name + ":</h3><div style='background-color: " + self.colorchanger(friendId) + ";float: right;'>" + html.escape(msg.message) + "</div>")
 
   def onIncomingFriendFile(self, friendId, fileId, fileSize, filename):
     """
@@ -416,7 +415,7 @@ class toxUiHandler(QtCore.QObject):
     if tu.name is self.lastMessageName:
       self.ui.toxTryChat.append('<div style="background-color:' + self.colorchanger(friendId) + '">[' + ts + '] ' + html.escape(message) + '</div>')
     else:
-      self.ui.toxTryChat.append(" <h3>[" + ts + "] " + tu.name + ':</h3> ' + '<div style="background-color:' + self.colorchanger(friendId) + ';float: right;">' + html.escape(message) + '</div>')
+      self.ui.toxTryChat.append('<div style="background-color:' + self.colorchanger(friendId) + '; float: right;"> <h3>[' + ts + '] ' + tu.name + ':</h3> ' + html.escape(message) + '</div>')
       self.lastMessageName = tu.name
     self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
 
