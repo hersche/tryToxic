@@ -1,6 +1,6 @@
 from lib.header import *
 import base64
-import sys
+import sys, os
 from Crypto.Hash import SHA512
 
 class cm:
@@ -105,6 +105,76 @@ class cm:
             return encryptedMessage
         except Exception as e:
           logger.error(tr("|Crypt| Decryptionerror: ") + str(e.args[0]))
+        
+    def encryptFile(self, FileName):
+      """
+      Encrypt plain-file.
+      return none, but lets a encrypted file on your hd
+      """
+      try:
+        message = str(rawMessage)
+        if self.mod == None and self.name == "None" and self.key != "encryptionInit":
+            return message
+        iv = self.rand.new().read(self.mod.block_size)
+        if self.name == "XOR" or self.name == "ARC4":
+          cipher = self.mod.new(self.key)
+        else:
+          cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
+        mLen = len(message)
+        if mLen > self.mod.block_size:
+            rest = self.mod.block_size - (mLen % self.mod.block_size)
+        else:
+            rest = self.mod.block_size - mLen
+        tmp = ""
+        while rest != 0:
+            rest -= 1
+            tmp += "."
+        eMessage = message + tmp
+        inputFile = open(FileName, "r")
+        outputFile = open(FileName+".encryptionTmp","w")
+        finished = False
+        while not finished:
+            chunk = inputFile.read(1024 * bs)
+            if len(chunk) == 0 or len(chunk) % bs != 0:
+                    padding_length = (bs - len(chunk) % bs) or bs
+                    chunk += str.encode(padding_length * chr(padding_length)) # changed right side to str.encode(...)
+                    finished = True
+            outputFile.write(cipher.encrypt(chunk))
+        #t = base64.b64encode(iv + cipher.encrypt(eMessage))
+        os.remove(Filename)
+        os.rename(FileName+".encryptionTmp",FileName)
+      except Exception as e:
+        logger.error(tr("|Crypt| FileEncryptionerror: ") + str(e.args[0]) + tr(" Message ") + str(rawMessage))
+    def decryptFile(self, encryptedFileName):
+        """
+        Decrypt encrypted file.
+        return clearText
+        """
+        try:
+          if encryptedMessage is None:
+              return ""
+          if self.mod != None and self.name != "None" and self.key != "encryptionInit":
+            tDec = base64.b64decode(encryptedMessage)
+            iv = tDec[:self.mod.block_size]
+            # logger.error("mod-value: "+str(self.name)+" block-lenght: "+str(self.mod.block_size))
+            # logger.error("iv-value: "+str(iv)+" iv-lenght: "+len(str(iv)))
+            if self.name == "XOR" or self.name == "ARC4":
+              cipher = self.mod.new(self.key)
+            else:
+              cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
+            next_chunk = ''
+            finished = False
+            decryptedContent = ''
+            while not finished:
+                chunk, next_chunk = next_chunk, cipher.decrypt(in_file.read(1024 * bs))
+                if len(next_chunk) == 0:
+                    padding_length = chunk[-1] # removed ord(...) as unnecessary
+                    chunk = chunk[:-padding_length]
+                    finished = True
+            decryptedContent += bytes(x for x in chunk)
+            return decryptedContent
+        except Exception as e:
+          logger.error(tr("|Crypt| FileDecryptionerror: ") + str(e.args[0]))
 
 
 class scm:
