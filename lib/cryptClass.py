@@ -1,6 +1,6 @@
 from lib.header import *
 import base64
-import sys, os
+import sys, os, mmap
 from Crypto.Hash import SHA512
 
 class cm:
@@ -106,58 +106,48 @@ class cm:
         except Exception as e:
           logger.error(tr("|Crypt| Decryptionerror: ") + str(e.args[0]))
         
-    def encryptFile(self, FileName):
+    def encryptFile(self,FileName):
       """
       Encrypt plain-file.
       return none, but lets a encrypted file on your hd
       """
       try:
-        message = str(rawMessage)
         if self.mod == None and self.name == "None" and self.key != "encryptionInit":
-            return message
-        iv = self.rand.new().read(self.mod.block_size)
+            return open(FileName, "r")
+        iv = self.key[:self.mod.block_size]
         if self.name == "XOR" or self.name == "ARC4":
           cipher = self.mod.new(self.key)
         else:
           cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
-        mLen = len(message)
-        if mLen > self.mod.block_size:
-            rest = self.mod.block_size - (mLen % self.mod.block_size)
-        else:
-            rest = self.mod.block_size - mLen
-        tmp = ""
-        while rest != 0:
-            rest -= 1
-            tmp += "."
-        eMessage = message + tmp
-        inputFile = open(FileName, "r")
-        outputFile = open(FileName+".encryptionTmp","w")
+        print(FileName)
+        inputFile = open(FileName)
+        print("blub")
+        outputFile = open(FileName+".encryptionTmp", "wb")
+        print("created")
+        bs = self.mod.block_size
         finished = False
         while not finished:
             chunk = inputFile.read(1024 * bs)
             if len(chunk) == 0 or len(chunk) % bs != 0:
                     padding_length = (bs - len(chunk) % bs) or bs
-                    chunk += str.encode(padding_length * chr(padding_length)) # changed right side to str.encode(...)
+                    chunk += padding_length * chr(padding_length) # changed right side to str.encode(...)
                     finished = True
             outputFile.write(cipher.encrypt(chunk))
         #t = base64.b64encode(iv + cipher.encrypt(eMessage))
-        os.remove(Filename)
-        os.rename(FileName+".encryptionTmp",FileName)
+        #os.remove(Filename)
+        #os.rename(FileName+".encryptionTmp",FileName)
       except Exception as e:
-        logger.error(tr("|Crypt| FileEncryptionerror: ") + str(e.args[0]) + tr(" Message ") + str(rawMessage))
+        logger.error(tr("|Crypt| FileEncryptionerror: ") + str(e.args[0]) + tr(" Message "))
     def decryptFile(self, encryptedFileName):
         """
         Decrypt encrypted file.
         return clearText
         """
         try:
-          if encryptedMessage is None:
-              return ""
           if self.mod != None and self.name != "None" and self.key != "encryptionInit":
-            tDec = base64.b64decode(encryptedMessage)
-            iv = tDec[:self.mod.block_size]
-            # logger.error("mod-value: "+str(self.name)+" block-lenght: "+str(self.mod.block_size))
-            # logger.error("iv-value: "+str(iv)+" iv-lenght: "+len(str(iv)))
+            inputFile = open(encryptedFileName, "r")
+            iv = self.key[:self.mod.block_size]
+            bs = self.mod.block_size
             if self.name == "XOR" or self.name == "ARC4":
               cipher = self.mod.new(self.key)
             else:
@@ -165,16 +155,18 @@ class cm:
             next_chunk = ''
             finished = False
             decryptedContent = ''
+            outputFile = mmap.mmap(-1, 13)
             while not finished:
-                chunk, next_chunk = next_chunk, cipher.decrypt(in_file.read(1024 * bs))
+                chunk, next_chunk = str(next_chunk), str(cipher.decrypt(inputFile.read(1024 * bs)))
                 if len(next_chunk) == 0:
                     padding_length = chunk[-1] # removed ord(...) as unnecessary
                     chunk = chunk[:-padding_length]
                     finished = True
-            decryptedContent += bytes(x for x in chunk)
-            return decryptedContent
+                #print(str(bytes(x for x in chunk)))
+                outputFile.write(bytes(x for x in chunk))
+            return outputFile
         except Exception as e:
-          logger.error(tr("|Crypt| FileDecryptionerror: ") + str(e.args[0]))
+          logger.error(tr("|Crypt| FileDecryptionerror: ") + str(e.args))
 
 
 class scm:
