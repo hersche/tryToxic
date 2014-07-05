@@ -40,7 +40,12 @@ After it the dependencies compiled, you should be ready. Give start.sh a kick. D
 <ul>
   <li>fileTransfer</li>
   <li>friends keys are weirdly shorted - crap for giving to a friend (the own is well)</li>
-  <li><del>nr's of peers isn't right (ever 1 persons)</del></li>
+  <li>The encryption for the local storage from "Project tox-core" gets splitted into a seperate lib which isn't avaible to python yet. Because of i want 
+to provide encryption for local data, i work on two new methods to de- and encrypt all kind of files, what makes the project independend in this point. 
+Look into wiki, http://piratepad.net/fileEncryption (posted in diaspora) and the file lib/cryptClass.py for changes and join, if you like to (for 
+auditing, development, forking or using, when it works). If the class gets avaible, it could be activated too, as a hardening. i also will not remove the 
+sql-data-based encryption, so you will be able to choose at least two algorithms (nice thing would be to increase it to many algos on both kinds of 
+encryption). </li>
   <li>this stuff i couldn't resolve for moment, but there's enough to improve :)</li>
 </ul>
 <b>Ideas/Future</b>
