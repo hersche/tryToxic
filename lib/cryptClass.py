@@ -2,6 +2,7 @@ from lib.header import *
 import base64
 import sys, os, mmap
 from Crypto.Hash import SHA512
+from Crypto.Cipher import AES
 
 class cm:
     """
@@ -106,67 +107,41 @@ class cm:
         except Exception as e:
           logger.error(tr("|Crypt| Decryptionerror: ") + str(e.args[0]))
         
-    def encryptFile(self,FileName):
-      """
-      Encrypt plain-file.
-      return none, but lets a encrypted file on your hd
-      """
-      try:
-        if self.mod == None and self.name == "None" and self.key != "encryptionInit":
-            return open(FileName, "r")
-        iv = self.key[:self.mod.block_size]
+     
+    def pad(self,s):
+        return s + b"\0" * (AES.block_size - len(s) % AES.block_size)
+    
+    def encryptInternal(self, message, key, key_size=256):
+        message = self.pad(message)
+        iv = self.rand.new().read(self.mod.block_size)
         if self.name == "XOR" or self.name == "ARC4":
-          cipher = self.mod.new(self.key)
+            cipher = self.mod.new(self.key)
         else:
-          cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
-        print(FileName)
-        inputFile = open(FileName)
-        print("blub")
-        outputFile = open(FileName+".encryptionTmp", "wb")
-        print("created")
-        bs = self.mod.block_size
-        finished = False
-        while not finished:
-            chunk = inputFile.read(1024 * bs)
-            if len(chunk) == 0 or len(chunk) % bs != 0:
-                    padding_length = (bs - len(chunk) % bs) or bs
-                    chunk += padding_length * chr(padding_length) # changed right side to str.encode(...)
-                    finished = True
-            outputFile.write(cipher.encrypt(chunk))
-        #t = base64.b64encode(iv + cipher.encrypt(eMessage))
-        #os.remove(Filename)
-        #os.rename(FileName+".encryptionTmp",FileName)
-      except Exception as e:
-        logger.error(tr("|Crypt| FileEncryptionerror: ") + str(e.args[0]) + tr(" Message "))
-    def decryptFile(self, encryptedFileName):
-        """
-        Decrypt encrypted file.
-        return clearText
-        """
-        try:
-          if self.mod != None and self.name != "None" and self.key != "encryptionInit":
-            inputFile = open(encryptedFileName, "r")
-            iv = self.key[:self.mod.block_size]
-            bs = self.mod.block_size
-            if self.name == "XOR" or self.name == "ARC4":
-              cipher = self.mod.new(self.key)
-            else:
-              cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
-            next_chunk = ''
-            finished = False
-            decryptedContent = ''
-            outputFile = mmap.mmap(-1, 13)
-            while not finished:
-                chunk, next_chunk = str(next_chunk), str(cipher.decrypt(inputFile.read(1024 * bs)))
-                if len(next_chunk) == 0:
-                    padding_length = chunk[-1] # removed ord(...) as unnecessary
-                    chunk = chunk[:-padding_length]
-                    finished = True
-                #print(str(bytes(x for x in chunk)))
-                outputFile.write(bytes(x for x in chunk))
-            return outputFile
-        except Exception as e:
-          logger.error(tr("|Crypt| FileDecryptionerror: ") + str(e.args))
+            cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
+        return iv + cipher.encrypt(message)
+    
+    def decryptInternal(self, ciphertext, key):
+        iv = ciphertext[:self.mod.block_size]
+        if self.name == "XOR" or self.name == "ARC4":
+            cipher = self.mod.new(self.key)
+        else:
+            cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
+        plaintext = cipher.decrypt(ciphertext[self.mod.block_size:])
+        return plaintext.rstrip(b"\0")
+    
+    def encryptFile(self, file_name):
+        with open(file_name, 'rb') as fo:
+            plaintext = fo.read()
+        enc = self.encryptInternal(plaintext, self.key)
+        with open(file_name + ".enc", 'wb') as fo:
+            fo.write(enc)
+    
+    def decryptFile(self, file_name):
+        with open(file_name, 'rb') as fo:
+            ciphertext = fo.read()
+        dec = self.decryptInternal(ciphertext, self.key)
+        with open(file_name[:-4], 'wb') as fo:
+            fo.write(dec)
 
 
 class scm:
