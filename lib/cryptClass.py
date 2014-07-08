@@ -111,7 +111,8 @@ class cm:
     
     def encryptInternal(self, message, key, key_size=256):
         message = self.pad(message)
-        iv = self.rand.new().read(self.mod.block_size)
+        iv = bytes(self.name,'ascii') + self.rand.new().read(self.mod.block_size-len(self.name))
+        print(str(iv))
         if self.name == "XOR" or self.name == "ARC4":
             cipher = self.mod.new(self.key)
         else:
@@ -127,7 +128,7 @@ class cm:
         plaintext = cipher.decrypt(ciphertext[self.mod.block_size:])
         return plaintext.rstrip(b"\0")
     
-    def encryptFile(self, file_name):
+    def encryptFile(self, file_name, deleteUnencryptedFile=True):
         with open(file_name, 'rb') as fo:
             plaintext = fo.read()
         enc = self.encryptInternal(plaintext, self.key)
@@ -135,11 +136,16 @@ class cm:
             fo.write(enc)
     
     def decryptFile(self, file_name):
-        with open(file_name, 'rb') as fo:
-            ciphertext = fo.read()
+        ifi = open(file_name, 'rb')
+        print(scm.guessAlgorithm(ifi.read(4)))
+        ifi.seek(0)
+        ciphertext = ifi.read()
         dec = self.decryptInternal(ciphertext, self.key)
-        with open(file_name[:-4], 'wb') as fo:
-            fo.write(dec)
+        ramOutput = mmap.mmap(-1, os.path.getsize(os.path.abspath(ifi.name)))
+        ramOutput.write(dec)
+        
+
+            
 
 
 class scm:
@@ -157,6 +163,27 @@ class scm:
     toxMessagesHandler.eo = newCryptManager
     toxMessagesHandler.updateMessages()
 
+
+  @staticmethod
+  def guessAlgorithm(headerAlgo):
+    headerAlgo = str(headerAlgo)[2:-1]
+    headerAlgo = headerAlgo.lower()
+    print(headerAlgo)
+    if headerAlgo[0:4] == "cast":
+        return "CAST"
+    elif headerAlgo[0:4] == "des3":
+        return "DES3"
+    elif headerAlgo[0:4] == "arc4":
+        return "ARC4"
+    elif headerAlgo[0:4] == "arc2":
+        return "ARC2"
+    elif headerAlgo[0:4] == "xor":
+        return XOR
+    elif headerAlgo[0:4] == "aes":
+        return AES
+    elif headerAlgo[0:4] == "blow":
+        return "Blowfish"
+    
 
   @staticmethod
   def getMod(configValue):
@@ -182,7 +209,7 @@ class scm:
             if("ARC4" not in sys.modules):
                 from Crypto.Cipher import ARC4
             return ARC4
-        elif configValue == "5"  or configValue == "xor":
+        elif configValue == "5" or configValue == "xor":
             if("XOR" not in sys.modules):
                 from Crypto.Cipher import XOR
             return XOR
