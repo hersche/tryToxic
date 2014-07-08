@@ -2,7 +2,6 @@ from lib.header import *
 import base64
 import sys, os, mmap
 from Crypto.Hash import SHA512
-from Crypto.Cipher import AES
 
 class cm:
     """
@@ -71,12 +70,13 @@ class cm:
         tmp = ""
         while rest != 0:
             rest -= 1
-            tmp += " "
-        eMessage = self.pad(message)
+            tmp += "."
+        eMessage = message + tmp
+        
         t = base64.b64encode(iv + cipher.encrypt(eMessage))
         return t
       except Exception as e:
-        logger.error(tr("|Crypt| Encryptionerror: ") + str(e.args[0]) + tr(" Message ") + str(rawMessage))
+        logger.error(tr("|Crypt| Encryptionerror: ") + str(e.args) + tr(" Message ") + str(rawMessage))
     def decrypt(self, encryptedMessage):
         """
         Decrypt encrypted text.
@@ -101,6 +101,7 @@ class cm:
                 clearText = clearText[0:-1]
             return clearText.rstrip(".")
           else:
+            # This case is only exist, when there's no key nor module..
             return encryptedMessage
         except Exception as e:
           logger.error(tr("|Crypt| Decryptionerror: ") + str(e.args[0]))
@@ -109,7 +110,11 @@ class cm:
     def pad(self,s):
         return s + b"\0" * (self.mod.block_size - len(s) % self.mod.block_size)
     
-    def encryptInternal(self, message, key, key_size=256):
+    def unpad(self, s):
+        return s.rstrip(b"\0")
+    
+    
+    def encryptInternal(self, message, key):
         message = self.pad(message)
         iv = bytes(self.name,'ascii') + self.rand.new().read(self.mod.block_size-len(self.name))
         print(str(iv))
@@ -135,14 +140,17 @@ class cm:
         with open(file_name + ".enc", 'wb') as fo:
             fo.write(enc)
     
-    def decryptFile(self, file_name):
+    def decryptFile(self, file_name, realFile=False):
         ifi = open(file_name, 'rb')
         print(scm.guessAlgorithm(ifi.read(4)))
         ifi.seek(0)
         ciphertext = ifi.read()
         dec = self.decryptInternal(ciphertext, self.key)
-        ramOutput = mmap.mmap(-1, os.path.getsize(os.path.abspath(ifi.name)))
-        ramOutput.write(dec)
+        if realFile:
+            ouputFile = open(ifi.name+".decrypted", "web")
+        else:
+            ouputFile = mmap.mmap(-1, os.path.getsize(os.path.abspath(ifi.name)))
+        ouputFile.write(dec)
         
 
             
