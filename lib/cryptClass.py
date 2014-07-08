@@ -71,8 +71,8 @@ class cm:
         tmp = ""
         while rest != 0:
             rest -= 1
-            tmp += "."
-        eMessage = message + tmp
+            tmp += " "
+        eMessage = self.pad(message)
         t = base64.b64encode(iv + cipher.encrypt(eMessage))
         return t
       except Exception as e:
@@ -88,8 +88,6 @@ class cm:
           if self.mod != None and self.name != "None" and self.key != "encryptionInit":
             tDec = base64.b64decode(encryptedMessage)
             iv = tDec[:self.mod.block_size]
-            # logger.error("mod-value: "+str(self.name)+" block-lenght: "+str(self.mod.block_size))
-            # logger.error("iv-value: "+str(iv)+" iv-lenght: "+len(str(iv)))
             if self.name == "XOR" or self.name == "ARC4":
               cipher = self.mod.new(self.key)
             else:
@@ -109,7 +107,7 @@ class cm:
         
      
     def pad(self,s):
-        return s + b"\0" * (AES.block_size - len(s) % AES.block_size)
+        return s + b"\0" * (self.mod.block_size - len(s) % self.mod.block_size)
     
     def encryptInternal(self, message, key, key_size=256):
         message = self.pad(message)
