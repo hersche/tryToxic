@@ -1,5 +1,5 @@
 
-from tox import Tox
+from pytox import Tox
 from lib.toxModels import *
 from time import sleep
 from lib.header import *
@@ -34,7 +34,7 @@ class ToxTry(Tox):
     self.updateToxUserObjects()
     self.thread.updateUiUserList.emit(self.toxUserList)
     self.saveLocalData()
-    self.bootstrap_from_address(SERVER[0], 1, SERVER[1], SERVER[2])
+    self.bootstrap_from_address(SERVER[0], SERVER[1], SERVER[2])
   def getToxGroupUserByFriendId(self, groupFriendId):
     """
     Get a toxGroup by friendId

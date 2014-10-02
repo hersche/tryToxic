@@ -5,7 +5,7 @@ from lib.toxUiHandler import toxUiHandler
 from lib.toxModels import toxMessageHandler
 from lib.cryptClass import scm
 from lib.configUiHandler import configUiHandler
-from lib.header import tr
+from lib.header import *
 
 class toxThread(QtCore.QThread):
   """
