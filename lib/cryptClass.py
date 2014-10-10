@@ -72,7 +72,7 @@ class cm:
             rest -= 1
             tmp += "."
         eMessage = message + tmp
-        
+
         t = base64.b64encode(iv + cipher.encrypt(eMessage))
         return t
       except Exception as e:
@@ -105,15 +105,15 @@ class cm:
             return encryptedMessage
         except Exception as e:
           logger.error(tr("|Crypt| Decryptionerror: ") + str(e.args[0]))
-        
-     
+
+
     def pad(self,s):
         return s + b"\0" * (self.mod.block_size - len(s) % self.mod.block_size)
-    
+
     def unpad(self, s):
         return s.rstrip(b"\0")
-    
-    
+
+
     def encryptInternal(self, message, key):
         message = self.pad(message)
         iv = bytes(self.name,'ascii') + self.rand.new().read(self.mod.block_size-len(self.name))
@@ -123,7 +123,7 @@ class cm:
         else:
             cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
         return iv + cipher.encrypt(message)
-    
+
     def decryptInternal(self, ciphertext, key):
         iv = ciphertext[:self.mod.block_size]
         if self.name == "XOR" or self.name == "ARC4":
@@ -132,14 +132,14 @@ class cm:
             cipher = self.mod.new(self.key, self.mod.MODE_CBC, iv)
         plaintext = cipher.decrypt(ciphertext[self.mod.block_size:])
         return plaintext.rstrip(b"\0")
-    
+
     def encryptFile(self, file_name, deleteUnencryptedFile=True):
         with open(file_name, 'rb') as fo:
             plaintext = fo.read()
         enc = self.encryptInternal(plaintext, self.key)
         with open(file_name + ".enc", 'wb') as fo:
             fo.write(enc)
-    
+
     def decryptFile(self, file_name, realFile=False):
         ifi = open(file_name, 'rb')
         print(scm.guessAlgorithm(ifi.read(4)))
@@ -151,9 +151,9 @@ class cm:
         else:
             ouputFile = mmap.mmap(-1, os.path.getsize(os.path.abspath(ifi.name)))
         ouputFile.write(dec)
-        
 
-            
+
+
 
 
 class scm:
@@ -191,7 +191,7 @@ class scm:
         return AES
     elif headerAlgo[0:4] == "blow":
         return "Blowfish"
-    
+
 
   @staticmethod
   def getMod(configValue):

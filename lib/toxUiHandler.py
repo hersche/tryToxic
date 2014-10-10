@@ -155,7 +155,7 @@ class toxUiHandler(QtCore.QObject):
             name = tu.name
           usr = tu.getPeerByName(name)
           if self.lastMessageName == name:
-            tmpBeginnString = "<div style='background-color: " + self.colorchanger(self.lastMessageColor) + ";float: right;'>"
+            tmpBeginnString = "<div style='background-color: " + self.colorchanger(self.lastMessageColor) + ";position: absolute; float: right; border-style: solid; border-width: medium;'>"
             self.ui.toxTryChat.append(tmpBeginnString + "[" + msg.timestamp + "] " + msg.message + "</div>")
           else:
             if usr is not None:
@@ -164,12 +164,12 @@ class toxUiHandler(QtCore.QObject):
               self.lastMessageColor += 1
               if self.lastMessageColor > 13:
                 self.lastMessageColor = 1
-            tmpBeginnString = "<div style='background-color: " + self.colorchanger(self.lastMessageColor) + ";float: right;'>"
+            tmpBeginnString = "</div><div style='background-color: " + self.colorchanger(self.lastMessageColor) + "; position: absolute; float: right; border-style: solid; border-width: medium;'>"
             if name != "":
-              self.ui.toxTryChat.append(" <h3>[" + msg.timestamp + "] " + name + ":</h3> " + tmpBeginnString + html.escape(msg.message) + "</div>")
+              self.ui.toxTryChat.append(tmpBeginnString +" <h3>[" + msg.timestamp + "] " + name + ":</h3> " + html.escape(msg.message) + "</div>")
               self.lastMessageName = name
             else:
-              self.ui.toxTryChat.append(" <h3>[" + msg.timestamp + "] " + str(tu.name) + "(worse):</h3> " + tmpBeginnString + html.escape(msg.message) + "</div>")
+              self.ui.toxTryChat.append(tmpBeginnString +" <h3>[" + msg.timestamp + "] " + str(tu.name) + "(worse):</h3> " + html.escape(msg.message) + "</div>")
 
 
   def onClickToxUser(self, item=None):
@@ -510,27 +510,14 @@ class toxUiHandler(QtCore.QObject):
     Try to change color for chats
     return (r,g,b)
     """
-    if id > 2:
-      r = (id * 45) % 255
-      g = (id * 60) % 255
-      b = (id * 210) % 255
-    elif id > 4:
-      r = (id * 120) % 255
-      g = (id * 140) % 255
-      b = (id * 45) % 255
-    elif id > 8:
-      r = (id * 180) % 255
-      g = (id * 60) % 255
-      b = (id * 120) % 255
-    elif id > 16:
-      r = (id * 180) % 255
-      g = (id * 180) % 255
-      b = (id * 180) % 255
+    print(id)
+    BackgroundColors =[[152,245,255],[255,193,193],[127,255,0],[244,164,96],[255,215,0],[255,127,36],[211,211,211],[255,255,0],[128,0,128]]
+    if id < len(BackgroundColors):
+        r,g,b = BackgroundColors[id]
     else:
-      r = (id * 180) % 255
-      g = (id * 210) % 255
-      b = (id * 120) % 255
-
+        colorId = int(id % len(BackgroundColors))
+        print(colorId)
+        r,g,b = BackgroundColors[colorId]
     return "rgb(" + str(r) + "," + str(g) + "," + str(b) + ")"
   def generateKey(self, dns, pin):
     """

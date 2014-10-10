@@ -52,7 +52,7 @@ class ToxTry(Tox):
     for tu in self.toxUserList:
       if tu.friendId == friendId:
         return tu
-  def saveLocalData(self):
+  def saveLocalData(self, eo=None):
     if self.passPhrase == "":
       self.save_to_file('toxData')
     else:
