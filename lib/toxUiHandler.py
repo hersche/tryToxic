@@ -164,7 +164,7 @@ class toxUiHandler(QtCore.QObject):
               self.lastMessageColor += 1
               if self.lastMessageColor > 13:
                 self.lastMessageColor = 1
-            tmpBeginnString = "</div><div style='background-color: " + self.colorchanger(self.lastMessageColor) + "; position: absolute; float: right; border-style: solid; border-width: medium;'>"
+            tmpBeginnString = "</div> <hr /><div style='background-color: " + self.colorchanger(self.lastMessageColor) + "; position: absolute; float: right; border-style: solid; border-width: medium;'>"
             if name != "":
               self.ui.toxTryChat.append(tmpBeginnString +" <h3>[" + msg.timestamp + "] " + name + ":</h3> " + html.escape(msg.message) + "</div>")
               self.lastMessageName = name
@@ -205,17 +205,18 @@ class toxUiHandler(QtCore.QObject):
           else:
             name = self.tryToxic.name
             friendId = 777
-          # is the name from last time setet and the same we have now? when yes, we didn't have to do so much.stay on color and append to chat
-          if self.lastMessageName != "" and name == self.lastMessageName:
-            tmpBeginnString = "<div style='background-color: " + self.colorchanger(friendId) + "; padding-left:5em'>"
-            self.ui.toxTryChat.append(tmpBeginnString + "[" + msg.timestamp + "]          " + html.escape(msg.message) + "</div>")
-          else:
-            if self.lastMessageColor == 3:
-              self.lastMessageColor = 2
+          if msg.message.strip() != "":
+            # is the name from last time setet and the same we have now? when yes, we didn't have to do so much.stay on color and append to chat
+            if self.lastMessageName != "" and name == self.lastMessageName:
+              tmpBeginnString = "<p style='background-color: " + self.colorchanger(friendId) + ";'>"
+              self.ui.toxTryChat.append(tmpBeginnString + "[" + msg.timestamp + "]          " + html.escape(msg.message) + "</p>")
             else:
-              self.lastMessageColor = 3
-            self.lastMessageName = name
-            self.ui.toxTryChat.append(" <h3 style='background-color: " + self.colorchanger(friendId) + ";' >[" + msg.timestamp + "] " + name + ":</h3><div style='background-color: " + self.colorchanger(friendId) + ";float: right;'>" + html.escape(msg.message) + "</div>")
+              if self.lastMessageColor == 3:
+                self.lastMessageColor = 2
+              else:
+                self.lastMessageColor = 3
+              self.lastMessageName = name
+              self.ui.toxTryChat.append("<hr /><div style='background-color: " + self.colorchanger(friendId) + ";float: right;'><h3 style='background-color: " + self.colorchanger(friendId) + ";' >[" + msg.timestamp + "] " + name + ":</h3><p style='background-color: " + self.colorchanger(friendId) + ";'>" +html.escape(msg.message) + "</p></div>")
 
   def onIncomingFriendFile(self, friendId, fileId, fileSize, filename):
     """
@@ -232,10 +233,10 @@ class toxUiHandler(QtCore.QObject):
       if os.path.exists(folder) is not True:
         os.makedirs(folder)
       try:
-        f = io.FileIO(folder + filename, "wb+")
+        fileObject = io.FileIO(folder + filename, "wb+")
       except Exception as e:
         logger.error("FILE | on recive: " + str(e))
-      tu.files.append(toxFile(fileId, filename, folder, fileSize, f, 1))
+      tu.files.append(toxFile(fileId, filename, folder, fileSize, fileObject, 1))
       self.tryToxic.file_send_control(friendId, 1, fileId, self.tryToxic.FILECONTROL_ACCEPT)
     else:
       self.tryToxic.file_send_control(friendId, 1, fileId, self.tryToxic.FILECONTROL_KILL)
@@ -415,7 +416,7 @@ class toxUiHandler(QtCore.QObject):
     if tu.name is self.lastMessageName:
       self.ui.toxTryChat.append('<div style="background-color:' + self.colorchanger(friendId) + '">[' + ts + '] ' + html.escape(message) + '</div>')
     else:
-      self.ui.toxTryChat.append('<div style="background-color:' + self.colorchanger(friendId) + '; float: right;"> <h3>[' + ts + '] ' + tu.name + ':</h3> ' + html.escape(message) + '</div>')
+      self.ui.toxTryChat.append('<div style="background-color:' + self.colorchanger(friendId) + ';"> <h3 style="background-color:' + self.colorchanger(friendId) + '; >[' + ts + '] ' + tu.name + ':</h3> <p style="background-color:' + self.colorchanger(friendId) + ';>' + html.escape(message) + '</p></div>')
       self.lastMessageName = tu.name
     self.ui.toxTryChat.moveCursor(QtGui.QTextCursor.End)
 
@@ -510,13 +511,11 @@ class toxUiHandler(QtCore.QObject):
     Try to change color for chats
     return (r,g,b)
     """
-    print(id)
     BackgroundColors =[[152,245,255],[255,193,193],[127,255,0],[244,164,96],[255,215,0],[255,127,36],[211,211,211],[255,255,0],[128,0,128]]
     if id < len(BackgroundColors):
         r,g,b = BackgroundColors[id]
     else:
         colorId = int(id % len(BackgroundColors))
-        print(colorId)
         r,g,b = BackgroundColors[colorId]
     return "rgb(" + str(r) + "," + str(g) + "," + str(b) + ")"
   def generateKey(self, dns, pin):

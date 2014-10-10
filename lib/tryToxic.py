@@ -2,8 +2,9 @@
 from pytox import Tox
 from lib.toxModels import *
 from time import sleep
+import time
 from lib.header import *
-import os
+import os,sys, traceback
 
 class ToxTry(Tox):
   """
@@ -31,6 +32,7 @@ class ToxTry(Tox):
     self.statusMessage = self.get_self_status_message()
     self.online = False
     self.userColor = {}
+    self.lastFileMili = int(round(time.time() * 1000))
     self.updateToxUserObjects()
     self.thread.updateUiUserList.emit(self.toxUserList)
     self.saveLocalData()
@@ -101,6 +103,7 @@ class ToxTry(Tox):
         sleep(0.02)
       except Exception as e:
         logger.error(tr("Catch exception in toxLoop: ") + str(e))
+        traceback.print_exc(file=sys.stdout)
         continue
   def on_friend_request(self, pk, message):
     self.thread.incomingFriendRequest.emit(pk, message)
@@ -114,10 +117,16 @@ class ToxTry(Tox):
     self.thread.incomingFriendFile.emit(friendId, fileId, fileSize, filename)
 
   def on_file_data(self, friend_number, file_number, data):
-    logger.info("Recive data now")
+    logger.info("tryToxic | Recive data now")
     tu = self.getToxUserByFriendId(friend_number)
     tf = tu.getFileById(file_number)
+    logger.info("tryToxic | Recive data now "+tf.filename)
+    self.currentFileMili = int(round(time.time() * 1000))
     tf.fileObject.write(data)
+    if((self.lastFileMili-self.currentFileMili)>4000):
+      logger.info("tryToxic | FLUSH data now")
+      tf.fileObject.flush()
+      self.lastFileMili = int(round(time.time() * 1000))
   def on_file_control(self, friend_number, receive_send, file_number, control_type, data):
     """ Callback for everykind of file-changes. Big method!
     receive_send : 0 = rec, 1 = send
@@ -125,25 +134,38 @@ class ToxTry(Tox):
     logger.info("Do a filecontrol now, r/s " + str(receive_send) + " controll type " + str(control_type))
     if receive_send == 0:
       if control_type == self.FILECONTROL_FINISHED:
-        tu = self.getToxUserByFriendId(friend_number)
-        tf = tf = tu.getFileById(file_number)
+        ToxUser = self.getToxUserByFriendId(friend_number)
+        ToxFile = ToxUser.getFileById(file_number)
         if data is not None:
-          # tf.fileobject.write(data)
-          logger.info("receive restdata of file: " + str(data))
-        logger.info("fileobject recived")
-        tf.fileObject.close()
+          #ToxFile.fileobject.write(data)
+          logger.debug("receive restdata of file: " + str(data))
+        self.file_send_control(friend_number, 1, file_number, control_type)
+        logger.info("tryToxic | fileobject recived")
+        ToxFile.fileObject.close()
       elif control_type == self.FILECONTROL_PAUSE:
+        logger.info("File should do a break")
         pass
       elif control_type == self.FILECONTROL_RESUME_BROKEN:
         logger.info("get from broken again")
-        self.f.write(data)
+        ToxUser = self.getToxUserByFriendId(friend_number)
+        ToxFile = ToxUser.getFileById(file_number)
+        if data is not None:
+          ToxFile.fileobject.write(data)
+          logger.debug("receive restdata of file: " + str(data))
+        logger.info("tryToxic | fileobject RESUMED")
+        ToxFile.fileObject.flush()
+      elif control_type == self.FILECONTROL_KILL:
+        ToxUser = self.getToxUserByFriendId(friend_number)
+        ToxFile = ToxUser.getFileById(file_number)
+        logger.info("tryToxic | File canceled")
+        
       else:
         pass
     elif receive_send == 1:
       if control_type == self.FILECONTROL_ACCEPT:
         logger.info("user accept filerequest, sending")
-        tu = self.getToxUserByFriendId(friend_number)
-        toxFile = tu.getFileById(file_number)
+        ToxUser = self.getToxUserByFriendId(friend_number)
+        toxFile = ToxUser.getFileById(file_number)
         if toxFile.fileObject is not None:
           completed = False
           sended = 0
@@ -167,6 +189,7 @@ class ToxTry(Tox):
               except Exception as e:
                 logger.error("file-send-data interrupted: " + str(e.args))
               sended = next
+        
 
   def on_name_change(self, friendId, name):
     logger.debug(tr("Name changed"))
